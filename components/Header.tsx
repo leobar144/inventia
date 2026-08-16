@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Menu, X } from 'react-icons/fa'
+import { FaBars, FaTimes } from 'react-icons/fa'
 import { NAV_LINKS, SITE_CONFIG } from '@/lib/constants'
 
 export default function Header() {
@@ -53,7 +53,7 @@ export default function Header() {
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
         </div>
 
