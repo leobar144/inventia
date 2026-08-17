@@ -468,6 +468,36 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="section">
+        <div className="section-container">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Lo que dicen las familias</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Estamos construyendo esta sección con testimonios reales de familias INVENTIA.
+              Vuelve pronto.
+            </p>
+          </div>
+
+          <FadeInGrid className="grid md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <FadeInItem
+                key={i}
+                className="card p-8 flex flex-col items-center text-center border-2 border-dashed border-gray-200"
+              >
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-3xl mb-4">
+                  💬
+                </div>
+                <p className="text-gray-500 italic mb-4">
+                  Espacio reservado para el testimonio de una familia INVENTIA
+                </p>
+                <p className="text-sm text-gray-400">Próximamente</p>
+              </FadeInItem>
+            ))}
+          </FadeInGrid>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="section pb-24 md:pb-12 bg-gradient-to-r from-secondary-600 to-primary-600 text-white">
         <div className="section-container text-center">
