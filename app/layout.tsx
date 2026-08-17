@@ -48,7 +48,6 @@ export const metadata: Metadata = {
   },
   robots: 'index, follow',
   viewport: 'width=device-width, initial-scale=1.0',
-  charset: 'utf-8',
 }
 
 export default function RootLayout({
