@@ -69,6 +69,7 @@ export interface BookingWithTime {
   course_interest: string | null
   parent_name: string
   whatsapp: string
+  parent_email: string | null
   created_at: string
   trial_availability: { time: string } | null
 }
@@ -87,4 +88,22 @@ export async function getAllBookings(): Promise<BookingWithTime[]> {
 
   if (error) throw error
   return data as unknown as BookingWithTime[]
+}
+
+/**
+ * Trae una reserva puntual por id — usada por la página pública de
+ * confirmación (el id es un UUID impredecible, funciona como el "link
+ * secreto" que se manda por correo, no requiere login).
+ */
+export async function getBookingById(id: string): Promise<BookingWithTime | null> {
+  const supabase = createServiceRoleClient()
+
+  const { data, error } = await supabase
+    .from('trial_bookings')
+    .select('*, trial_availability(time)')
+    .eq('id', id)
+    .single()
+
+  if (error) return null
+  return data as unknown as BookingWithTime
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServiceRoleClient } from '@/lib/supabase/server'
 import { getAvailableSlots } from '@/lib/supabase/trial-queries'
-import { sendTrialBookingNotification } from '@/lib/email'
+import { sendTrialBookingNotification, sendParentConfirmationEmail } from '@/lib/email'
 import type { TrialBookingInput } from '@/types'
 
 const COURSE_LABELS: Record<string, string> = {
@@ -37,25 +37,31 @@ export async function POST(request: Request) {
     !body.childName ||
     !body.childAge ||
     !body.parentName ||
-    !body.whatsapp
+    !body.whatsapp ||
+    !body.parentEmail
   ) {
     return NextResponse.json({ error: 'Faltan datos' }, { status: 400 })
   }
 
   const supabase = createServiceRoleClient()
 
-  const { error } = await supabase.from('trial_bookings').insert({
-    availability_id: body.availabilityId,
-    booking_date: body.bookingDate,
-    child_name: body.childName,
-    child_age: body.childAge,
-    course_interest: body.courseInterest || null,
-    parent_name: body.parentName,
-    whatsapp: body.whatsapp,
-  })
+  const { data: booking, error } = await supabase
+    .from('trial_bookings')
+    .insert({
+      availability_id: body.availabilityId,
+      booking_date: body.bookingDate,
+      child_name: body.childName,
+      child_age: body.childAge,
+      course_interest: body.courseInterest || null,
+      parent_name: body.parentName,
+      whatsapp: body.whatsapp,
+      parent_email: body.parentEmail,
+    })
+    .select('id')
+    .single()
 
-  if (error) {
-    if (error.code === '23505') {
+  if (error || !booking) {
+    if (error?.code === '23505') {
       return NextResponse.json(
         { error: 'Ese horario ya se acaba de ocupar. Elige otro.' },
         { status: 409 }
@@ -70,24 +76,47 @@ export async function POST(request: Request) {
     .eq('id', body.availabilityId)
     .single()
 
+  const bookingDateLabel = new Date(`${body.bookingDate}T00:00:00`).toLocaleDateString('es-CO', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  })
+  const timeLabel = availability ? formatTimeLabel(availability.time) : ''
+  const courseLabel =
+    COURSE_LABELS[body.courseInterest] || body.courseInterest || 'No especificado'
+  const confirmationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/clase-de-prueba/confirmacion/${booking.id}`
+
   try {
     await sendTrialBookingNotification({
       childName: body.childName,
       childAge: body.childAge,
-      courseInterest: COURSE_LABELS[body.courseInterest] || body.courseInterest || 'No especificado',
+      courseInterest: courseLabel,
       parentName: body.parentName,
       whatsapp: body.whatsapp,
-      bookingDateLabel: new Date(`${body.bookingDate}T00:00:00`).toLocaleDateString('es-CO', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-      }),
-      timeLabel: availability ? formatTimeLabel(availability.time) : '',
+      bookingDateLabel,
+      timeLabel,
     })
   } catch (emailError) {
     // La reserva ya quedó guardada — un fallo de correo no debe hacer fallar la reserva.
     console.error('Error enviando notificación de reserva:', emailError)
   }
 
-  return NextResponse.json({ success: true })
+  try {
+    await sendParentConfirmationEmail({
+      childName: body.childName,
+      childAge: body.childAge,
+      courseInterest: courseLabel,
+      parentName: body.parentName,
+      whatsapp: body.whatsapp,
+      parentEmail: body.parentEmail,
+      bookingDateLabel,
+      timeLabel,
+      meetLink: process.env.NEXT_PUBLIC_TRIAL_MEET_LINK,
+      confirmationUrl,
+    })
+  } catch (emailError) {
+    console.error('Error enviando confirmación al padre:', emailError)
+  }
+
+  return NextResponse.json({ success: true, bookingId: booking.id })
 }

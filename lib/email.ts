@@ -35,3 +35,43 @@ export async function sendTrialBookingNotification(data: TrialBookingNotificatio
     `,
   })
 }
+
+interface ParentConfirmation extends TrialBookingNotification {
+  parentEmail: string
+  meetLink?: string
+  confirmationUrl: string
+}
+
+export async function sendParentConfirmationEmail(data: ParentConfirmation) {
+  const apiKey = process.env.RESEND_API_KEY
+
+  if (!apiKey || !data.parentEmail) {
+    console.warn('Resend o correo del padre no disponibles — se omite el correo de confirmación')
+    return
+  }
+
+  const resend = new Resend(apiKey)
+
+  await resend.emails.send({
+    from: 'INVENTIA <onboarding@resend.dev>',
+    to: data.parentEmail,
+    subject: `¡Confirmado! Clase de prueba de ${data.childName} — ${data.bookingDateLabel}`,
+    html: `
+      <h2>¡Tu clase de prueba está agendada!</h2>
+      <p>Hola ${data.parentName},</p>
+      <p>Confirmamos la clase de prueba gratis de <strong>${data.childName}</strong>:</p>
+      <p style="font-size: 18px; font-weight: bold; color: #2e9655;">
+        ${data.bookingDateLabel} · ${data.timeLabel}
+      </p>
+      ${
+        data.meetLink
+          ? `<p>Únete a la videollamada aquí: <a href="${data.meetLink}">${data.meetLink}</a></p>`
+          : ''
+      }
+      <p>Guarda este correo — también puedes ver el detalle de tu reserva en cualquier momento aquí:</p>
+      <p><a href="${data.confirmationUrl}">${data.confirmationUrl}</a></p>
+      <p>Cualquier duda, escríbenos por WhatsApp.</p>
+      <p>— El equipo de INVENTIA</p>
+    `,
+  })
+}

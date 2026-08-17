@@ -130,6 +130,7 @@ export interface TrialBookingInput {
   courseInterest: string
   parentName: string
   whatsapp: string
+  parentEmail: string
 }
 
 export interface AvailableSlotDay {

@@ -1,18 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import {
-  FaWhatsapp,
-  FaArrowLeft,
-  FaArrowRight,
-  FaSpinner,
-  FaVideo,
-} from 'react-icons/fa'
-import { SITE_CONFIG } from '@/lib/constants'
+import { useRouter } from 'next/navigation'
+import { FaArrowLeft, FaArrowRight, FaSpinner } from 'react-icons/fa'
 import type { AvailableSlotDay } from '@/types'
-import InventiaBot from '@/components/InventiaBot'
-import CountdownTimer from '@/components/CountdownTimer'
 
 const COURSES = [
   { id: 'scratch', label: 'Scratch & Bloques', icon: '🎨' },
@@ -43,12 +34,14 @@ function formatTimeLabel(time: string): string {
 const TOTAL_STEPS = 5
 
 export default function ClaseDePruebaPage() {
+  const router = useRouter()
   const [step, setStep] = useState(1)
   const [childName, setChildName] = useState('')
   const [childAge, setChildAge] = useState('')
   const [courseInterest, setCourseInterest] = useState('')
   const [parentName, setParentName] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
+  const [parentEmail, setParentEmail] = useState('')
 
   const [days, setDays] = useState<AvailableSlotDay[] | null>(null)
   const [loadingDays, setLoadingDays] = useState(false)
@@ -59,7 +52,6 @@ export default function ClaseDePruebaPage() {
 
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [confirmed, setConfirmed] = useState(false)
 
   useEffect(() => {
     if (step !== 4 || days !== null) return
@@ -76,7 +68,8 @@ export default function ClaseDePruebaPage() {
   const canProceed = () => {
     if (step === 1) return childName.trim() !== '' && childAge.trim() !== ''
     if (step === 2) return courseInterest !== ''
-    if (step === 3) return parentName.trim() !== '' && whatsapp.trim() !== ''
+    if (step === 3)
+      return parentName.trim() !== '' && whatsapp.trim() !== '' && parentEmail.trim() !== ''
     if (step === 4) return selectedSlot !== null
     return true
   }
@@ -97,12 +90,12 @@ export default function ClaseDePruebaPage() {
         courseInterest,
         parentName,
         whatsapp,
+        parentEmail,
       }),
     })
 
-    setSubmitting(false)
-
     if (!res.ok) {
+      setSubmitting(false)
       const body = await res.json().catch(() => ({}))
       setSubmitError(body.error || 'No pudimos guardar tu reserva. Intenta de nuevo.')
       if (res.status === 409) {
@@ -112,7 +105,8 @@ export default function ClaseDePruebaPage() {
       return
     }
 
-    setConfirmed(true)
+    const { bookingId } = await res.json()
+    router.push(`/clase-de-prueba/confirmacion/${bookingId}`)
   }
 
   const selectedDateLabel = selectedDate
@@ -122,62 +116,6 @@ export default function ClaseDePruebaPage() {
         month: 'long',
       })
     : ''
-
-  const whatsappMessage = encodeURIComponent(
-    `Hola INVENTIA! Acabo de reservar una clase de prueba para ${childName} (${childAge} años) el ${selectedDateLabel} a las ${
-      selectedSlot ? formatTimeLabel(selectedSlot.time) : ''
-    }. Curso de interés: ${COURSES.find((c) => c.id === courseInterest)?.label ?? ''}.`
-  )
-
-  const targetDateTime =
-    selectedDate && selectedSlot ? new Date(`${selectedDate}T${selectedSlot.time}`) : null
-  const meetLink = process.env.NEXT_PUBLIC_TRIAL_MEET_LINK
-
-  if (confirmed) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary-50 via-white to-primary-50 py-16 px-4">
-        <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl p-10 text-center">
-          <InventiaBot className="w-32 h-32 mx-auto mb-2 animate-float" />
-          <h1 className="text-2xl font-heading font-bold mb-2">¡Clase de prueba agendada!</h1>
-          <p className="text-gray-600 mb-1">
-            <strong>{childName}</strong> tiene su clase el:
-          </p>
-          <p className="text-xl font-bold text-primary-600 mb-6 capitalize">
-            {selectedDateLabel} · {selectedSlot && formatTimeLabel(selectedSlot.time)}
-          </p>
-
-          {targetDateTime && (
-            <div className="bg-gray-50 rounded-xl py-4 mb-6">
-              <CountdownTimer target={targetDateTime} />
-            </div>
-          )}
-
-          {meetLink && (
-            <a
-              href={meetLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-outline w-full text-lg mb-3"
-            >
-              <FaVideo className="mr-2" size={18} /> Unirse a la videollamada
-            </a>
-          )}
-
-          <a
-            href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=${whatsappMessage}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-primary w-full text-lg mb-3"
-          >
-            <FaWhatsapp className="mr-2" size={20} /> Confirmar por WhatsApp
-          </a>
-          <Link href="/" className="text-sm text-gray-500 hover:underline">
-            Volver al inicio
-          </Link>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary-50 via-white to-primary-50 py-12 px-4">
@@ -270,6 +208,19 @@ export default function ClaseDePruebaPage() {
                   onChange={(e) => setWhatsapp(e.target.value)}
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+                <input
+                  type="email"
+                  placeholder="tu@correo.com"
+                  className="input-field"
+                  value={parentEmail}
+                  onChange={(e) => setParentEmail(e.target.value)}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Te enviamos ahí la confirmación con el link de la clase.
+                </p>
+              </div>
             </div>
           )}
 
@@ -347,7 +298,7 @@ export default function ClaseDePruebaPage() {
               <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
                 <p><strong>Niño/a:</strong> {childName}, {childAge} años</p>
                 <p><strong>Curso:</strong> {COURSES.find((c) => c.id === courseInterest)?.label}</p>
-                <p><strong>Contacto:</strong> {parentName} · {whatsapp}</p>
+                <p><strong>Contacto:</strong> {parentName} · {whatsapp} · {parentEmail}</p>
                 <p className="capitalize">
                   <strong>Horario:</strong> {selectedDateLabel} ·{' '}
                   {selectedSlot && formatTimeLabel(selectedSlot.time)}

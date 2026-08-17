@@ -50,6 +50,7 @@ export default async function AdminReservasPage() {
         >
           <FaWhatsapp /> {b.whatsapp}
         </a>
+        {b.parent_email && <p className="text-gray-500">{b.parent_email}</p>}
       </td>
     </tr>
   )
