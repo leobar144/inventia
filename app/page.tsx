@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { FaRobot, FaCode, FaBrain, FaAward, FaUsers, FaCheckCircle } from 'react-icons/fa'
+import { FaCode, FaBrain, FaAward, FaUsers, FaCheckCircle } from 'react-icons/fa'
 import { SITE_CONFIG, FEATURES, AGE_GROUPS } from '@/lib/constants'
 
 export default function Home() {
