@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { FaTimes, FaWhatsapp, FaCalendarCheck } from 'react-icons/fa'
 import { SITE_CONFIG } from '@/lib/constants'
 import PopupIllustration from './PopupIllustration'
+import InventiaBot from './InventiaBot'
 
 const STORAGE_KEY = 'inventia_welcome_popup_seen'
 
@@ -47,18 +48,17 @@ export default function WelcomePopup() {
           <FaTimes />
         </button>
 
-        <div className="h-40 relative">
+        <div className="h-32 relative">
           <PopupIllustration />
-          <div className="absolute inset-0 flex items-center justify-center px-6">
-            <h3 className="text-white text-xl sm:text-2xl font-heading font-bold leading-tight text-center drop-shadow">
-              Aprende creando.
-              <br />
-              Construye. Programa. Innova.
-            </h3>
-          </div>
+          <InventiaBot className="w-24 h-24 absolute -bottom-6 right-4 animate-float drop-shadow-lg" />
         </div>
 
-        <div className="p-6 text-center">
+        <div className="p-6 text-center pt-2">
+          <h3 className="text-secondary-800 text-xl font-heading font-bold leading-tight mb-3">
+            Aprende creando.
+            <br />
+            Construye. Programa. Innova.
+          </h3>
           <p className="text-lg font-bold text-gray-800 mb-1">
             Reserva un cupo en el Campamento STEM
           </p>

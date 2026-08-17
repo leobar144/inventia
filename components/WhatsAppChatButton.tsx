@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { FaWhatsapp, FaTimes } from 'react-icons/fa'
 import { SITE_CONFIG } from '@/lib/constants'
+import InventiaBot from './InventiaBot'
 
 export default function WhatsAppChatButton() {
   const [isOpen, setIsOpen] = useState(false)
@@ -18,8 +19,8 @@ export default function WhatsAppChatButton() {
         <div className="absolute bottom-16 right-0 w-72 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden animate-slide-up">
           <div className="bg-primary-500 text-white p-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center">
-                <FaWhatsapp size={20} />
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden shrink-0">
+                <InventiaBot className="w-9 h-9" />
               </div>
               <div>
                 <p className="font-bold text-sm">INVENTIA</p>

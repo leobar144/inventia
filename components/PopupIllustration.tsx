@@ -43,22 +43,6 @@ export default function PopupIllustration() {
         <path d="M88 115 L98 132 L83 125 Z" fill="#e67e22" />
         <path d="M68 128 L75 148 L82 128 Z" fill="#f29014" className="animate-pulse" />
       </g>
-
-      {/* Robot (right, floating) */}
-      <g style={{ transformOrigin: '300px 100px' }} className="animate-float">
-        <ellipse cx="300" cy="155" rx="28" ry="6" fill="black" opacity="0.15" />
-        <rect x="278" y="90" width="44" height="40" rx="10" fill="white" />
-        <rect x="286" y="100" width="10" height="10" rx="3" fill="#2e9655" />
-        <rect x="304" y="100" width="10" height="10" rx="3" fill="#2e9655" />
-        <rect x="292" y="118" width="16" height="4" rx="2" fill="#4680b3" />
-        <rect x="290" y="70" width="20" height="22" rx="6" fill="#f5f7fa" />
-        <circle cx="300" cy="60" r="5" fill="#e67e22" />
-        <line x1="300" y1="65" x2="300" y2="70" stroke="#e67e22" strokeWidth="2" />
-        <rect x="270" y="105" width="8" height="18" rx="4" fill="white" />
-        <rect x="322" y="105" width="8" height="18" rx="4" fill="white" />
-        <rect x="286" y="130" width="10" height="14" rx="3" fill="white" />
-        <rect x="304" y="130" width="10" height="14" rx="3" fill="white" />
-      </g>
     </svg>
   )
 }

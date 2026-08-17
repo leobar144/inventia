@@ -5,6 +5,7 @@ import { SITE_CONFIG, FEATURES, PRICING_PLANS } from '@/lib/constants'
 import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
 import WelcomePopup from '@/components/WelcomePopup'
 import MobileStickyBar from '@/components/MobileStickyBar'
+import InventiaBot from '@/components/InventiaBot'
 
 export default function Home() {
   return (
@@ -77,6 +78,9 @@ export default function Home() {
               <div className="absolute -bottom-4 -left-4 bg-accent-500 text-white px-4 py-2 rounded-xl shadow-lg font-bold text-sm">
                 +50 proyectos creados 🎉
               </div>
+              <FloatingCard className="absolute -top-6 -right-6 bg-white rounded-full p-2 shadow-lg hidden sm:block">
+                <InventiaBot className="w-16 h-16" />
+              </FloatingCard>
             </div>
           </div>
         </div>
