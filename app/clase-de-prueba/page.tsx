@@ -7,10 +7,12 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaSpinner,
+  FaVideo,
 } from 'react-icons/fa'
 import { SITE_CONFIG } from '@/lib/constants'
 import type { AvailableSlotDay } from '@/types'
 import InventiaBot from '@/components/InventiaBot'
+import CountdownTimer from '@/components/CountdownTimer'
 
 const COURSES = [
   { id: 'scratch', label: 'Scratch & Bloques', icon: '🎨' },
@@ -127,6 +129,10 @@ export default function ClaseDePruebaPage() {
     }. Curso de interés: ${COURSES.find((c) => c.id === courseInterest)?.label ?? ''}.`
   )
 
+  const targetDateTime =
+    selectedDate && selectedSlot ? new Date(`${selectedDate}T${selectedSlot.time}`) : null
+  const meetLink = process.env.NEXT_PUBLIC_TRIAL_MEET_LINK
+
   if (confirmed) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary-50 via-white to-primary-50 py-16 px-4">
@@ -139,6 +145,24 @@ export default function ClaseDePruebaPage() {
           <p className="text-xl font-bold text-primary-600 mb-6 capitalize">
             {selectedDateLabel} · {selectedSlot && formatTimeLabel(selectedSlot.time)}
           </p>
+
+          {targetDateTime && (
+            <div className="bg-gray-50 rounded-xl py-4 mb-6">
+              <CountdownTimer target={targetDateTime} />
+            </div>
+          )}
+
+          {meetLink && (
+            <a
+              href={meetLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-outline w-full text-lg mb-3"
+            >
+              <FaVideo className="mr-2" size={18} /> Unirse a la videollamada
+            </a>
+          )}
+
           <a
             href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=${whatsappMessage}`}
             target="_blank"
