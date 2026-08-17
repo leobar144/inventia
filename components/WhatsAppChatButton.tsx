@@ -13,7 +13,7 @@ export default function WhatsAppChatButton() {
   const chatUrl = `https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=${message}`
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-50">
       {isOpen && (
         <div className="absolute bottom-16 right-0 w-72 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden animate-slide-up">
           <div className="bg-primary-500 text-white p-4 flex items-center justify-between">

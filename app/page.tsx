@@ -4,11 +4,13 @@ import { FaCheckCircle } from 'react-icons/fa'
 import { SITE_CONFIG, FEATURES, PRICING_PLANS } from '@/lib/constants'
 import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
 import WelcomePopup from '@/components/WelcomePopup'
+import MobileStickyBar from '@/components/MobileStickyBar'
 
 export default function Home() {
   return (
     <>
       <WelcomePopup />
+      <MobileStickyBar />
 
       {/* Hero Section */}
       <section className="relative min-h-screen bg-gradient-to-br from-secondary-50 via-white to-primary-50 flex items-center py-20">
@@ -437,7 +439,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="section bg-gradient-to-r from-secondary-600 to-primary-600 text-white">
+      <section className="section pb-24 md:pb-12 bg-gradient-to-r from-secondary-600 to-primary-600 text-white">
         <div className="section-container text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             ¿Listo para que tu hijo cree?
