@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { FaTimes, FaWhatsapp, FaCalendarCheck } from 'react-icons/fa'
 import { SITE_CONFIG } from '@/lib/constants'
+import PopupIllustration from './PopupIllustration'
 
 const STORAGE_KEY = 'inventia_welcome_popup_seen'
 
@@ -46,20 +47,26 @@ export default function WelcomePopup() {
           <FaTimes />
         </button>
 
-        <div className="bg-gradient-to-br from-primary-600 to-secondary-700 px-6 py-8 text-center">
-          <div className="text-5xl mb-3">🤖✨</div>
-          <h3 className="text-white text-2xl font-heading font-bold leading-tight">
-            Aprende creando.
-            <br />
-            Construye. Programa. Innova.
-          </h3>
+        <div className="h-40 relative">
+          <PopupIllustration />
+          <div className="absolute inset-0 flex items-center justify-center px-6">
+            <h3 className="text-white text-xl sm:text-2xl font-heading font-bold leading-tight text-center drop-shadow">
+              Aprende creando.
+              <br />
+              Construye. Programa. Innova.
+            </h3>
+          </div>
         </div>
 
         <div className="p-6 text-center">
           <p className="text-lg font-bold text-gray-800 mb-1">
             Reserva un cupo en el Campamento STEM
           </p>
-          <p className="text-gray-600 mb-4">5-12 de octubre · Cupos limitados</p>
+          <p className="text-gray-600 mb-3">5-12 de octubre · Cupos limitados</p>
+
+          <div className="inline-flex items-center gap-2 border-2 border-dashed border-accent-400 bg-accent-50 text-accent-700 font-bold px-4 py-2 rounded-lg mb-4">
+            🎉 30% OFF en el Campamento STEM
+          </div>
 
           <Link
             href="/clase-de-prueba"
@@ -80,7 +87,7 @@ export default function WelcomePopup() {
           </a>
 
           <p className="text-xs text-gray-500 mt-4">
-            Sin compromiso · Respondemos en minutos · +100 niños ya han pasado por INVENTIA
+            Menciona esta promoción al escribirnos · Sin compromiso · Respondemos en minutos
           </p>
         </div>
       </div>
