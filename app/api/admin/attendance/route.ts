@@ -32,6 +32,16 @@ export async function POST(request: Request) {
 
   const admin = createServiceRoleClient()
 
+  const { data: session, error: sessionError } = await admin
+    .from('class_sessions')
+    .select('course_id')
+    .eq('id', sessionId)
+    .single()
+
+  if (sessionError || !session) {
+    return NextResponse.json({ error: 'Sesión no encontrada' }, { status: 404 })
+  }
+
   if (childIds.length > 0) {
     const rows = childIds.map((childId) => ({
       child_id: childId,
@@ -48,17 +58,52 @@ export async function POST(request: Request) {
     }
   }
 
-  // Recalcula classes_completed desde la fuente de verdad para cada niño afectado
+  // Total de sesiones que tiene el curso — denominador del % de avance del curso
+  const { count: totalSessionsInCourse } = await admin
+    .from('class_sessions')
+    .select('id', { count: 'exact', head: true })
+    .eq('course_id', session.course_id)
+
+  // Recalcula desde la fuente de verdad para cada niño afectado — tanto el
+  // contador global (classes_completed, mueve la insignia) como el % del
+  // curso específico (enrollments.progress, la barra de "Sus cursos").
   for (const childId of childIds) {
-    const { count } = await admin
+    const { count: totalCompleted } = await admin
       .from('class_attendance')
       .select('id', { count: 'exact', head: true })
       .eq('child_id', childId)
 
     await admin
       .from('children')
-      .update({ classes_completed: count ?? 0 })
+      .update({ classes_completed: totalCompleted ?? 0 })
       .eq('id', childId)
+
+    const { data: sessionsForCourse } = await admin
+      .from('class_sessions')
+      .select('id')
+      .eq('course_id', session.course_id)
+
+    const sessionIdsInCourse = (sessionsForCourse ?? []).map((s) => s.id)
+
+    const { count: attendedInCourse } =
+      sessionIdsInCourse.length > 0
+        ? await admin
+            .from('class_attendance')
+            .select('id', { count: 'exact', head: true })
+            .eq('child_id', childId)
+            .in('session_id', sessionIdsInCourse)
+        : { count: 0 }
+
+    const progress =
+      totalSessionsInCourse && totalSessionsInCourse > 0
+        ? Math.min(100, Math.round(((attendedInCourse ?? 0) / totalSessionsInCourse) * 100))
+        : 0
+
+    await admin
+      .from('enrollments')
+      .update({ progress })
+      .eq('student_id', childId)
+      .eq('course_id', session.course_id)
   }
 
   return NextResponse.json({ success: true })
