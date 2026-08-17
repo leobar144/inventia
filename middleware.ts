@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user && request.nextUrl.pathname.startsWith('/portal')) {
+  if (!user) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('next', request.nextUrl.pathname)
     return NextResponse.redirect(loginUrl)
@@ -42,8 +42,9 @@ export async function middleware(request: NextRequest) {
   return response
 }
 
+// Solo corre en /portal/** — el resto del sitio (marketing, registro, login,
+// checkout) no necesita revisar sesión en cada carga, y hacerlo ahí agotaba
+// el límite de solicitudes de autenticación de Supabase con solo navegar.
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: ['/portal/:path*'],
 }
