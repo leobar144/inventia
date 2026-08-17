@@ -287,16 +287,16 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
             {PRICING_PLANS.map((plan) => (
               <div
                 key={plan.id}
-                className={`rounded-2xl overflow-hidden shadow-lg ${
+                className={`rounded-2xl overflow-hidden shadow-lg flex flex-col ${
                   plan.highlight ? 'ring-2 ring-primary-500 md:-mt-4' : ''
                 }`}
               >
                 <div
-                  className={`text-center py-6 ${
+                  className={`text-center py-6 min-h-[148px] flex flex-col items-center justify-center shrink-0 ${
                     plan.highlight
                       ? 'bg-gradient-to-br from-primary-500 to-primary-600'
                       : 'bg-gradient-to-br from-secondary-600 to-secondary-700'
@@ -314,8 +314,8 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="bg-white p-6 flex flex-col h-full">
-                  <p className="text-center text-sm font-bold text-primary-600 uppercase tracking-wide mb-3">
+                <div className="bg-white p-6 flex flex-col flex-grow">
+                  <p className="text-center text-sm font-bold text-primary-600 uppercase tracking-wide mb-3 min-h-[2.5rem] flex items-center justify-center">
                     {plan.tagline}
                   </p>
 
@@ -347,7 +347,7 @@ export default function Home() {
                     {plan.description}
                   </p>
 
-                  <div className="bg-gray-50 rounded-lg p-3 mb-6 text-center">
+                  <div className="bg-gray-50 rounded-lg p-3 mb-6 text-center min-h-[92px] flex flex-col justify-center">
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">
                       Desbloqueas
                     </p>
