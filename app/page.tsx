@@ -309,6 +309,9 @@ export default function Home() {
                   )}
                   <h3 className="text-white text-2xl font-bold">{plan.name}</h3>
                   <p className="text-white/80 text-sm">{plan.classes} clases</p>
+                  <p className="text-white text-xs font-bold mt-2 bg-white/15 inline-block px-3 py-1 rounded-full">
+                    {plan.levelIcon} {plan.levelName}
+                  </p>
                 </div>
 
                 <div className="bg-white p-6 flex flex-col h-full">
@@ -346,7 +349,7 @@ export default function Home() {
 
                   <a
                     href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=${encodeURIComponent(
-                      `Hola INVENTIA! Me interesa el plan ${plan.name} (${plan.classes} clases).`
+                      `Hola INVENTIA! Me interesa el plan ${plan.name} - ${plan.levelName} (${plan.classes} clases).`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"

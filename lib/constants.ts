@@ -45,6 +45,8 @@ export const PRICING_PLANS = [
   {
     id: 'mes',
     name: 'Mes',
+    levelName: 'Explorador INVENTIA',
+    levelIcon: '🧭',
     tagline: 'Ideal para empezar sin compromiso',
     description:
       'Perfecto para que tu hijo conozca el método INVENTIA y pierda el miedo a crear con tecnología, sin atarte a un pago largo.',
@@ -57,6 +59,8 @@ export const PRICING_PLANS = [
   {
     id: 'trimestre',
     name: 'Trimestre',
+    levelName: 'Constructor INVENTIA',
+    levelIcon: '🔧',
     tagline: 'El plan más elegido',
     description:
       'El tiempo justo para que tu hijo termine su primer proyecto real de principio a fin y gane confianza de verdad, no solo teoría.',
@@ -69,6 +73,8 @@ export const PRICING_PLANS = [
   {
     id: 'semestre',
     name: 'Semestre',
+    levelName: 'Inventor(a) INVENTIA',
+    levelIcon: '🚀',
     tagline: 'Máximo compromiso, máximos resultados',
     description:
       'El plan de quienes van en serio: tu hijo construye su portafolio de proyectos y domina las bases de un lenguaje o de robótica, con el kit incluido sin costo extra.',
