@@ -3,10 +3,13 @@ import Image from 'next/image'
 import { FaCheckCircle } from 'react-icons/fa'
 import { SITE_CONFIG, FEATURES } from '@/lib/constants'
 import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
+import WelcomePopup from '@/components/WelcomePopup'
 
 export default function Home() {
   return (
     <>
+      <WelcomePopup />
+
       {/* Hero Section */}
       <section className="relative min-h-screen bg-gradient-to-br from-secondary-50 via-white to-primary-50 flex items-center py-20">
         <div className="section-container">
@@ -270,6 +273,54 @@ export default function Home() {
               </ul>
             </FadeInItem>
           </FadeInGrid>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="section bg-gray-50">
+        <div className="section-container max-w-3xl">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Preguntas Frecuentes</h2>
+            <p className="text-xl text-gray-600">Resolvemos las dudas más comunes de los papás</p>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              {
+                q: '¿Mi hijo necesita experiencia previa en programación?',
+                a: 'No. Nuestros cursos, como Scratch & Bloques, están diseñados para que un niño sin ninguna experiencia previa pueda empezar desde cero y avanzar a su propio ritmo.',
+              },
+              {
+                q: '¿Las clases son presenciales o virtuales?',
+                a: 'Tenemos ambas modalidades: cursos en vivo por Google Meet durante todo el año, y el Campamento STEM presencial en Bogotá (próxima edición: 5-12 de octubre).',
+              },
+              {
+                q: '¿A partir de qué edad puede empezar mi hijo?',
+                a: 'Desde los 4 años. Organizamos los cursos por rango de edad (4-6, 7-9, 10-12 y 13-16 años) para que el contenido y el ritmo sean apropiados para cada etapa.',
+              },
+              {
+                q: '¿Qué necesito para las clases virtuales?',
+                a: 'Solo un computador con conexión estable a internet. Para el curso de Robótica, el kit necesario está incluido en la inscripción.',
+              },
+              {
+                q: '¿Cómo reservo un cupo o resuelvo más dudas?',
+                a: 'Escríbenos directo por WhatsApp — te respondemos en minutos con toda la información de cupos, horarios y próximos pasos.',
+              },
+            ].map((item, index) => (
+              <details
+                key={index}
+                className="card group open:border-primary-300 open:shadow-md"
+              >
+                <summary className="cursor-pointer list-none p-5 font-bold flex items-center justify-between">
+                  {item.q}
+                  <span className="text-primary-500 text-xl group-open:rotate-45 transition-transform ml-4 shrink-0">
+                    +
+                  </span>
+                </summary>
+                <p className="px-5 pb-5 text-gray-600">{item.a}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
