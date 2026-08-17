@@ -311,8 +311,12 @@ export default function Home() {
                   <p className="text-white/80 text-sm">{plan.classes} clases</p>
                 </div>
 
-                <div className="bg-white p-6">
-                  <div className="text-center mb-4">
+                <div className="bg-white p-6 flex flex-col h-full">
+                  <p className="text-center text-sm font-bold text-primary-600 uppercase tracking-wide mb-3">
+                    {plan.tagline}
+                  </p>
+
+                  <div className="text-center mb-3">
                     {plan.originalPrice && (
                       <p className="text-gray-400 line-through text-sm">
                         ${plan.originalPrice.toLocaleString('es-CO')}
@@ -321,12 +325,24 @@ export default function Home() {
                     <span className="text-3xl font-bold text-gray-900">
                       ${plan.price.toLocaleString('es-CO')}
                     </span>
-                    {plan.includesKit && (
-                      <p className="inline-block mt-2 ml-2 px-3 py-1 bg-accent-500 text-white text-xs font-bold rounded-full">
-                        ¡Incluye kit gratis!
-                      </p>
-                    )}
                   </div>
+
+                  {plan.originalPrice && (
+                    <p className="text-center text-sm font-bold text-primary-600 mb-2">
+                      Ahorras ${(plan.originalPrice - plan.price).toLocaleString('es-CO')}
+                    </p>
+                  )}
+                  {plan.includesKit && (
+                    <p className="text-center mb-2">
+                      <span className="inline-block px-3 py-1 bg-accent-500 text-white text-xs font-bold rounded-full">
+                        🎁 ¡Incluye kit gratis!
+                      </span>
+                    </p>
+                  )}
+
+                  <p className="text-sm text-gray-600 text-center mb-6 flex-grow">
+                    {plan.description}
+                  </p>
 
                   <a
                     href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=${encodeURIComponent(
