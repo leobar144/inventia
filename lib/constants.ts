@@ -17,12 +17,12 @@ export const SITE_CONFIG = {
 }
 
 // Navigation
+// Apuntan a anclas de la home (no páginas propias) hasta que existan /cursos, /acerca-de, /blog reales.
 export const NAV_LINKS = [
   { label: 'Inicio', href: '/' },
-  { label: 'Cursos', href: '/cursos' },
-  { label: 'Acerca de', href: '/acerca-de' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'Contacto', href: '/contacto' },
+  { label: 'Cursos', href: '/#cursos' },
+  { label: 'Por qué INVENTIA', href: '/#caracteristicas' },
+  { label: 'Contacto', href: '/#contacto' },
 ]
 
 // Course Levels

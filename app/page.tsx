@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { FaCheckCircle } from 'react-icons/fa'
 import { SITE_CONFIG, FEATURES } from '@/lib/constants'
+import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
 
 export default function Home() {
   return (
@@ -12,7 +13,7 @@ export default function Home() {
             {/* Left Content */}
             <div className="space-y-6 animate-fade-in">
               <div className="inline-block">
-                <span className="px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
+                <span className="px-4 py-2 bg-accent-100 text-accent-700 rounded-full text-sm font-bold">
                   🚀 Campamento STEM 5-12 de Octubre
                 </span>
               </div>
@@ -61,13 +62,18 @@ export default function Home() {
             {/* Right Image */}
             <div className="hidden md:block relative">
               <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-2xl blur-3xl opacity-20"></div>
-              <div className="relative bg-white rounded-2xl p-8 shadow-2xl">
-                <div className="aspect-square bg-gradient-to-br from-primary-100 to-secondary-100 rounded-xl flex items-center justify-center">
-                  <div className="text-center">
+              <FloatingCard className="relative bg-white rounded-2xl p-8 shadow-2xl">
+                <div className="aspect-square bg-gradient-to-br from-primary-100 to-secondary-100 rounded-xl flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute top-4 right-4 w-16 h-16 rounded-full bg-accent-200 opacity-60 blur-xl" />
+                  <div className="absolute bottom-6 left-6 w-20 h-20 rounded-full bg-secondary-200 opacity-60 blur-xl" />
+                  <div className="text-center relative">
                     <div className="text-8xl mb-4">🤖</div>
                     <p className="text-lg font-bold text-gray-800">Tu próximo proyecto</p>
                   </div>
                 </div>
+              </FloatingCard>
+              <div className="absolute -bottom-4 -left-4 bg-accent-500 text-white px-4 py-2 rounded-xl shadow-lg font-bold text-sm">
+                +50 proyectos creados 🎉
               </div>
             </div>
           </div>
@@ -84,15 +90,15 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <FadeInGrid className="grid md:grid-cols-3 gap-8">
             {FEATURES.map((feature, index) => (
-              <div key={index} className="card-hover p-8">
+              <FadeInItem key={index} className="card-hover p-8 hover:border-accent-300">
                 <div className="text-5xl mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
-              </div>
+              </FadeInItem>
             ))}
-          </div>
+          </FadeInGrid>
         </div>
       </section>
 
@@ -106,9 +112,9 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <FadeInGrid className="grid md:grid-cols-2 gap-8">
             {/* Scratch Section */}
-            <div className="card-hover p-8 border-l-4 border-primary-500">
+            <FadeInItem className="card-hover p-8 border-l-4 border-primary-500">
               <div className="flex items-center space-x-3 mb-4">
                 <span className="text-4xl">🎨</span>
                 <h3 className="text-2xl font-bold">Scratch & Bloques</h3>
@@ -130,10 +136,10 @@ export default function Home() {
                   <span>Proyecto final: Tu primer juego</span>
                 </li>
               </ul>
-            </div>
+            </FadeInItem>
 
             {/* Python Section */}
-            <div className="card-hover p-8 border-l-4 border-secondary-500">
+            <FadeInItem className="card-hover p-8 border-l-4 border-secondary-500">
               <div className="flex items-center space-x-3 mb-4">
                 <span className="text-4xl">🐍</span>
                 <h3 className="text-2xl font-bold">Python & Código Real</h3>
@@ -155,10 +161,10 @@ export default function Home() {
                   <span>Certificado verificable</span>
                 </li>
               </ul>
-            </div>
+            </FadeInItem>
 
             {/* Robotica Section */}
-            <div className="card-hover p-8 border-l-4 border-accent-500">
+            <FadeInItem className="card-hover p-8 border-l-4 border-accent-500">
               <div className="flex items-center space-x-3 mb-4">
                 <span className="text-4xl">🤖</span>
                 <h3 className="text-2xl font-bold">Robótica</h3>
@@ -180,10 +186,10 @@ export default function Home() {
                   <span>Competencias inter-grupo</span>
                 </li>
               </ul>
-            </div>
+            </FadeInItem>
 
             {/* IA Section */}
-            <div className="card-hover p-8 border-l-4 border-purple-500">
+            <FadeInItem className="card-hover p-8 border-l-4 border-purple-500">
               <div className="flex items-center space-x-3 mb-4">
                 <span className="text-4xl">🧠</span>
                 <h3 className="text-2xl font-bold">IA & Futuro</h3>
@@ -205,8 +211,8 @@ export default function Home() {
                   <span>Portfolio profesional</span>
                 </li>
               </ul>
-            </div>
-          </div>
+            </FadeInItem>
+          </FadeInGrid>
         </div>
       </section>
 
