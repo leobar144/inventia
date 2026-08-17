@@ -296,17 +296,19 @@ export default function Home() {
                 }`}
               >
                 <div
-                  className={`text-center py-6 min-h-[148px] flex flex-col items-center justify-center shrink-0 ${
+                  className={`text-center py-6 flex flex-col items-center justify-center shrink-0 ${
                     plan.highlight
                       ? 'bg-gradient-to-br from-primary-500 to-primary-600'
                       : 'bg-gradient-to-br from-secondary-600 to-secondary-700'
                   }`}
                 >
-                  {plan.highlight && (
-                    <span className="inline-block mb-1 px-3 py-1 bg-accent-500 text-white text-xs font-bold rounded-full">
-                      Más elegido
-                    </span>
-                  )}
+                  <span
+                    className={`inline-block mb-1 px-3 py-1 bg-accent-500 text-white text-xs font-bold rounded-full ${
+                      plan.highlight ? '' : 'invisible'
+                    }`}
+                  >
+                    Más elegido
+                  </span>
                   <h3 className="text-white text-2xl font-bold">{plan.name}</h3>
                   <p className="text-white/80 text-sm">{plan.classes} clases</p>
                   <p className="text-white text-xs font-bold mt-2 bg-white/15 inline-block px-3 py-1 rounded-full">
