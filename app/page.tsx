@@ -368,6 +368,15 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+          <div className="max-w-2xl mx-auto mt-8 text-center bg-gradient-to-r from-accent-50 to-accent-100 border border-accent-200 rounded-xl p-5">
+            <p className="text-gray-800">
+              <span className="text-xl mr-1">🏆</span>
+              <strong>¿Tu hijo llega a Inventor(a) dos veces?</strong> Desbloquea el nivel{' '}
+              <strong>Maestro Inventor</strong> — mentoría de estudiantes nuevos y competencias
+              INVENTIA.
+            </p>
+          </div>
         </div>
       </section>
 
