@@ -19,6 +19,15 @@ export interface Child {
   full_name: string
   birth_date: string
   avatar_url?: string
+  classes_completed: number
+  created_at: string
+}
+
+export interface ClassAttendance {
+  id: string
+  child_id: string
+  session_id: string
+  attended: boolean
   created_at: string
 }
 

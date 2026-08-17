@@ -7,6 +7,8 @@ import {
   getUpcomingSessionsForCourses,
 } from '@/lib/supabase/portal-queries'
 import { FaVideo, FaCalendarAlt } from 'react-icons/fa'
+import { getBadgeProgress } from '@/lib/badges'
+import BadgeIcon from '@/components/BadgeIcon'
 
 function calculateAge(birthDate: string): number {
   const birth = new Date(birthDate)
@@ -61,6 +63,37 @@ export default async function ChildDashboardPage({
           <p className="text-gray-600">{calculateAge(child.birth_date)} años</p>
         </div>
       </div>
+
+      {/* Insignia de nivel */}
+      {(() => {
+        const badge = getBadgeProgress(child.classes_completed)
+        return (
+          <section className="card p-6 flex items-center gap-5">
+            {badge.current ? (
+              <BadgeIcon level={badge.current} size="lg" />
+            ) : (
+              <div className="w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center text-4xl shrink-0">
+                🌱
+              </div>
+            )}
+            <div>
+              <p className="text-sm text-gray-500">{child.classes_completed} clases completadas</p>
+              <h2 className="text-xl font-bold">
+                {badge.current ? badge.current.name : 'Aún sin insignia'}
+              </h2>
+              {badge.next && (
+                <p className="text-sm text-gray-600">
+                  Le faltan <strong>{badge.classesUntilNext}</strong> clase
+                  {badge.classesUntilNext !== 1 ? 's' : ''} para{' '}
+                  <strong>
+                    {badge.next.icon} {badge.next.name}
+                  </strong>
+                </p>
+              )}
+            </div>
+          </section>
+        )
+      })()}
 
       {/* Cursos inscritos */}
       <section>
