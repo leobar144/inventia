@@ -15,14 +15,9 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div>
-            <div className="bg-white rounded-lg inline-block px-4 py-2 mb-4">
-              <div className="relative h-8 w-36">
-                <Image
-                  src="/logoInventia.jpeg"
-                  alt="INVENTIA"
-                  fill
-                  className="object-contain object-left scale-125 origin-left"
-                />
+            <div className="bg-white rounded-lg inline-block px-4 py-3 mb-4">
+              <div className="relative h-10 w-44">
+                <Image src="/logo2.jpeg" alt="INVENTIA" fill className="object-contain object-left" />
               </div>
             </div>
             <p className="text-gray-400 text-sm">

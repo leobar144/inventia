@@ -14,13 +14,13 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link href="/" className="relative h-16 w-60 shrink-0 -my-2">
+          <Link href="/" className="relative h-16 w-64 shrink-0">
             <Image
-              src="/logoInventia.jpeg"
+              src="/logo2.jpeg"
               alt="INVENTIA"
               fill
               priority
-              className="object-contain object-left scale-125 origin-left"
+              className="object-contain object-left"
             />
           </Link>
 
