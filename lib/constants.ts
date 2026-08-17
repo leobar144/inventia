@@ -40,53 +40,34 @@ export const USER_ROLES = {
   admin: 'Administrador',
 }
 
-// Pricing
-// ⚠️ Valores APROXIMADOS de referencia (estimados por sesión, 4 sesiones/mes).
-// Ajustar cuando el negocio defina precios definitivos.
+// Pricing — Clases personalizadas (en casa o virtuales), precios reales del negocio
 export const PRICING_PLANS = [
   {
-    id: 'grupal',
-    name: 'Grupal',
-    groupSize: 'Grupo de 4-6 niños',
-    pricePerSession: 30000,
-    sessionsPerMonth: 4,
+    id: 'mes',
+    name: 'Mes',
+    classes: 4,
+    price: 340000,
+    originalPrice: null as number | null,
+    includesKit: false,
     highlight: false,
-    features: [
-      'Clases en vivo (60 min c/u)',
-      '4 sesiones al mes',
-      'Ambiente colaborativo entre compañeros',
-      'Material y proyectos incluidos',
-    ],
   },
   {
-    id: 'semiprivado',
-    name: 'Semi-Privado',
-    groupSize: 'Grupo de 2-3 niños',
-    pricePerSession: 45000,
-    sessionsPerMonth: 4,
+    id: 'trimestre',
+    name: 'Trimestre',
+    classes: 12,
+    price: 890000,
+    originalPrice: 1020000 as number | null,
+    includesKit: false,
     highlight: true,
-    features: [
-      'Clases en vivo (60 min c/u)',
-      '4 sesiones al mes',
-      'Atención más personalizada',
-      'Material y proyectos incluidos',
-      'Reprogramación flexible',
-    ],
   },
   {
-    id: 'individual',
-    name: 'Individual',
-    groupSize: '1 a 1 con el instructor',
-    pricePerSession: 70000,
-    sessionsPerMonth: 4,
+    id: 'semestre',
+    name: 'Semestre',
+    classes: 24,
+    price: 1860000,
+    originalPrice: 2040000 as number | null,
+    includesKit: true,
     highlight: false,
-    features: [
-      'Clases en vivo (60 min c/u)',
-      '4 sesiones al mes',
-      '100% personalizado al ritmo de tu hijo',
-      'Material y proyectos incluidos',
-      'Reprogramación flexible',
-    ],
   },
 ]
 export const PRICING = {

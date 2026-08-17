@@ -280,19 +280,12 @@ export default function Home() {
       {/* Pricing Section */}
       <section className="section bg-white">
         <div className="section-container">
-          <div className="text-center mb-4">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Planes que se ajustan al ritmo de tu hijo
-            </h2>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Clases Personalizadas</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Elige el formato de clase que mejor se acomode — todos incluyen material y
-              proyectos.
+              En casa o virtuales — elige el plan que mejor se acomode a tu hijo
             </p>
           </div>
-          <p className="text-center text-sm text-gray-400 mb-12">
-            * Precios de referencia por sesión. Confirma el valor exacto con nosotros por
-            WhatsApp.
-          </p>
 
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
             {PRICING_PLANS.map((plan) => (
@@ -315,40 +308,36 @@ export default function Home() {
                     </span>
                   )}
                   <h3 className="text-white text-2xl font-bold">{plan.name}</h3>
+                  <p className="text-white/80 text-sm">{plan.classes} clases</p>
                 </div>
 
                 <div className="bg-white p-6">
                   <div className="text-center mb-4">
+                    {plan.originalPrice && (
+                      <p className="text-gray-400 line-through text-sm">
+                        ${plan.originalPrice.toLocaleString('es-CO')}
+                      </p>
+                    )}
                     <span className="text-3xl font-bold text-gray-900">
-                      ${plan.pricePerSession.toLocaleString('es-CO')}
+                      ${plan.price.toLocaleString('es-CO')}
                     </span>
-                    <span className="text-gray-500"> / sesión</span>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {plan.sessionsPerMonth} sesiones al mes · {plan.groupSize}
-                    </p>
+                    {plan.includesKit && (
+                      <p className="inline-block mt-2 ml-2 px-3 py-1 bg-accent-500 text-white text-xs font-bold rounded-full">
+                        ¡Incluye kit gratis!
+                      </p>
+                    )}
                   </div>
 
                   <a
                     href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=${encodeURIComponent(
-                      `Hola INVENTIA! Me interesa el plan ${plan.name}.`
+                      `Hola INVENTIA! Me interesa el plan ${plan.name} (${plan.classes} clases).`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`btn w-full mb-6 ${
-                      plan.highlight ? 'btn-primary' : 'btn-outline'
-                    }`}
+                    className={`btn w-full ${plan.highlight ? 'btn-primary' : 'btn-outline'}`}
                   >
                     Consultar por WhatsApp
                   </a>
-
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-start space-x-2 text-sm text-gray-600">
-                        <FaCheckCircle className="text-primary-500 mt-0.5 shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </div>
             ))}
