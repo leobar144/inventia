@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
-  FaCheckCircle,
   FaWhatsapp,
   FaArrowLeft,
   FaArrowRight,
@@ -11,6 +10,7 @@ import {
 } from 'react-icons/fa'
 import { SITE_CONFIG } from '@/lib/constants'
 import type { AvailableSlotDay } from '@/types'
+import InventiaBot from '@/components/InventiaBot'
 
 const COURSES = [
   { id: 'scratch', label: 'Scratch & Bloques', icon: '🎨' },
@@ -131,7 +131,7 @@ export default function ClaseDePruebaPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary-50 via-white to-primary-50 py-16 px-4">
         <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl p-10 text-center">
-          <FaCheckCircle className="text-6xl text-primary-500 mx-auto mb-4" />
+          <InventiaBot className="w-32 h-32 mx-auto mb-2 animate-float" />
           <h1 className="text-2xl font-heading font-bold mb-2">¡Clase de prueba agendada!</h1>
           <p className="text-gray-600 mb-1">
             <strong>{childName}</strong> tiene su clase el:
