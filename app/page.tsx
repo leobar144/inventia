@@ -221,8 +221,8 @@ export default function Home() {
       <section className="section bg-white">
         <div className="section-container">
           <div className="max-w-3xl mx-auto rounded-2xl bg-gradient-to-br from-secondary-900 to-secondary-800 shadow-xl p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-            <div className="bg-white rounded-xl px-6 py-4 shrink-0">
-              <div className="relative h-14 w-48">
+            <div className="shrink-0">
+              <div className="relative h-16 w-56">
                 <Image
                   src="/logoverde_blanco-iz_E_Trv.webp"
                   alt="Development Innovation System"
