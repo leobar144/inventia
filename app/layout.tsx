@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, Poppins } from 'next/font/google'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -47,7 +47,11 @@ export const metadata: Metadata = {
     images: ['https://inventiagroup.com/og-image.png'],
   },
   robots: 'index, follow',
-  viewport: 'width=device-width, initial-scale=1.0',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1.0,
 }
 
 export default function RootLayout({

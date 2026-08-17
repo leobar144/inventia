@@ -12,6 +12,16 @@ export interface User {
   updated_at: string
 }
 
+// Child Types — a student profile owned by a parent account (no login of its own)
+export interface Child {
+  id: string
+  parent_id: string
+  full_name: string
+  birth_date: string
+  avatar_url?: string
+  created_at: string
+}
+
 // Course Types
 export interface Course {
   id: string
@@ -34,11 +44,11 @@ export interface Course {
 // Enrollment Types
 export interface Enrollment {
   id: string
-  student_id: string
+  student_id: string // references children(id), not profiles(id)
   course_id: string
   enrolled_date: string
   completion_date?: string
-  status: 'active' | 'completed' | 'dropped'
+  status: 'pending_payment' | 'active' | 'completed' | 'dropped'
   progress: number // 0-100
 }
 
@@ -85,4 +95,21 @@ export interface Certificate {
   issued_date: string
   certificate_url: string
   verification_code: string
+}
+
+// Payment Types (Wompi)
+export type PaymentStatus = 'PENDING' | 'APPROVED' | 'DECLINED' | 'VOIDED' | 'ERROR'
+
+export interface Payment {
+  id: string
+  enrollment_id: string
+  parent_id: string
+  wompi_transaction_id?: string
+  reference: string
+  amount_in_cents: number
+  currency: 'COP'
+  status: PaymentStatus
+  raw_response?: Record<string, unknown>
+  created_at: string
+  updated_at: string
 }

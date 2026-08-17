@@ -84,6 +84,10 @@ input, textarea, select {
   @apply rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
 }
 
+.input-field {
+  @apply w-full;
+}
+
 /* Responsive Images */
 img {
   @apply max-w-full h-auto;

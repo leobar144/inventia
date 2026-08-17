@@ -37,6 +37,12 @@ export default function Header() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            <Link
+              href="/login"
+              className="text-gray-600 hover:text-primary-600 font-medium transition-colors"
+            >
+              Portal de Padres
+            </Link>
             <a
               href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}`}
               target="_blank"
@@ -70,6 +76,13 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/login"
+              className="block px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              Portal de Padres
+            </Link>
             <a
               href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}`}
               target="_blank"
