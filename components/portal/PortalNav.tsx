@@ -5,7 +5,13 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { FaSignOutAlt } from 'react-icons/fa'
 
-export default function PortalNav({ parentName }: { parentName: string }) {
+export default function PortalNav({
+  parentName,
+  isAdmin,
+}: {
+  parentName: string
+  isAdmin?: boolean
+}) {
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -38,6 +44,14 @@ export default function PortalNav({ parentName }: { parentName: string }) {
             >
               Pagos
             </Link>
+            {isAdmin && (
+              <Link
+                href="/admin/reservas"
+                className="text-accent-600 hover:text-accent-700 font-bold"
+              >
+                Reservas (Admin)
+              </Link>
+            )}
             <span className="hidden md:inline text-sm text-gray-500">Hola, {parentName}</span>
             <button
               onClick={handleSignOut}
