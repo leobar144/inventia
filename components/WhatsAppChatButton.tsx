@@ -55,9 +55,18 @@ export default function WhatsAppChatButton() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? 'Cerrar chat de soporte' : 'Abrir chat de soporte'}
-        className="w-14 h-14 rounded-full bg-primary-500 hover:bg-primary-600 text-white shadow-lg flex items-center justify-center transition-transform hover:scale-105"
+        className="relative w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center transition-transform hover:scale-105 border-2 border-primary-500"
       >
-        {isOpen ? <FaTimes size={22} /> : <FaWhatsapp size={26} />}
+        {isOpen ? (
+          <FaTimes size={24} className="text-primary-600" />
+        ) : (
+          <>
+            <InventiaBot className="w-14 h-14" />
+            <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center shadow">
+              <FaWhatsapp size={13} />
+            </span>
+          </>
+        )}
       </button>
     </div>
   )
