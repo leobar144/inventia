@@ -16,6 +16,9 @@ export interface SessionAttendanceRow {
  * Trae las próximas sesiones de clase junto con los niños actualmente
  * inscritos (activos) en ese curso, y si ya se marcó su asistencia.
  * Solo se usa desde /admin/asistencia, con el rol admin ya verificado.
+ *
+ * Cruza todo manualmente en vez de usar embeds de PostgREST (course:courses(*))
+ * porque la caché de relaciones no reconoce class_sessions -> courses.
  */
 export async function getUpcomingSessionsWithAttendance(
   daysAhead: number = 14
@@ -28,7 +31,7 @@ export async function getUpcomingSessionsWithAttendance(
 
   const { data: sessions, error: sessionsError } = await supabase
     .from('class_sessions')
-    .select('id, title, scheduled_at, course_id, courses(title)')
+    .select('id, title, scheduled_at, course_id')
     .gte('scheduled_at', now.toISOString())
     .lte('scheduled_at', rangeEnd.toISOString())
     .order('scheduled_at', { ascending: true })
@@ -38,13 +41,30 @@ export async function getUpcomingSessionsWithAttendance(
 
   const courseIds = [...new Set(sessions.map((s) => s.course_id))]
 
+  const { data: courses, error: coursesError } = await supabase
+    .from('courses')
+    .select('id, title')
+    .in('id', courseIds)
+
+  if (coursesError) throw coursesError
+  const courseTitleById = new Map((courses ?? []).map((c) => [c.id, c.title]))
+
   const { data: enrollments, error: enrollmentsError } = await supabase
     .from('enrollments')
-    .select('course_id, children(id, full_name)')
+    .select('course_id, student_id')
     .in('course_id', courseIds)
     .eq('status', 'active')
 
   if (enrollmentsError) throw enrollmentsError
+
+  const childIds = [...new Set((enrollments ?? []).map((e) => e.student_id))]
+  const { data: children, error: childrenError } =
+    childIds.length > 0
+      ? await supabase.from('children').select('id, full_name').in('id', childIds)
+      : { data: [], error: null }
+
+  if (childrenError) throw childrenError
+  const childById = new Map((children ?? []).map((c) => [c.id, c.full_name]))
 
   const sessionIds = sessions.map((s) => s.id)
   const { data: attendance, error: attendanceError } = await supabase
@@ -57,21 +77,22 @@ export async function getUpcomingSessionsWithAttendance(
   const markedSet = new Set((attendance ?? []).map((a) => `${a.session_id}_${a.child_id}`))
 
   return sessions.map((session) => {
-    const childrenForCourse = (enrollments ?? [])
+    const childIdsForCourse = (enrollments ?? [])
       .filter((e) => e.course_id === session.course_id)
-      .map((e) => e.children as unknown as { id: string; full_name: string } | null)
-      .filter((c): c is { id: string; full_name: string } => c !== null)
+      .map((e) => e.student_id)
 
     return {
       sessionId: session.id,
       sessionTitle: session.title,
       scheduledAt: session.scheduled_at,
-      courseTitle: (session.courses as unknown as { title: string } | null)?.title ?? '',
-      children: childrenForCourse.map((child) => ({
-        childId: child.id,
-        childName: child.full_name,
-        alreadyMarked: markedSet.has(`${session.id}_${child.id}`),
-      })),
+      courseTitle: courseTitleById.get(session.course_id) ?? '',
+      children: childIdsForCourse
+        .filter((childId) => childById.has(childId))
+        .map((childId) => ({
+          childId,
+          childName: childById.get(childId) as string,
+          alreadyMarked: markedSet.has(`${session.id}_${childId}`),
+        })),
     }
   })
 }
