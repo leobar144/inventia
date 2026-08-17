@@ -343,9 +343,16 @@ export default function Home() {
                     </p>
                   )}
 
-                  <p className="text-sm text-gray-600 text-center mb-6 flex-grow">
+                  <p className="text-sm text-gray-600 text-center mb-4 flex-grow">
                     {plan.description}
                   </p>
+
+                  <div className="bg-gray-50 rounded-lg p-3 mb-6 text-center">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">
+                      Desbloqueas
+                    </p>
+                    <p className="text-sm text-gray-700">{plan.unlocks}</p>
+                  </div>
 
                   <a
                     href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=${encodeURIComponent(

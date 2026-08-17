@@ -50,6 +50,7 @@ export const PRICING_PLANS = [
     tagline: 'Ideal para empezar sin compromiso',
     description:
       'Perfecto para que tu hijo conozca el método INVENTIA y pierda el miedo a crear con tecnología, sin atarte a un pago largo.',
+    unlocks: 'Insignia digital de bienvenida + su primer mini-proyecto terminado',
     classes: 4,
     price: 340000,
     originalPrice: null as number | null,
@@ -64,6 +65,7 @@ export const PRICING_PLANS = [
     tagline: 'El plan más elegido',
     description:
       'El tiempo justo para que tu hijo termine su primer proyecto real de principio a fin y gane confianza de verdad, no solo teoría.',
+    unlocks: 'Certificado firmado por su instructor al cerrar su primer proyecto real',
     classes: 12,
     price: 890000,
     originalPrice: 1020000 as number | null,
@@ -78,6 +80,7 @@ export const PRICING_PLANS = [
     tagline: 'Máximo compromiso, máximos resultados',
     description:
       'El plan de quienes van en serio: tu hijo construye su portafolio de proyectos y domina las bases de un lenguaje o de robótica, con el kit incluido sin costo extra.',
+    unlocks: 'Certificado mayor + portafolio de 4 proyectos publicable en su perfil',
     classes: 24,
     price: 1860000,
     originalPrice: 2040000 as number | null,

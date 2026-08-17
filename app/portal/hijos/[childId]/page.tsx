@@ -82,13 +82,18 @@ export default async function ChildDashboardPage({
                 {badge.current ? badge.current.name : 'Aún sin insignia'}
               </h2>
               {badge.next && (
-                <p className="text-sm text-gray-600">
-                  Le faltan <strong>{badge.classesUntilNext}</strong> clase
-                  {badge.classesUntilNext !== 1 ? 's' : ''} para{' '}
-                  <strong>
-                    {badge.next.icon} {badge.next.name}
-                  </strong>
-                </p>
+                <>
+                  <p className="text-sm text-gray-600">
+                    Le faltan <strong>{badge.classesUntilNext}</strong> clase
+                    {badge.classesUntilNext !== 1 ? 's' : ''} para{' '}
+                    <strong>
+                      {badge.next.icon} {badge.next.name}
+                    </strong>
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Desbloquea: {badge.next.unlocks}
+                  </p>
+                </>
               )}
             </div>
           </section>
