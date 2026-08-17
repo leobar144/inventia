@@ -218,30 +218,37 @@ export default function Home() {
       </section>
 
       {/* Alliance / Trust Section */}
-      <section className="py-12 bg-gray-50 border-y border-gray-100">
+      <section className="section bg-white">
         <div className="section-container">
-          <p className="text-center text-sm font-medium text-gray-500 uppercase tracking-wide mb-6">
-            Con el respaldo tecnológico de
-          </p>
-          <div className="flex items-center justify-center gap-4 flex-wrap">
-            <div className="h-20 px-6 bg-secondary-900 rounded-xl flex items-center justify-center">
-              <Image
-                src="/logoverde_blanco-iz_E_Trv.webp"
-                alt="Development Innovation System"
-                width={180}
-                height={70}
-                className="h-12 w-auto"
-              />
+          <div className="max-w-3xl mx-auto rounded-2xl bg-gradient-to-br from-secondary-900 to-secondary-800 shadow-xl p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+            <div className="bg-white rounded-xl px-6 py-4 shrink-0">
+              <div className="relative h-14 w-48">
+                <Image
+                  src="/logoverde_blanco-iz_E_Trv.webp"
+                  alt="Development Innovation System"
+                  fill
+                  className="object-contain"
+                />
+              </div>
             </div>
-            <div className="text-left">
-              <p className="font-bold text-gray-800">En alianza con Development Innovation System</p>
+            <div>
+              <p className="text-accent-400 text-sm font-bold uppercase tracking-wide mb-2">
+                Alianza tecnológica internacional
+              </p>
+              <h3 className="text-white text-xl md:text-2xl font-bold mb-2">
+                En alianza con Development Innovation System
+              </h3>
+              <p className="text-secondary-200">
+                Contamos con el respaldo de una empresa de tecnología de Estados Unidos, lo que
+                nos permite ofrecer una plataforma educativa robusta y en constante evolución.
+              </p>
               <a
                 href="https://discdc.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-primary-600 hover:underline"
+                className="inline-block mt-3 text-sm text-primary-300 hover:text-primary-200 font-medium hover:underline"
               >
-                discdc.com
+                Conocer más en discdc.com →
               </a>
             </div>
           </div>

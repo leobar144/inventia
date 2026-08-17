@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { FaInstagram, FaWhatsapp, FaMailBulk } from 'react-icons/fa'
 import { SITE_CONFIG, NAV_LINKS } from '@/lib/constants'
 
@@ -14,11 +15,15 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">I</span>
+            <div className="bg-white rounded-lg inline-block px-4 py-2 mb-4">
+              <div className="relative h-8 w-36">
+                <Image
+                  src="/logoInventia.jpeg"
+                  alt="INVENTIA"
+                  fill
+                  className="object-contain object-left scale-125 origin-left"
+                />
               </div>
-              <span className="font-heading font-bold text-xl">INVENTIA</span>
             </div>
             <p className="text-gray-400 text-sm">
               Tu hijo no usa tecnología. La inventa.
