@@ -63,14 +63,15 @@ export default function Home() {
             {/* Right Image */}
             <div className="hidden md:block relative">
               <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-2xl blur-3xl opacity-20"></div>
-              <FloatingCard className="relative bg-white rounded-2xl p-8 shadow-2xl">
-                <div className="aspect-square bg-gradient-to-br from-primary-100 to-secondary-100 rounded-xl flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute top-4 right-4 w-16 h-16 rounded-full bg-accent-200 opacity-60 blur-xl" />
-                  <div className="absolute bottom-6 left-6 w-20 h-20 rounded-full bg-secondary-200 opacity-60 blur-xl" />
-                  <div className="text-center relative">
-                    <div className="text-8xl mb-4">🤖</div>
-                    <p className="text-lg font-bold text-gray-800">Tu próximo proyecto</p>
-                  </div>
+              <FloatingCard className="relative bg-white rounded-2xl p-3 shadow-2xl">
+                <div className="aspect-square rounded-xl overflow-hidden relative">
+                  <Image
+                    src="/gallery/hero.jpg"
+                    alt="Estudiante de INVENTIA mostrando el robot que construyó"
+                    fill
+                    priority
+                    className="object-cover"
+                  />
                 </div>
               </FloatingCard>
               <div className="absolute -bottom-4 -left-4 bg-accent-500 text-white px-4 py-2 rounded-xl shadow-lg font-bold text-sm">
@@ -99,6 +100,61 @@ export default function Home() {
                 <p className="text-gray-600">{feature.description}</p>
               </FadeInItem>
             ))}
+          </FadeInGrid>
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section className="section bg-gray-50">
+        <div className="section-container">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Nuestros estudiantes en acción</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Así se ve aprender creando — cada foto es un proyecto real hecho por un niño real.
+            </p>
+          </div>
+
+          <FadeInGrid className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[160px] md:auto-rows-[200px]">
+            <FadeInItem className="col-span-2 row-span-2 relative rounded-2xl overflow-hidden group">
+              <Image
+                src="/gallery/robotica2.jpg"
+                alt="Estudiante armando un robot con ruedas"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </FadeInItem>
+            <FadeInItem className="relative rounded-2xl overflow-hidden group">
+              <Image
+                src="/gallery/robotica1.jpg"
+                alt="Estudiante programando un brazo robótico"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </FadeInItem>
+            <FadeInItem className="relative rounded-2xl overflow-hidden group">
+              <Image
+                src="/gallery/kits.webp"
+                alt="Estudiantes construyendo con kits de robótica educativa"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </FadeInItem>
+            <FadeInItem className="relative rounded-2xl overflow-hidden group">
+              <Image
+                src="/gallery/iot.jpg"
+                alt="Estudiantes trabajando en un proyecto de electrónica"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </FadeInItem>
+            <FadeInItem className="relative rounded-2xl overflow-hidden group">
+              <Image
+                src="/gallery/colaboracion.jpg"
+                alt="Dos estudiantes colaborando en un robot"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </FadeInItem>
           </FadeInGrid>
         </div>
       </section>

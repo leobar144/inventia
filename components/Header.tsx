@@ -12,9 +12,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center h-24">
           {/* Logo */}
-          <Link href="/" className="relative h-16 w-64 shrink-0">
+          <Link href="/" className="relative h-20 w-72 shrink-0">
             <Image
               src="/logo2.jpeg"
               alt="INVENTIA"
