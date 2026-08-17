@@ -33,14 +33,9 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <a
-                  href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=Hola%20INVENTIA%21%20Me%20interesa%20el%20campamento%20de%20octubre`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-primary text-lg"
-                >
-                  📅 Reservar Ahora
-                </a>
+                <Link href="/clase-de-prueba" className="btn btn-primary text-lg">
+                  📅 Reservar Clase de Prueba Gratis
+                </Link>
                 <Link href="#cursos" className="btn btn-outline text-lg">
                   Conocer Cursos
                 </Link>

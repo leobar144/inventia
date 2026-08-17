@@ -113,3 +113,26 @@ export interface Payment {
   created_at: string
   updated_at: string
 }
+
+// Trial Class Booking Types
+export interface TrialAvailability {
+  id: string
+  day_of_week: number // 0 = domingo ... 6 = sábado
+  time: string // 'HH:MM:SS'
+  is_active: boolean
+}
+
+export interface TrialBookingInput {
+  availabilityId: string
+  bookingDate: string // 'YYYY-MM-DD'
+  childName: string
+  childAge: number
+  courseInterest: string
+  parentName: string
+  whatsapp: string
+}
+
+export interface AvailableSlotDay {
+  date: string // 'YYYY-MM-DD'
+  slots: { availabilityId: string; time: string }[]
+}

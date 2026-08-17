@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { FaTimes, FaWhatsapp } from 'react-icons/fa'
+import Link from 'next/link'
+import { FaTimes, FaWhatsapp, FaCalendarCheck } from 'react-icons/fa'
 import { SITE_CONFIG } from '@/lib/constants'
 
 const STORAGE_KEY = 'inventia_welcome_popup_seen'
@@ -60,14 +61,22 @@ export default function WelcomePopup() {
           </p>
           <p className="text-gray-600 mb-4">5-12 de octubre · Cupos limitados</p>
 
+          <Link
+            href="/clase-de-prueba"
+            onClick={() => setIsOpen(false)}
+            className="btn btn-primary w-full text-lg mb-3"
+          >
+            <FaCalendarCheck className="mr-2" size={18} /> Agendar clase de prueba gratis
+          </Link>
+
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setIsOpen(false)}
-            className="btn btn-primary w-full text-lg"
+            className="btn btn-outline w-full text-sm"
           >
-            <FaWhatsapp className="mr-2" size={20} /> Reservar por WhatsApp
+            <FaWhatsapp className="mr-2" /> O escríbenos por WhatsApp
           </a>
 
           <p className="text-xs text-gray-500 mt-4">
