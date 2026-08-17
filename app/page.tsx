@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { FaCheckCircle } from 'react-icons/fa'
-import { SITE_CONFIG, FEATURES } from '@/lib/constants'
+import { SITE_CONFIG, FEATURES, PRICING_PLANS } from '@/lib/constants'
 import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
 import WelcomePopup from '@/components/WelcomePopup'
 
@@ -273,6 +273,85 @@ export default function Home() {
               </ul>
             </FadeInItem>
           </FadeInGrid>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="section bg-white">
+        <div className="section-container">
+          <div className="text-center mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Planes que se ajustan al ritmo de tu hijo
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Elige el formato de clase que mejor se acomode — todos incluyen material y
+              proyectos.
+            </p>
+          </div>
+          <p className="text-center text-sm text-gray-400 mb-12">
+            * Precios de referencia por sesión. Confirma el valor exacto con nosotros por
+            WhatsApp.
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
+            {PRICING_PLANS.map((plan) => (
+              <div
+                key={plan.id}
+                className={`rounded-2xl overflow-hidden shadow-lg ${
+                  plan.highlight ? 'ring-2 ring-primary-500 md:-mt-4' : ''
+                }`}
+              >
+                <div
+                  className={`text-center py-6 ${
+                    plan.highlight
+                      ? 'bg-gradient-to-br from-primary-500 to-primary-600'
+                      : 'bg-gradient-to-br from-secondary-600 to-secondary-700'
+                  }`}
+                >
+                  {plan.highlight && (
+                    <span className="inline-block mb-1 px-3 py-1 bg-accent-500 text-white text-xs font-bold rounded-full">
+                      Más elegido
+                    </span>
+                  )}
+                  <h3 className="text-white text-2xl font-bold">{plan.name}</h3>
+                </div>
+
+                <div className="bg-white p-6">
+                  <div className="text-center mb-4">
+                    <span className="text-3xl font-bold text-gray-900">
+                      ${plan.pricePerSession.toLocaleString('es-CO')}
+                    </span>
+                    <span className="text-gray-500"> / sesión</span>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {plan.sessionsPerMonth} sesiones al mes · {plan.groupSize}
+                    </p>
+                  </div>
+
+                  <a
+                    href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=${encodeURIComponent(
+                      `Hola INVENTIA! Me interesa el plan ${plan.name}.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`btn w-full mb-6 ${
+                      plan.highlight ? 'btn-primary' : 'btn-outline'
+                    }`}
+                  >
+                    Consultar por WhatsApp
+                  </a>
+
+                  <ul className="space-y-3">
+                    {plan.features.map((feature, i) => (
+                      <li key={i} className="flex items-start space-x-2 text-sm text-gray-600">
+                        <FaCheckCircle className="text-primary-500 mt-0.5 shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

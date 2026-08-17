@@ -41,14 +41,55 @@ export const USER_ROLES = {
 }
 
 // Pricing
+// ⚠️ Valores APROXIMADOS de referencia (estimados por sesión, 4 sesiones/mes).
+// Ajustar cuando el negocio defina precios definitivos.
+export const PRICING_PLANS = [
+  {
+    id: 'grupal',
+    name: 'Grupal',
+    groupSize: 'Grupo de 4-6 niños',
+    pricePerSession: 30000,
+    sessionsPerMonth: 4,
+    highlight: false,
+    features: [
+      'Clases en vivo (60 min c/u)',
+      '4 sesiones al mes',
+      'Ambiente colaborativo entre compañeros',
+      'Material y proyectos incluidos',
+    ],
+  },
+  {
+    id: 'semiprivado',
+    name: 'Semi-Privado',
+    groupSize: 'Grupo de 2-3 niños',
+    pricePerSession: 45000,
+    sessionsPerMonth: 4,
+    highlight: true,
+    features: [
+      'Clases en vivo (60 min c/u)',
+      '4 sesiones al mes',
+      'Atención más personalizada',
+      'Material y proyectos incluidos',
+      'Reprogramación flexible',
+    ],
+  },
+  {
+    id: 'individual',
+    name: 'Individual',
+    groupSize: '1 a 1 con el instructor',
+    pricePerSession: 70000,
+    sessionsPerMonth: 4,
+    highlight: false,
+    features: [
+      'Clases en vivo (60 min c/u)',
+      '4 sesiones al mes',
+      '100% personalizado al ritmo de tu hijo',
+      'Material y proyectos incluidos',
+      'Reprogramación flexible',
+    ],
+  },
+]
 export const PRICING = {
-  monthly: {
-    student: 99000, // COP
-    multiple: 180000, // 2+ students
-  },
-  hourly: {
-    student: 25000, // Per class
-  },
   currency: 'COP',
 }
 
