@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Poppins } from 'next/font/google'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import WhatsAppChatButton from '@/components/WhatsAppChatButton'
 import '@/styles/globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
@@ -71,6 +72,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-grow">{children}</main>
         <Footer />
+        <WhatsAppChatButton />
       </body>
     </html>
   )

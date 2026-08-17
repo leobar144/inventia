@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { FaCheckCircle } from 'react-icons/fa'
 import { SITE_CONFIG, FEATURES } from '@/lib/constants'
 import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
@@ -213,6 +214,37 @@ export default function Home() {
               </ul>
             </FadeInItem>
           </FadeInGrid>
+        </div>
+      </section>
+
+      {/* Alliance / Trust Section */}
+      <section className="py-12 bg-gray-50 border-y border-gray-100">
+        <div className="section-container">
+          <p className="text-center text-sm font-medium text-gray-500 uppercase tracking-wide mb-6">
+            Con el respaldo tecnológico de
+          </p>
+          <div className="flex items-center justify-center gap-4 flex-wrap">
+            <div className="h-20 px-6 bg-secondary-900 rounded-xl flex items-center justify-center">
+              <Image
+                src="/logoverde_blanco-iz_E_Trv.webp"
+                alt="Development Innovation System"
+                width={180}
+                height={70}
+                className="h-12 w-auto"
+              />
+            </div>
+            <div className="text-left">
+              <p className="font-bold text-gray-800">En alianza con Development Innovation System</p>
+              <a
+                href="https://discdc.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary-600 hover:underline"
+              >
+                discdc.com
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
