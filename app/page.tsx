@@ -61,7 +61,7 @@ export default function Home() {
             </div>
 
             {/* Right Image */}
-            <div className="hidden md:block relative">
+            <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-2xl blur-3xl opacity-20"></div>
               <FloatingCard className="relative bg-white rounded-2xl p-3 shadow-2xl">
                 <div className="aspect-square rounded-xl overflow-hidden relative">
