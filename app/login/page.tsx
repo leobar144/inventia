@@ -35,7 +35,14 @@ function LoginForm() {
     setLoading(false)
 
     if (signInError) {
-      setError('Correo o contraseña incorrectos.')
+      const msg = signInError.message.toLowerCase()
+      if (msg.includes('email not confirmed')) {
+        setError('Debes confirmar tu correo antes de iniciar sesión. Revisa tu bandeja (y spam).')
+      } else if (msg.includes('invalid login credentials')) {
+        setError('Correo o contraseña incorrectos.')
+      } else {
+        setError(`No pudimos iniciar sesión: ${signInError.message}`)
+      }
       return
     }
 

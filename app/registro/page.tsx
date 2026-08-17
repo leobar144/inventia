@@ -28,7 +28,7 @@ export default function RegistroPage() {
     setLoading(true)
     const supabase = createClient()
 
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
       options: {
@@ -39,11 +39,21 @@ export default function RegistroPage() {
     setLoading(false)
 
     if (signUpError) {
-      setError(
-        signUpError.message === 'User already registered'
-          ? 'Ese correo ya tiene una cuenta. Intenta iniciar sesión.'
-          : 'No pudimos crear tu cuenta. Intenta de nuevo.'
-      )
+      const msg = signUpError.message.toLowerCase()
+      if (msg.includes('already registered') || msg.includes('already exists')) {
+        setError('Ese correo ya tiene una cuenta. Intenta iniciar sesión, o usa "¿Olvidaste tu contraseña?".')
+      } else if (msg.includes('rate limit')) {
+        setError('Demasiados intentos seguidos. Espera unos minutos y prueba de nuevo.')
+      } else {
+        setError(`No pudimos crear tu cuenta: ${signUpError.message}`)
+      }
+      return
+    }
+
+    // Si Supabase requiere confirmar el correo, signUp no crea sesión todavía.
+    if (!signUpData.session) {
+      setError(null)
+      router.push('/registro/revisa-tu-correo')
       return
     }
 
