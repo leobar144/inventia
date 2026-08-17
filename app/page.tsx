@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { FaCheckCircle } from 'react-icons/fa'
-import { SITE_CONFIG, FEATURES, AGE_GROUPS } from '@/lib/constants'
+import { SITE_CONFIG, FEATURES } from '@/lib/constants'
 
 export default function Home() {
   return (
