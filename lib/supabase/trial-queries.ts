@@ -60,3 +60,31 @@ export async function getAvailableSlots(daysAhead: number = 14): Promise<Availab
 
   return days
 }
+
+export interface BookingWithTime {
+  id: string
+  booking_date: string
+  child_name: string
+  child_age: number
+  course_interest: string | null
+  parent_name: string
+  whatsapp: string
+  created_at: string
+  trial_availability: { time: string } | null
+}
+
+/**
+ * Lista todas las reservas — solo para uso en la vista de administración
+ * (nunca exponer a un endpoint público; ya filtra rol admin antes de llamarla).
+ */
+export async function getAllBookings(): Promise<BookingWithTime[]> {
+  const supabase = createServiceRoleClient()
+
+  const { data, error } = await supabase
+    .from('trial_bookings')
+    .select('*, trial_availability(time)')
+    .order('booking_date', { ascending: true })
+
+  if (error) throw error
+  return data as unknown as BookingWithTime[]
+}

@@ -42,9 +42,9 @@ export async function middleware(request: NextRequest) {
   return response
 }
 
-// Solo corre en /portal/** — el resto del sitio (marketing, registro, login,
-// checkout) no necesita revisar sesión en cada carga, y hacerlo ahí agotaba
+// Solo corre en /portal/** y /admin/** — el resto del sitio (marketing, registro,
+// login, checkout) no necesita revisar sesión en cada carga, y hacerlo ahí agotaba
 // el límite de solicitudes de autenticación de Supabase con solo navegar.
 export const config = {
-  matcher: ['/portal/:path*'],
+  matcher: ['/portal/:path*', '/admin/:path*'],
 }
