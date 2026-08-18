@@ -35,7 +35,7 @@ export function verifyWompiWebhookSignature(payload: WompiEventPayload): boolean
   const values = payload.signature.properties.map((path) => {
     const keys = path.split('.')
     let value: unknown = payload.data
-    for (const key of keys.slice(1)) {
+    for (const key of keys) {
       value = (value as Record<string, unknown>)?.[key]
     }
     return String(value ?? '')
