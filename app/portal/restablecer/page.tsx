@@ -4,8 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
+// El cliente se crea una sola vez, en el render inicial — así procesa de
+// inmediato el token que Supabase manda pegado después de "#" en el enlace
+// de invitación/recuperación (ese token nunca llega al servidor, solo el
+// navegador lo puede leer, por eso no se puede esperar hasta el submit).
 export default function RestablecerPasswordPage() {
   const router = useRouter()
+  const [supabase] = useState(() => createClient())
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -25,7 +30,6 @@ export default function RestablecerPasswordPage() {
     }
 
     setLoading(true)
-    const supabase = createClient()
 
     const { error: updateError } = await supabase.auth.updateUser({ password })
 

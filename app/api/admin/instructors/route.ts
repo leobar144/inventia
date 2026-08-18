@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
   const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
     data: { full_name: fullName },
-    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/portal/restablecer`,
+    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/portal/restablecer`,
   })
 
   if (inviteError || !invited.user) {
