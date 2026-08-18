@@ -39,6 +39,7 @@ function RegistroForm() {
       password: formData.password,
       options: {
         data: { full_name: formData.fullName, phone: formData.phone },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     })
 
