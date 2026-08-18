@@ -1,6 +1,7 @@
 import { getAllCoursesWithInstructor, getAllInstructors } from '@/lib/supabase/admin-queries'
 import CourseInstructorSelect from '@/components/admin/CourseInstructorSelect'
 import NewCourseForm from '@/components/admin/NewCourseForm'
+import InviteInstructorForm from '@/components/admin/InviteInstructorForm'
 
 export default async function AdminCursosPage() {
   const [courses, instructors] = await Promise.all([
@@ -13,16 +14,18 @@ export default async function AdminCursosPage() {
       <div className="flex justify-between items-start flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-heading font-bold">Cursos y profesores</h1>
-          <p className="text-gray-600">Asigna qué profesor dicta cada curso/clase.</p>
+          <p className="text-gray-600">Invita profesores y asigna qué curso/clase dicta cada uno.</p>
         </div>
-        <NewCourseForm instructors={instructors} />
+        <div className="flex gap-3">
+          <InviteInstructorForm />
+          <NewCourseForm instructors={instructors} />
+        </div>
       </div>
 
       {instructors.length === 0 && (
         <div className="p-4 bg-accent-50 text-accent-800 rounded-lg text-sm">
-          Todavía no tienes ningún profesor registrado. Un profesor primero debe crear su cuenta
-          en <code>/registro</code>, y luego cambiar su <code>role</code> a{' '}
-          <code>instructor</code> en Supabase → tabla <code>profiles</code>.
+          Todavía no tienes ningún profesor cargado. Usa "+ Invitar profesor" arriba — en
+          cuanto acepte la invitación, va a aparecer disponible para asignarle cursos aquí mismo.
         </div>
       )}
 
