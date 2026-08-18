@@ -1,5 +1,71 @@
 import { createServiceRoleClient } from './server'
 
+export interface CourseWithInstructor {
+  id: string
+  title: string
+  description: string
+  level: string
+  price: number
+  currency: string
+  schedule: string | null
+  max_students: number | null
+  instructor_id: string | null
+  instructor_name: string | null
+}
+
+export interface InstructorOption {
+  id: string
+  full_name: string
+  email: string
+}
+
+/**
+ * Trae todos los cursos con el nombre del profesor asignado (si tiene).
+ * Solo se usa desde /admin/cursos, con el rol admin ya verificado.
+ */
+export async function getAllCoursesWithInstructor(): Promise<CourseWithInstructor[]> {
+  const supabase = createServiceRoleClient()
+
+  const { data: courses, error: coursesError } = await supabase
+    .from('courses')
+    .select('id, title, description, level, price, currency, schedule, max_students, instructor_id')
+    .order('title', { ascending: true })
+
+  if (coursesError) throw coursesError
+  if (!courses) return []
+
+  const instructorIds = [...new Set(courses.map((c) => c.instructor_id).filter(Boolean))] as string[]
+  const { data: instructors, error: instructorsError } =
+    instructorIds.length > 0
+      ? await supabase.from('profiles').select('id, full_name').in('id', instructorIds)
+      : { data: [], error: null }
+
+  if (instructorsError) throw instructorsError
+  const nameById = new Map((instructors ?? []).map((i) => [i.id, i.full_name]))
+
+  return courses.map((c) => ({
+    ...c,
+    instructor_name: c.instructor_id ? (nameById.get(c.instructor_id) ?? null) : null,
+  }))
+}
+
+/**
+ * Trae todos los perfiles con role='instructor', para el selector de
+ * asignación de profesor en /admin/cursos.
+ */
+export async function getAllInstructors(): Promise<InstructorOption[]> {
+  const supabase = createServiceRoleClient()
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, full_name, email')
+    .eq('role', 'instructor')
+    .order('full_name', { ascending: true })
+
+  if (error) throw error
+  return data ?? []
+}
+
 export interface SessionAttendanceRow {
   sessionId: string
   sessionTitle: string
