@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { FaCheckCircle } from 'react-icons/fa'
-import { SITE_CONFIG, FEATURES, PRICING_PLANS } from '@/lib/constants'
+import { SITE_CONFIG, FEATURES, PRICING_PLANS, PROGRAM_TRACKS } from '@/lib/constants'
 import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
 import WelcomePopup from '@/components/WelcomePopup'
 import MobileStickyBar from '@/components/MobileStickyBar'
@@ -174,111 +174,38 @@ export default function Home() {
           </div>
 
           <FadeInGrid className="grid md:grid-cols-2 gap-8">
-            {/* Scratch Section */}
-            <FadeInItem className="card-hover p-8 border-l-4 border-primary-500">
-              <div className="flex items-center space-x-3 mb-4">
-                <span className="text-4xl">🎨</span>
-                <h3 className="text-2xl font-bold">Scratch & Bloques</h3>
-              </div>
-              <p className="text-gray-600 mb-4">
-                Aprende lógica de programación con bloques visuales. Perfecto para empezar.
-              </p>
-              <ul className="space-y-2">
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-primary-500" />
-                  <span>Edades 7-10 años</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-primary-500" />
-                  <span>8 sesiones semanales</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-primary-500" />
-                  <span>Proyecto final: Tu primer juego</span>
-                </li>
-              </ul>
-            </FadeInItem>
-
-            {/* Python Section */}
-            <FadeInItem className="card-hover p-8 border-l-4 border-secondary-500">
-              <div className="flex items-center space-x-3 mb-4">
-                <span className="text-4xl">🐍</span>
-                <h3 className="text-2xl font-bold">Python & Código Real</h3>
-              </div>
-              <p className="text-gray-600 mb-4">
-                Domina un lenguaje de programación real usado por profesionales.
-              </p>
-              <ul className="space-y-2">
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-secondary-500" />
-                  <span>Edades 10-16 años</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-secondary-500" />
-                  <span>Clases en vivo vía Google Meet</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-secondary-500" />
-                  <span>Certificado verificable</span>
-                </li>
-              </ul>
-            </FadeInItem>
-
-            {/* Robotica Section */}
-            <FadeInItem className="card-hover p-8 border-l-4 border-accent-500">
-              <div className="flex items-center space-x-3 mb-4">
-                <span className="text-4xl">🤖</span>
-                <h3 className="text-2xl font-bold">Robótica</h3>
-              </div>
-              <p className="text-gray-600 mb-4">
-                Construye y programa robots reales. Aprende electrónica y mecánica.
-              </p>
-              <ul className="space-y-2">
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-accent-500" />
-                  <span>Edades 8-14 años</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-accent-500" />
-                  <span>Kit de robótica incluido</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-accent-500" />
-                  <span>Competencias inter-grupo</span>
-                </li>
-              </ul>
-            </FadeInItem>
-
-            {/* IA Section */}
-            <FadeInItem className="card-hover p-8 border-l-4 border-purple-500">
-              <div className="flex items-center space-x-3 mb-4">
-                <span className="text-4xl">🧠</span>
-                <h3 className="text-2xl font-bold">IA & Futuro</h3>
-              </div>
-              <p className="text-gray-600 mb-4">
-                Entiende inteligencia artificial, machine learning y el futuro de la tecnología.
-              </p>
-              <ul className="space-y-2">
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-purple-500" />
-                  <span>Edades 12-16 años</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-purple-500" />
-                  <span>Proyectos con TensorFlow</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <FaCheckCircle className="text-purple-500" />
-                  <span>Portfolio profesional</span>
-                </li>
-              </ul>
-            </FadeInItem>
+            {PROGRAM_TRACKS.map((track) => (
+              <FadeInItem
+                key={track.id}
+                className={`card-hover p-8 border-l-4 ${track.borderColor}`}
+              >
+                <div className="flex items-center space-x-3 mb-4">
+                  <span className="text-4xl">{track.icon}</span>
+                  <h3 className="text-2xl font-bold">{track.title}</h3>
+                </div>
+                <p className="text-gray-600 mb-4">{track.description}</p>
+                <ul className="space-y-2">
+                  {track.bullets.map((bullet) => (
+                    <li key={bullet} className="flex items-center space-x-2">
+                      <FaCheckCircle className={track.iconColor} />
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </FadeInItem>
+            ))}
           </FadeInGrid>
+
+          <div className="text-center mt-10">
+            <Link href="/cursos" className="text-primary-600 font-bold hover:underline">
+              Ver el detalle completo de cada curso →
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section className="section bg-white">
+      <section id="precios" className="section bg-white">
         <div className="section-container">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">Clases Personalizadas</h2>

@@ -17,12 +17,51 @@ export const SITE_CONFIG = {
 }
 
 // Navigation
-// Apuntan a anclas de la home (no páginas propias) hasta que existan /cursos, /acerca-de, /blog reales.
 export const NAV_LINKS = [
   { label: 'Inicio', href: '/' },
-  { label: 'Cursos', href: '/#cursos' },
-  { label: 'Por qué INVENTIA', href: '/#caracteristicas' },
+  { label: 'Cursos', href: '/cursos' },
+  { label: 'Por qué INVENTIA', href: '/acerca-de' },
   { label: 'Contacto', href: '/#contacto' },
+]
+
+// Programas — contenido compartido entre la sección "Cursos" de la home y /cursos
+export const PROGRAM_TRACKS = [
+  {
+    id: 'scratch',
+    icon: '🎨',
+    title: 'Scratch & Bloques',
+    description: 'Aprende lógica de programación con bloques visuales. Perfecto para empezar.',
+    bullets: ['Edades 7-10 años', '8 sesiones semanales', 'Proyecto final: Tu primer juego'],
+    borderColor: 'border-primary-500',
+    iconColor: 'text-primary-500',
+  },
+  {
+    id: 'python',
+    icon: '🐍',
+    title: 'Python & Código Real',
+    description: 'Domina un lenguaje de programación real usado por profesionales.',
+    bullets: ['Edades 10-16 años', 'Clases en vivo vía Google Meet', 'Certificado verificable'],
+    borderColor: 'border-secondary-500',
+    iconColor: 'text-secondary-500',
+  },
+  {
+    id: 'robotica',
+    icon: '🤖',
+    title: 'Robótica',
+    description: 'Construye y programa robots reales. Aprende electrónica y mecánica.',
+    bullets: ['Edades 8-14 años', 'Kit de robótica incluido', 'Competencias inter-grupo'],
+    borderColor: 'border-accent-500',
+    iconColor: 'text-accent-500',
+  },
+  {
+    id: 'ia',
+    icon: '🧠',
+    title: 'IA & Futuro',
+    description: 'Entiende inteligencia artificial, machine learning y el futuro de la tecnología.',
+    bullets: ['Edades 12-16 años', 'Proyectos con TensorFlow', 'Portfolio profesional'],
+    borderColor: 'border-purple-500',
+    iconColor: 'text-purple-500',
+  },
 ]
 
 // Course Levels
