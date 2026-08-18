@@ -43,10 +43,13 @@ export default function AcercaDePage() {
         <div className="section-container">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">El Método CREA</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-3">
               Cada clase suma. A medida que tu hijo/a completa clases, avanza por niveles que
               desbloquean certificados y reconocimientos reales.
             </p>
+            <Link href="/metodo-crea" className="text-primary-600 font-bold hover:underline">
+              Conoce la malla curricular completa por edades →
+            </Link>
           </div>
 
           <FadeInGrid className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">

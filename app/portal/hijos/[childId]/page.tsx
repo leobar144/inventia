@@ -95,6 +95,14 @@ export default async function ChildDashboardPage({
                   </p>
                 </>
               )}
+              {badge.current && (
+                <Link
+                  href={`/portal/hijos/${child.id}/certificado-insignia/${badge.current.id}`}
+                  className="inline-block mt-2 text-sm text-primary-600 font-medium hover:underline"
+                >
+                  Descargar certificado →
+                </Link>
+              )}
             </div>
           </section>
         )
@@ -130,6 +138,14 @@ export default async function ChildDashboardPage({
                   />
                 </div>
                 <p className="text-sm text-gray-600">{enrollment.progress}% completado</p>
+                {enrollment.status === 'completed' && (
+                  <Link
+                    href={`/portal/hijos/${child.id}/certificado-curso/${enrollment.course_id}`}
+                    className="inline-block mt-2 text-sm text-primary-600 font-medium hover:underline"
+                  >
+                    Descargar certificado →
+                  </Link>
+                )}
               </div>
             ))}
           </div>

@@ -116,6 +116,17 @@ export async function POST(request: Request) {
       .update({ progress })
       .eq('student_id', childId)
       .eq('course_id', session.course_id)
+
+    // Al llegar al 100% se marca completado (habilita el certificado de curso).
+    // Solo se transiciona desde 'active' — nunca resucita un enrollment 'dropped'.
+    if (progress === 100) {
+      await admin
+        .from('enrollments')
+        .update({ status: 'completed', completion_date: new Date().toISOString() })
+        .eq('student_id', childId)
+        .eq('course_id', session.course_id)
+        .eq('status', 'active')
+    }
   }
 
   return NextResponse.json({ success: true })

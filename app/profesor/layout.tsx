@@ -27,6 +27,9 @@ export default async function ProfesorLayout({ children }: { children: React.Rea
             <Link href="/profesor" className="text-secondary-200 hover:text-white">
               Mis Clases
             </Link>
+            <Link href="/profesor/curriculo" className="text-secondary-200 hover:text-white">
+              Currículo
+            </Link>
             <Link href="/portal" className="text-secondary-200 hover:text-white">
               Portal de Padres
             </Link>
