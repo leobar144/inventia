@@ -31,11 +31,35 @@ export default async function PortalHomePage() {
 
       {children.length === 0 ? (
         <div className="card p-12 text-center">
-          <FaChild className="text-5xl text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-bold mb-2">Aún no has agregado a ningún hijo</h2>
-          <p className="text-gray-600 mb-6">
-            Agrega el perfil de tu hijo/a para poder inscribirlo en un curso.
+          <FaChild className="text-5xl text-primary-300 mx-auto mb-4" />
+          <h2 className="text-2xl font-heading font-bold mb-2">¡Bienvenido a INVENTIA! 🎉</h2>
+          <p className="text-gray-600 mb-8 max-w-md mx-auto">
+            Estás a un paso de que tu hijo/a empiece a crear con tecnología. Así funciona el
+            portal:
           </p>
+
+          <div className="grid sm:grid-cols-3 gap-4 mb-8 text-left max-w-2xl mx-auto">
+            <div className="bg-gray-50 rounded-xl p-4">
+              <p className="text-2xl mb-2">1️⃣</p>
+              <p className="font-bold text-sm mb-1">Agrega a tu hijo/a</p>
+              <p className="text-xs text-gray-600">Nombre y fecha de nacimiento, así de simple.</p>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <p className="text-2xl mb-2">2️⃣</p>
+              <p className="font-bold text-sm mb-1">Inscríbelo en un curso</p>
+              <p className="text-xs text-gray-600">
+                Elige el plan que más le convenga y paga en línea de forma segura.
+              </p>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <p className="text-2xl mb-2">3️⃣</p>
+              <p className="font-bold text-sm mb-1">Sigue su progreso</p>
+              <p className="text-xs text-gray-600">
+                Clases, insignias y certificados, todo desde aquí.
+              </p>
+            </div>
+          </div>
+
           <Link href="/portal/hijos/nuevo" className="btn btn-primary">
             Agregar hijo/a
           </Link>

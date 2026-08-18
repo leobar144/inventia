@@ -13,6 +13,8 @@ interface BookingConfirmationCardProps {
   timeLabel: string
   targetDateTime: Date
   meetLink?: string
+  parentName?: string
+  parentEmail?: string
 }
 
 export default function BookingConfirmationCard({
@@ -22,10 +24,17 @@ export default function BookingConfirmationCard({
   timeLabel,
   targetDateTime,
   meetLink,
+  parentName,
+  parentEmail,
 }: BookingConfirmationCardProps) {
   const whatsappMessage = encodeURIComponent(
     `Hola INVENTIA! Tengo una clase de prueba agendada para ${childName} el ${dateLabel} a las ${timeLabel}. Curso de interés: ${courseLabel}.`
   )
+
+  const registroParams = new URLSearchParams()
+  if (parentName) registroParams.set('nombre', parentName)
+  if (parentEmail) registroParams.set('correo', parentEmail)
+  const registroHref = `/registro?${registroParams.toString()}`
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary-50 via-white to-primary-50 py-16 px-4">
@@ -62,6 +71,19 @@ export default function BookingConfirmationCard({
         >
           <FaWhatsapp className="mr-2" size={20} /> Escribir por WhatsApp
         </a>
+        <div className="bg-primary-50 border border-primary-100 rounded-xl p-5 mb-3 text-left">
+          <p className="font-bold text-primary-800 mb-1">
+            📊 Crea tu cuenta de padre/madre
+          </p>
+          <p className="text-sm text-gray-600 mb-4">
+            Llévale el registro a {childName}: progreso, insignias y próximas clases, todo en un
+            solo lugar.
+          </p>
+          <Link href={registroHref} className="btn btn-primary w-full">
+            Crear mi cuenta gratis
+          </Link>
+        </div>
+
         <Link href="/" className="text-sm text-gray-500 hover:underline">
           Volver al inicio
         </Link>

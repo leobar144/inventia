@@ -43,6 +43,8 @@ export default async function BookingConfirmationPage({
       timeLabel={timeLabel}
       targetDateTime={targetDateTime}
       meetLink={process.env.NEXT_PUBLIC_TRIAL_MEET_LINK}
+      parentName={booking.parent_name}
+      parentEmail={booking.parent_email ?? undefined}
     />
   )
 }
