@@ -36,13 +36,17 @@ export async function POST(request: Request) {
 
   if (inviteError || !invited.user) {
     const msg = inviteError?.message?.toLowerCase() ?? ''
-    if (msg.includes('already been registered') || msg.includes('already exists')) {
+    if (msg.includes('already been registered') || msg.includes('already exists') || msg.includes('already registered')) {
       return NextResponse.json(
         { error: 'Ese correo ya tiene una cuenta. Cámbiale el rol a instructor en la tabla profiles.' },
         { status: 409 }
       )
     }
-    return NextResponse.json({ error: 'No pudimos invitar al profesor' }, { status: 500 })
+    // TEMPORAL: exponemos el mensaje real para diagnosticar — quitar después.
+    return NextResponse.json(
+      { error: `No pudimos invitar al profesor: ${inviteError?.message ?? 'sin detalle'}` },
+      { status: 500 }
+    )
   }
 
   // El trigger on_auth_user_created crea el perfil con role='parent' por
