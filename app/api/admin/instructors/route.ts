@@ -42,11 +42,7 @@ export async function POST(request: Request) {
         { status: 409 }
       )
     }
-    // TEMPORAL: exponemos el mensaje real para diagnosticar — quitar después.
-    return NextResponse.json(
-      { error: `No pudimos invitar al profesor: ${inviteError?.message ?? 'sin detalle'}` },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'No pudimos invitar al profesor' }, { status: 500 })
   }
 
   // El trigger on_auth_user_created crea el perfil con role='parent' por
