@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') {
+  if (profile?.role !== 'admin' && profile?.role !== 'instructor') {
     return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
   }
 
@@ -40,6 +40,18 @@ export async function POST(request: Request) {
 
   if (sessionError || !session) {
     return NextResponse.json({ error: 'Sesión no encontrada' }, { status: 404 })
+  }
+
+  if (profile.role === 'instructor') {
+    const { data: course } = await admin
+      .from('courses')
+      .select('instructor_id')
+      .eq('id', session.course_id)
+      .single()
+
+    if (course?.instructor_id !== user.id) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+    }
   }
 
   if (childIds.length > 0) {

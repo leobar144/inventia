@@ -27,14 +27,13 @@ function LoginForm() {
     setLoading(true)
     const supabase = createClient()
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email: formData.email,
       password: formData.password,
     })
 
-    setLoading(false)
-
     if (signInError) {
+      setLoading(false)
       const msg = signInError.message.toLowerCase()
       if (msg.includes('email not confirmed')) {
         setError('Debes confirmar tu correo antes de iniciar sesión. Revisa tu bandeja (y spam).')
@@ -46,7 +45,25 @@ function LoginForm() {
       return
     }
 
-    router.push(searchParams.get('next') || '/portal')
+    const nextParam = searchParams.get('next')
+    if (nextParam) {
+      router.push(nextParam)
+      router.refresh()
+      return
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', signInData.user.id)
+      .single()
+
+    setLoading(false)
+
+    if (profile?.role === 'admin') router.push('/admin/reservas')
+    else if (profile?.role === 'instructor') router.push('/profesor')
+    else router.push('/portal')
+
     router.refresh()
   }
 
