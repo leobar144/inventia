@@ -4,11 +4,13 @@ import { createClient } from '@/lib/supabase/server'
 import {
   getChildById,
   getEnrollmentsForChild,
-  getUpcomingSessionsForCourses,
+  getClassPathForCourse,
+  type SessionPathState,
 } from '@/lib/supabase/portal-queries'
-import { FaVideo, FaCalendarAlt } from 'react-icons/fa'
 import { getBadgeProgress } from '@/lib/badges'
 import BadgeIcon from '@/components/BadgeIcon'
+import ClassPath from '@/components/portal/ClassPath'
+import NextClassCard from '@/components/portal/NextClassCard'
 
 function calculateAge(birthDate: string): number {
   const birth = new Date(birthDate)
@@ -40,10 +42,40 @@ export default async function ChildDashboardPage({
   if (!child) notFound()
 
   const enrollments = await getEnrollmentsForChild(childId)
-  const activeCourseIds = enrollments
-    .filter((e) => e.status === 'active')
-    .map((e) => e.course_id)
-  const upcomingSessions = await getUpcomingSessionsForCourses(activeCourseIds)
+
+  // El camino de clases solo aplica a cursos ya pagados (activos o
+  // completados) — un curso pendiente de pago todavía no tiene sesiones
+  // que le correspondan al niño.
+  const pathableEnrollments = enrollments.filter(
+    (e) => e.status === 'active' || e.status === 'completed'
+  )
+  const classPaths = await Promise.all(
+    pathableEnrollments.map(async (e) => ({
+      enrollment: e,
+      path: await getClassPathForCourse(childId, e.course_id),
+    }))
+  )
+  const pathByEnrollmentId = new Map(classPaths.map((cp) => [cp.enrollment.id, cp.path]))
+
+  // La próxima clase global: entre todos los cursos, la sesión "next" más próxima en el tiempo.
+  let nextClass: {
+    courseTitle: string
+    sessionTitle: string
+    scheduledAt: string
+    googleMeetLink: string | null
+  } | null = null
+
+  for (const { enrollment, path } of classPaths) {
+    const next = path.find((s: SessionPathState) => s.state === 'next')
+    if (next && (!nextClass || next.scheduledAt < nextClass.scheduledAt)) {
+      nextClass = {
+        courseTitle: enrollment.course.title,
+        sessionTitle: next.title,
+        scheduledAt: next.scheduledAt,
+        googleMeetLink: next.googleMeetLink,
+      }
+    }
+  }
 
   const enrolledCourseIds = enrollments.map((e) => e.course_id)
   const coursesQuery = supabase.from('courses').select('*')
@@ -108,16 +140,22 @@ export default async function ChildDashboardPage({
         )
       })()}
 
-      {/* Cursos inscritos */}
+      {/* Próxima clase destacada */}
+      <section>
+        <h2 className="text-xl font-bold mb-4">Próxima clase</h2>
+        <NextClassCard nextClass={nextClass} />
+      </section>
+
+      {/* Cursos inscritos, con su camino de clases */}
       <section>
         <h2 className="text-xl font-bold mb-4">Sus cursos</h2>
         {enrollments.length === 0 ? (
           <p className="text-gray-600">Todavía no está inscrito en ningún curso.</p>
         ) : (
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-4">
             {enrollments.map((enrollment) => (
               <div key={enrollment.id} className="card p-6">
-                <div className="flex justify-between items-start mb-2">
+                <div className="flex justify-between items-start mb-4 flex-wrap gap-2">
                   <h3 className="font-bold">{enrollment.course.title}</h3>
                   <span
                     className={`text-xs font-medium px-2 py-1 rounded-full ${
@@ -131,60 +169,22 @@ export default async function ChildDashboardPage({
                     {STATUS_LABELS[enrollment.status]}
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                  <div
-                    className="bg-primary-500 h-2 rounded-full"
-                    style={{ width: `${enrollment.progress}%` }}
-                  />
-                </div>
-                <p className="text-sm text-gray-600">{enrollment.progress}% completado</p>
+
+                {pathByEnrollmentId.has(enrollment.id) ? (
+                  <ClassPath sessions={pathByEnrollmentId.get(enrollment.id) ?? []} />
+                ) : (
+                  <p className="text-sm text-gray-500">
+                    Las clases empiezan a verse aquí una vez se confirme el pago.
+                  </p>
+                )}
+
                 {enrollment.status === 'completed' && (
                   <Link
                     href={`/portal/hijos/${child.id}/certificado-curso/${enrollment.course_id}`}
-                    className="inline-block mt-2 text-sm text-primary-600 font-medium hover:underline"
+                    className="inline-block mt-3 text-sm text-primary-600 font-medium hover:underline"
                   >
                     Descargar certificado →
                   </Link>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Próximas clases */}
-      <section>
-        <h2 className="text-xl font-bold mb-4">Próximas clases</h2>
-        {upcomingSessions.length === 0 ? (
-          <p className="text-gray-600">No hay clases programadas por ahora.</p>
-        ) : (
-          <div className="space-y-3">
-            {upcomingSessions.map((session) => (
-              <div
-                key={session.id}
-                className="card p-4 flex items-center justify-between flex-wrap gap-3"
-              >
-                <div className="flex items-center space-x-3">
-                  <FaCalendarAlt className="text-primary-500" />
-                  <div>
-                    <p className="font-medium">{session.title}</p>
-                    <p className="text-sm text-gray-600">
-                      {new Date(session.scheduled_at).toLocaleString('es-CO', {
-                        dateStyle: 'full',
-                        timeStyle: 'short',
-                      })}
-                    </p>
-                  </div>
-                </div>
-                {session.google_meet_link && (
-                  <a
-                    href={session.google_meet_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-primary text-sm py-2"
-                  >
-                    <FaVideo className="mr-2" /> Unirse
-                  </a>
                 )}
               </div>
             ))}

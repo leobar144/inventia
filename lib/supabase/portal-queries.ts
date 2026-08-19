@@ -1,4 +1,4 @@
-import { createClient } from './server'
+import { createClient, createServiceRoleClient } from './server'
 import type { Child, Course, ClassSession, Enrollment, Payment } from '@/types'
 
 export async function getChildrenForParent(parentId: string): Promise<Child[]> {
@@ -57,6 +57,61 @@ export async function getUpcomingSessionsForCourses(
 
   if (error) throw error
   return data
+}
+
+export interface SessionPathState {
+  id: string
+  title: string
+  scheduledAt: string
+  googleMeetLink: string | null
+  state: 'done' | 'next' | 'locked'
+}
+
+/**
+ * El "camino de clases" de un curso para un niño: cada sesión marcada como
+ * completada (ya asistió), la próxima (siguiente sin asistencia, destacada)
+ * o bloqueada (futuras, todavía no le toca).
+ *
+ * Usa service role porque class_attendance no tiene policy de select para
+ * el rol autenticado normal (a propósito, ver 006_asistencia_insignias.sql
+ * — solo se lee/escribe desde rutas del servidor ya verificadas). Es seguro
+ * llamarla aquí porque quien la invoca ya confirmó con getChildById que el
+ * niño pertenece al padre logueado.
+ */
+export async function getClassPathForCourse(
+  childId: string,
+  courseId: string
+): Promise<SessionPathState[]> {
+  const admin = createServiceRoleClient()
+
+  const { data: sessions, error } = await admin
+    .from('class_sessions')
+    .select('id, title, scheduled_at, google_meet_link')
+    .eq('course_id', courseId)
+    .order('scheduled_at', { ascending: true })
+
+  if (error) throw error
+  if (!sessions || sessions.length === 0) return []
+
+  const sessionIds = sessions.map((s) => s.id)
+  const { data: attendance, error: attendanceError } = await admin
+    .from('class_attendance')
+    .select('session_id')
+    .eq('child_id', childId)
+    .in('session_id', sessionIds)
+
+  if (attendanceError) throw attendanceError
+  const attendedSet = new Set((attendance ?? []).map((a) => a.session_id))
+
+  const firstUnattendedIndex = sessions.findIndex((s) => !attendedSet.has(s.id))
+
+  return sessions.map((s, i) => ({
+    id: s.id,
+    title: s.title,
+    scheduledAt: s.scheduled_at,
+    googleMeetLink: s.google_meet_link,
+    state: attendedSet.has(s.id) ? 'done' : i === firstUnattendedIndex ? 'next' : 'locked',
+  }))
 }
 
 export async function getChildById(childId: string, parentId: string): Promise<Child | null> {
