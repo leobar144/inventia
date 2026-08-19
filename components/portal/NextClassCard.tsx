@@ -4,6 +4,7 @@ import { SITE_CONFIG } from '@/lib/constants'
 interface NextClassInfo {
   courseTitle: string
   sessionTitle: string
+  moduleTitle: string | null
   scheduledAt: string
   googleMeetLink: string | null
 }
@@ -41,6 +42,9 @@ export default function NextClassCard({ nextClass }: { nextClass: NextClassInfo 
           <p className="font-bold truncate">
             {nextClass.courseTitle} · {nextClass.sessionTitle}
           </p>
+          {nextClass.moduleTitle && (
+            <p className="text-xs text-gray-600 truncate">Van a ver: {nextClass.moduleTitle}</p>
+          )}
         </div>
         {nextClass.googleMeetLink && (
           <a

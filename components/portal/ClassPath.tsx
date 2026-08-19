@@ -23,7 +23,7 @@ export default function ClassPath({ sessions }: { sessions: SessionPathState[] }
                     ? 'w-9 h-9 bg-primary-500'
                     : 'w-9 h-9 bg-white border border-gray-200'
               }`}
-              title={session.title}
+              title={session.moduleTitle ?? session.title}
             >
               {session.state === 'done' && <FaCheck className="text-white" size={14} />}
               {session.state === 'next' && <FaPlay className="text-white" size={13} />}

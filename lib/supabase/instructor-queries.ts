@@ -1,8 +1,10 @@
 import { createServiceRoleClient } from './server'
+import { CURRICULUM_LEVELS } from '@/lib/curriculum'
 
 export interface InstructorSessionRow {
   sessionId: string
   sessionTitle: string
+  moduleTitle: string | null
   scheduledAt: string
   courseTitle: string
   googleMeetLink: string | null
@@ -30,7 +32,7 @@ export async function getUpcomingSessionsForInstructor(
 
   const { data: myCourses, error: coursesError } = await supabase
     .from('courses')
-    .select('id, title')
+    .select('id, title, curriculum_level_id')
     .eq('instructor_id', instructorId)
 
   if (coursesError) throw coursesError
@@ -38,6 +40,7 @@ export async function getUpcomingSessionsForInstructor(
 
   const courseIds = myCourses.map((c) => c.id)
   const courseTitleById = new Map(myCourses.map((c) => [c.id, c.title]))
+  const courseLevelById = new Map(myCourses.map((c) => [c.id, c.curriculum_level_id]))
 
   const now = new Date()
   const rangeEnd = new Date(now)
@@ -45,7 +48,7 @@ export async function getUpcomingSessionsForInstructor(
 
   const { data: sessions, error: sessionsError } = await supabase
     .from('class_sessions')
-    .select('id, title, scheduled_at, course_id, google_meet_link')
+    .select('id, title, scheduled_at, course_id, google_meet_link, module_number')
     .in('course_id', courseIds)
     .gte('scheduled_at', now.toISOString())
     .lte('scheduled_at', rangeEnd.toISOString())
@@ -83,9 +86,15 @@ export async function getUpcomingSessionsForInstructor(
   return sessions.map((session) => {
     const rosterForCourse = (enrollments ?? []).filter((e) => e.course_id === session.course_id)
 
+    const courseLevel = CURRICULUM_LEVELS.find(
+      (l) => l.id === courseLevelById.get(session.course_id)
+    )
+
     return {
       sessionId: session.id,
       sessionTitle: session.title,
+      moduleTitle:
+        courseLevel?.modules.find((m) => m.number === session.module_number)?.title ?? null,
       scheduledAt: session.scheduled_at,
       courseTitle: courseTitleById.get(session.course_id) ?? '',
       googleMeetLink: session.google_meet_link,

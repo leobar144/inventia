@@ -1,5 +1,6 @@
 import { getAllCoursesWithInstructor, getAllInstructors } from '@/lib/supabase/admin-queries'
 import CourseInstructorSelect from '@/components/admin/CourseInstructorSelect'
+import CourseCurriculumSelect from '@/components/admin/CourseCurriculumSelect'
 import NewCourseForm from '@/components/admin/NewCourseForm'
 import InviteInstructorForm from '@/components/admin/InviteInstructorForm'
 
@@ -34,7 +35,7 @@ export default async function AdminCursosPage() {
       ) : (
         <div className="space-y-3">
           {courses.map((course) => (
-            <div key={course.id} className="card p-5 flex justify-between items-center flex-wrap gap-4">
+            <div key={course.id} className="card p-5 flex justify-between items-start flex-wrap gap-4">
               <div>
                 <p className="font-bold">{course.title}</p>
                 <p className="text-sm text-gray-500">
@@ -42,11 +43,17 @@ export default async function AdminCursosPage() {
                   {course.price.toLocaleString('es-CO')} {course.currency}
                 </p>
               </div>
-              <CourseInstructorSelect
-                courseId={course.id}
-                currentInstructorId={course.instructor_id}
-                instructors={instructors}
-              />
+              <div className="flex flex-col gap-2 items-end">
+                <CourseInstructorSelect
+                  courseId={course.id}
+                  currentInstructorId={course.instructor_id}
+                  instructors={instructors}
+                />
+                <CourseCurriculumSelect
+                  courseId={course.id}
+                  currentLevelId={course.curriculum_level_id}
+                />
+              </div>
             </div>
           ))}
         </div>

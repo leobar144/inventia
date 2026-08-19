@@ -1,5 +1,6 @@
 import { createClient, createServiceRoleClient } from './server'
 import type { Child, Course, ClassSession, Enrollment, Payment } from '@/types'
+import { CURRICULUM_LEVELS } from '@/lib/curriculum'
 
 export async function getChildrenForParent(parentId: string): Promise<Child[]> {
   const supabase = await createClient()
@@ -62,6 +63,7 @@ export async function getUpcomingSessionsForCourses(
 export interface SessionPathState {
   id: string
   title: string
+  moduleTitle: string | null
   scheduledAt: string
   googleMeetLink: string | null
   state: 'done' | 'next' | 'locked'
@@ -71,6 +73,11 @@ export interface SessionPathState {
  * El "camino de clases" de un curso para un niño: cada sesión marcada como
  * completada (ya asistió), la próxima (siguiente sin asistencia, destacada)
  * o bloqueada (futuras, todavía no le toca).
+ *
+ * Si el curso tiene curriculum_level_id y la sesión tiene module_number
+ * (ver 008_curriculo_sesiones.sql), resuelve el nombre real del módulo del
+ * Método CREA (lib/curriculum.ts) — si no, moduleTitle queda en null y el
+ * componente muestra "Clase N" genérico.
  *
  * Usa service role porque class_attendance no tiene policy de select para
  * el rol autenticado normal (a propósito, ver 006_asistencia_insignias.sql
@@ -84,9 +91,18 @@ export async function getClassPathForCourse(
 ): Promise<SessionPathState[]> {
   const admin = createServiceRoleClient()
 
+  const { data: course, error: courseError } = await admin
+    .from('courses')
+    .select('curriculum_level_id')
+    .eq('id', courseId)
+    .single()
+
+  if (courseError) throw courseError
+  const curriculumLevel = CURRICULUM_LEVELS.find((l) => l.id === course?.curriculum_level_id)
+
   const { data: sessions, error } = await admin
     .from('class_sessions')
-    .select('id, title, scheduled_at, google_meet_link')
+    .select('id, title, scheduled_at, google_meet_link, module_number')
     .eq('course_id', courseId)
     .order('scheduled_at', { ascending: true })
 
@@ -108,6 +124,8 @@ export async function getClassPathForCourse(
   return sessions.map((s, i) => ({
     id: s.id,
     title: s.title,
+    moduleTitle:
+      curriculumLevel?.modules.find((m) => m.number === s.module_number)?.title ?? null,
     scheduledAt: s.scheduled_at,
     googleMeetLink: s.google_meet_link,
     state: attendedSet.has(s.id) ? 'done' : i === firstUnattendedIndex ? 'next' : 'locked',

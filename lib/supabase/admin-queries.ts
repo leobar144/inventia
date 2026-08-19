@@ -11,6 +11,7 @@ export interface CourseWithInstructor {
   max_students: number | null
   instructor_id: string | null
   instructor_name: string | null
+  curriculum_level_id: string | null
 }
 
 export interface InstructorOption {
@@ -28,7 +29,9 @@ export async function getAllCoursesWithInstructor(): Promise<CourseWithInstructo
 
   const { data: courses, error: coursesError } = await supabase
     .from('courses')
-    .select('id, title, description, level, price, currency, schedule, max_students, instructor_id')
+    .select(
+      'id, title, description, level, price, currency, schedule, max_students, instructor_id, curriculum_level_id'
+    )
     .order('title', { ascending: true })
 
   if (coursesError) throw coursesError

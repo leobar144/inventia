@@ -61,6 +61,7 @@ export default async function ChildDashboardPage({
   let nextClass: {
     courseTitle: string
     sessionTitle: string
+    moduleTitle: string | null
     scheduledAt: string
     googleMeetLink: string | null
   } | null = null
@@ -71,6 +72,7 @@ export default async function ChildDashboardPage({
       nextClass = {
         courseTitle: enrollment.course.title,
         sessionTitle: next.title,
+        moduleTitle: next.moduleTitle,
         scheduledAt: next.scheduledAt,
         googleMeetLink: next.googleMeetLink,
       }

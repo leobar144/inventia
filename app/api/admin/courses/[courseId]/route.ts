@@ -22,14 +22,18 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ co
     return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
   }
 
-  const { instructorId } = (await request.json()) as { instructorId: string | null }
+  const body = (await request.json()) as {
+    instructorId?: string | null
+    curriculumLevelId?: string | null
+  }
+
+  const updates: Record<string, string | null> = {}
+  if ('instructorId' in body) updates.instructor_id = body.instructorId ?? null
+  if ('curriculumLevelId' in body) updates.curriculum_level_id = body.curriculumLevelId ?? null
 
   const admin = createServiceRoleClient()
 
-  const { error: updateError } = await admin
-    .from('courses')
-    .update({ instructor_id: instructorId })
-    .eq('id', courseId)
+  const { error: updateError } = await admin.from('courses').update(updates).eq('id', courseId)
 
   if (updateError) {
     return NextResponse.json({ error: 'No pudimos actualizar el curso' }, { status: 500 })

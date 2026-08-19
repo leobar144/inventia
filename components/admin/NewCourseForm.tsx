@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { COURSE_LEVELS } from '@/lib/constants'
+import { CURRICULUM_LEVELS } from '@/lib/curriculum'
 import type { InstructorOption } from '@/lib/supabase/admin-queries'
 
 export default function NewCourseForm({ instructors }: { instructors: InstructorOption[] }) {
@@ -15,6 +16,7 @@ export default function NewCourseForm({ instructors }: { instructors: Instructor
   const [schedule, setSchedule] = useState('')
   const [maxStudents, setMaxStudents] = useState('')
   const [instructorId, setInstructorId] = useState('')
+  const [curriculumLevelId, setCurriculumLevelId] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -35,6 +37,7 @@ export default function NewCourseForm({ instructors }: { instructors: Instructor
         schedule,
         maxStudents: maxStudents ? Number(maxStudents) : null,
         instructorId: instructorId || null,
+        curriculumLevelId: curriculumLevelId || null,
       }),
     })
 
@@ -51,6 +54,7 @@ export default function NewCourseForm({ instructors }: { instructors: Instructor
     setSchedule('')
     setMaxStudents('')
     setInstructorId('')
+    setCurriculumLevelId('')
     setOpen(false)
     router.refresh()
   }
@@ -136,20 +140,39 @@ export default function NewCourseForm({ instructors }: { instructors: Instructor
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Profesor</label>
-        <select
-          value={instructorId}
-          onChange={(e) => setInstructorId(e.target.value)}
-          className="input-field"
-        >
-          <option value="">Sin asignar</option>
-          {instructors.map((instructor) => (
-            <option key={instructor.id} value={instructor.id}>
-              {instructor.full_name} ({instructor.email})
-            </option>
-          ))}
-        </select>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Profesor</label>
+          <select
+            value={instructorId}
+            onChange={(e) => setInstructorId(e.target.value)}
+            className="input-field"
+          >
+            <option value="">Sin asignar</option>
+            {instructors.map((instructor) => (
+              <option key={instructor.id} value={instructor.id}>
+                {instructor.full_name} ({instructor.email})
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nivel del Método CREA
+          </label>
+          <select
+            value={curriculumLevelId}
+            onChange={(e) => setCurriculumLevelId(e.target.value)}
+            className="input-field"
+          >
+            <option value="">Sin nivel del currículo</option>
+            {CURRICULUM_LEVELS.map((cLevel) => (
+              <option key={cLevel.id} value={cLevel.id}>
+                {cLevel.name} ({cLevel.ageRange})
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="flex gap-3">

@@ -21,17 +21,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
   }
 
-  const { title, description, level, price, currency, schedule, maxStudents, instructorId } =
-    (await request.json()) as {
-      title: string
-      description: string
-      level: string
-      price: number
-      currency: string
-      schedule: string
-      maxStudents: number | null
-      instructorId: string | null
-    }
+  const {
+    title,
+    description,
+    level,
+    price,
+    currency,
+    schedule,
+    maxStudents,
+    instructorId,
+    curriculumLevelId,
+  } = (await request.json()) as {
+    title: string
+    description: string
+    level: string
+    price: number
+    currency: string
+    schedule: string
+    maxStudents: number | null
+    instructorId: string | null
+    curriculumLevelId: string | null
+  }
 
   if (!title || !description || !level || !price || !currency) {
     return NextResponse.json({ error: 'Faltan datos' }, { status: 400 })
@@ -48,6 +58,7 @@ export async function POST(request: Request) {
     schedule: schedule || null,
     max_students: maxStudents || null,
     instructor_id: instructorId || null,
+    curriculum_level_id: curriculumLevelId || null,
   })
 
   if (insertError) {

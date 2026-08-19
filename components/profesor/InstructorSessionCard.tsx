@@ -41,6 +41,11 @@ export default function InstructorSessionCard({ session }: { session: Instructor
         <div>
           <p className="font-bold">{session.sessionTitle}</p>
           <p className="text-sm text-gray-500">{session.courseTitle}</p>
+          {session.moduleTitle && (
+            <p className="text-xs text-primary-600 font-medium mt-0.5">
+              Módulo: {session.moduleTitle}
+            </p>
+          )}
         </div>
         <p className="text-sm text-gray-500">
           {new Date(session.scheduledAt).toLocaleString('es-CO', {
