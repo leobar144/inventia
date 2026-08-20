@@ -2,6 +2,7 @@ import { getAllCoursesWithInstructor, getAllInstructors } from '@/lib/supabase/a
 import CourseInstructorSelect from '@/components/admin/CourseInstructorSelect'
 import CourseCurriculumSelect from '@/components/admin/CourseCurriculumSelect'
 import NewCourseForm from '@/components/admin/NewCourseForm'
+import NewSessionForm from '@/components/admin/NewSessionForm'
 import InviteInstructorForm from '@/components/admin/InviteInstructorForm'
 
 export default async function AdminCursosPage() {
@@ -17,9 +18,10 @@ export default async function AdminCursosPage() {
           <h1 className="text-3xl font-heading font-bold">Cursos y profesores</h1>
           <p className="text-gray-600">Invita profesores y asigna qué curso/clase dicta cada uno.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <InviteInstructorForm />
           <NewCourseForm instructors={instructors} />
+          {courses.length > 0 && <NewSessionForm courses={courses} />}
         </div>
       </div>
 
