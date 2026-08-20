@@ -31,6 +31,14 @@ export interface ClassAttendance {
   created_at: string
 }
 
+export interface ChildProject {
+  id: string
+  child_id: string
+  title: string
+  url: string
+  created_at: string
+}
+
 // Course Types
 export interface Course {
   id: string
@@ -46,6 +54,7 @@ export interface Course {
   current_students: number
   price: number
   currency: 'COP' | 'USD'
+  curriculum_level_id: string | null
   created_at: string
   updated_at: string
 }

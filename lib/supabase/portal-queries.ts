@@ -1,6 +1,28 @@
 import { createClient, createServiceRoleClient } from './server'
-import type { Child, Course, ClassSession, Enrollment, Payment } from '@/types'
+import type { Child, Course, ClassSession, Enrollment, Payment, ChildProject } from '@/types'
 import { CURRICULUM_LEVELS } from '@/lib/curriculum'
+
+export async function getProjectsForChild(childId: string): Promise<ChildProject[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('child_projects')
+    .select('*')
+    .eq('child_id', childId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data
+}
+
+/** Los niveles del currículo (lib/curriculum.ts) en los que el niño está activo o completado — para filtrar el Aula por lo que de verdad está estudiando. */
+export async function getActiveCurriculumLevelsForChild(childId: string): Promise<string[]> {
+  const enrollments = await getEnrollmentsForChild(childId)
+  const levelIds = enrollments
+    .filter((e) => e.status === 'active' || e.status === 'completed')
+    .map((e) => e.course.curriculum_level_id)
+    .filter((id): id is string => Boolean(id))
+  return [...new Set(levelIds)]
+}
 
 export async function getChildrenForParent(parentId: string): Promise<Child[]> {
   const supabase = await createClient()
