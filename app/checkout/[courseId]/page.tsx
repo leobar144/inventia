@@ -11,6 +11,7 @@ interface PaymentData {
   currency: string
   signature: string
   publicKey: string
+  discountCents: number
 }
 
 function CheckoutContent({ params }: { params: Promise<{ courseId: string }> }) {
@@ -19,48 +20,51 @@ function CheckoutContent({ params }: { params: Promise<{ courseId: string }> }) 
   const childId = searchParams.get('childId')
 
   const [course, setCourse] = useState<Course | null>(null)
+  const [referralCode, setReferralCode] = useState('')
   const [payment, setPayment] = useState<PaymentData | null>(null)
+  const [preparing, setPreparing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const widgetContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    async function load() {
-      if (!childId) {
-        setError('Falta seleccionar el hijo/a a inscribir.')
-        return
-      }
-
-      const supabase = createClient()
-      const { data: courseData } = await supabase
-        .from('courses')
-        .select('*')
-        .eq('id', courseId)
-        .single()
-
-      if (!courseData) {
-        setError('Curso no encontrado.')
-        return
-      }
-      setCourse(courseData)
-
-      const res = await fetch('/api/payments/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ courseId, childId }),
-      })
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        setError(body.error || 'No pudimos preparar el pago.')
-        return
-      }
-
-      const data: PaymentData = await res.json()
-      setPayment(data)
+    if (!childId) {
+      setError('Falta seleccionar el hijo/a a inscribir.')
+      return
     }
 
-    load()
+    const supabase = createClient()
+    supabase
+      .from('courses')
+      .select('*')
+      .eq('id', courseId)
+      .single()
+      .then(({ data }) => {
+        if (!data) setError('Curso no encontrado.')
+        else setCourse(data)
+      })
   }, [courseId, childId])
+
+  const handlePrepare = async () => {
+    setPreparing(true)
+    setError(null)
+
+    const res = await fetch('/api/payments/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ courseId, childId, referralCode: referralCode || undefined }),
+    })
+
+    setPreparing(false)
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      setError(body.error || 'No pudimos preparar el pago.')
+      return
+    }
+
+    const data: PaymentData = await res.json()
+    setPayment(data)
+  }
 
   useEffect(() => {
     if (!payment || !widgetContainerRef.current) return
@@ -98,25 +102,60 @@ function CheckoutContent({ params }: { params: Promise<{ courseId: string }> }) 
       <div className="max-w-lg mx-auto card p-8">
         <h1 className="text-2xl font-heading font-bold mb-6">Confirmar inscripción</h1>
 
-        {course && payment ? (
+        {!course ? (
+          <p className="text-gray-600">Cargando...</p>
+        ) : (
           <>
             <div className="border-b border-gray-100 pb-4 mb-4">
               <p className="font-bold">{course.title}</p>
               <p className="text-gray-600 text-sm">{course.description}</p>
             </div>
-            <div className="flex justify-between items-center mb-6">
-              <span className="text-gray-600">Total a pagar</span>
-              <span className="text-2xl font-bold text-primary-600">
-                ${(payment.amountInCents / 100).toLocaleString('es-CO')} {payment.currency}
-              </span>
-            </div>
-            <div ref={widgetContainerRef} />
-            <p className="text-xs text-gray-500 mt-4 text-center">
-              Pago seguro procesado por Wompi. Aceptamos PSE, tarjetas y Nequi.
-            </p>
+
+            {!payment ? (
+              <>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    ¿Tienes un código de referido? (opcional)
+                  </label>
+                  <input
+                    type="text"
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value)}
+                    className="input-field"
+                    placeholder="Código de referido"
+                  />
+                </div>
+                <div className="flex justify-between items-center mb-6">
+                  <span className="text-gray-600">Precio del curso</span>
+                  <span className="text-xl font-bold">
+                    ${course.price.toLocaleString('es-CO')} {course.currency}
+                  </span>
+                </div>
+                <button onClick={handlePrepare} disabled={preparing} className="btn btn-primary w-full">
+                  {preparing ? 'Preparando...' : 'Continuar al pago'}
+                </button>
+              </>
+            ) : (
+              <>
+                {payment.discountCents > 0 && (
+                  <div className="mb-4 p-3 bg-primary-50 text-primary-700 rounded-lg text-sm font-medium">
+                    🎁 Descuento de referido aplicado: -$
+                    {(payment.discountCents / 100).toLocaleString('es-CO')}
+                  </div>
+                )}
+                <div className="flex justify-between items-center mb-6">
+                  <span className="text-gray-600">Total a pagar</span>
+                  <span className="text-2xl font-bold text-primary-600">
+                    ${(payment.amountInCents / 100).toLocaleString('es-CO')} {payment.currency}
+                  </span>
+                </div>
+                <div ref={widgetContainerRef} />
+                <p className="text-xs text-gray-500 mt-4 text-center">
+                  Pago seguro procesado por Wompi. Aceptamos PSE, tarjetas y Nequi.
+                </p>
+              </>
+            )}
           </>
-        ) : (
-          <p className="text-gray-600">Preparando tu pago...</p>
         )}
       </div>
     </div>

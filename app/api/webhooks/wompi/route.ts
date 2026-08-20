@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
   const { data: payment } = await admin
     .from('payments')
-    .select('id, enrollment_id')
+    .select('id, enrollment_id, parent_id, referrer_parent_id, consumed_credit_id')
     .eq('reference', transaction.reference)
     .single()
 
@@ -54,6 +54,21 @@ export async function POST(request: Request) {
       .from('enrollments')
       .update({ status: 'active', enrolled_date: new Date().toISOString() })
       .eq('id', payment.enrollment_id)
+
+    // Referidos: solo se acredita/consume una vez que el pago quedó
+    // realmente aprobado — nunca antes de cobrar de verdad.
+    if (payment.referrer_parent_id) {
+      await admin.from('referral_credits').insert({
+        referrer_parent_id: payment.referrer_parent_id,
+        source_payment_id: payment.id,
+      })
+    }
+    if (payment.consumed_credit_id) {
+      await admin
+        .from('referral_credits')
+        .update({ used: true, used_payment_id: payment.id })
+        .eq('id', payment.consumed_credit_id)
+    }
   }
 
   return NextResponse.json({ received: true })
