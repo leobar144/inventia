@@ -59,10 +59,13 @@ export default function InstructorSessionCard({ session }: { session: Instructor
       </div>
 
       <div className="flex items-center gap-3 mb-4">
+        <span className="text-xs font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">
+          {session.modality === 'presencial' ? '📍 Presencial' : '💻 Virtual'}
+        </span>
         <span className="text-sm font-medium text-gray-700">
           Cuórum: {paidCount}/{totalCount} pagados
         </span>
-        {session.googleMeetLink && (
+        {session.modality === 'virtual' && session.googleMeetLink && (
           <a
             href={session.googleMeetLink}
             target="_blank"

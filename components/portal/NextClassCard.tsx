@@ -1,4 +1,4 @@
-import { FaCalendarAlt, FaVideo, FaQuestionCircle } from 'react-icons/fa'
+import { FaCalendarAlt, FaVideo, FaQuestionCircle, FaMapMarkerAlt } from 'react-icons/fa'
 import { SITE_CONFIG } from '@/lib/constants'
 
 interface NextClassInfo {
@@ -7,6 +7,7 @@ interface NextClassInfo {
   moduleTitle: string | null
   scheduledAt: string
   googleMeetLink: string | null
+  modality: 'presencial' | 'virtual'
 }
 
 export default function NextClassCard({ nextClass }: { nextClass: NextClassInfo | null }) {
@@ -38,7 +39,12 @@ export default function NextClassCard({ nextClass }: { nextClass: NextClassInfo 
           <FaCalendarAlt className="text-primary-600" size={20} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-primary-700 font-medium capitalize">{dateLabel}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-xs text-primary-700 font-medium capitalize">{dateLabel}</p>
+            <span className="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-white text-primary-700">
+              {nextClass.modality === 'presencial' ? '📍 Presencial' : '💻 Virtual'}
+            </span>
+          </div>
           <p className="font-bold truncate">
             {nextClass.courseTitle} · {nextClass.sessionTitle}
           </p>
@@ -46,7 +52,7 @@ export default function NextClassCard({ nextClass }: { nextClass: NextClassInfo 
             <p className="text-xs text-gray-600 truncate">Van a ver: {nextClass.moduleTitle}</p>
           )}
         </div>
-        {nextClass.googleMeetLink && (
+        {nextClass.modality === 'virtual' && nextClass.googleMeetLink && (
           <a
             href={nextClass.googleMeetLink}
             target="_blank"
@@ -55,6 +61,11 @@ export default function NextClassCard({ nextClass }: { nextClass: NextClassInfo 
           >
             <FaVideo className="mr-2" /> Unirse
           </a>
+        )}
+        {nextClass.modality === 'presencial' && (
+          <span className="flex items-center gap-1 text-primary-700 text-sm font-medium shrink-0">
+            <FaMapMarkerAlt /> Presencial
+          </span>
         )}
       </div>
 

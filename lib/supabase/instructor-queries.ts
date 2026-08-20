@@ -8,6 +8,7 @@ export interface InstructorSessionRow {
   scheduledAt: string
   courseTitle: string
   googleMeetLink: string | null
+  modality: 'presencial' | 'virtual'
   roster: {
     childId: string
     childName: string
@@ -48,7 +49,7 @@ export async function getUpcomingSessionsForInstructor(
 
   const { data: sessions, error: sessionsError } = await supabase
     .from('class_sessions')
-    .select('id, title, scheduled_at, course_id, google_meet_link, module_number')
+    .select('id, title, scheduled_at, course_id, google_meet_link, module_number, modality')
     .in('course_id', courseIds)
     .gte('scheduled_at', now.toISOString())
     .lte('scheduled_at', rangeEnd.toISOString())
@@ -101,6 +102,7 @@ export async function getUpcomingSessionsForInstructor(
       scheduledAt: session.scheduled_at,
       courseTitle: courseTitleById.get(session.course_id) ?? '',
       googleMeetLink: session.google_meet_link,
+      modality: (session.modality as 'presencial' | 'virtual') ?? 'virtual',
       roster: rosterForCourse
         .filter((e) => childById.has(e.student_id))
         .map((e) => ({

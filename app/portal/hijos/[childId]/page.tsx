@@ -64,6 +64,7 @@ export default async function ChildDashboardPage({
     moduleTitle: string | null
     scheduledAt: string
     googleMeetLink: string | null
+    modality: 'presencial' | 'virtual'
   } | null = null
 
   for (const { enrollment, path } of classPaths) {
@@ -75,6 +76,7 @@ export default async function ChildDashboardPage({
         moduleTitle: next.moduleTitle,
         scheduledAt: next.scheduledAt,
         googleMeetLink: next.googleMeetLink,
+        modality: next.modality,
       }
     }
   }

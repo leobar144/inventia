@@ -66,6 +66,7 @@ export interface SessionPathState {
   moduleTitle: string | null
   scheduledAt: string
   googleMeetLink: string | null
+  modality: 'presencial' | 'virtual'
   state: 'done' | 'next' | 'locked'
 }
 
@@ -100,7 +101,7 @@ export async function getClassPathForCourse(
     admin.from('courses').select('curriculum_level_id').eq('id', courseId).single(),
     admin
       .from('class_sessions')
-      .select('id, title, scheduled_at, google_meet_link, module_number')
+      .select('id, title, scheduled_at, google_meet_link, module_number, modality')
       .eq('course_id', courseId)
       .order('scheduled_at', { ascending: true }),
   ])
@@ -130,6 +131,7 @@ export async function getClassPathForCourse(
       curriculumLevel?.modules.find((m) => m.number === s.module_number)?.title ?? null,
     scheduledAt: s.scheduled_at,
     googleMeetLink: s.google_meet_link,
+    modality: (s.modality as 'presencial' | 'virtual') ?? 'virtual',
     state: attendedSet.has(s.id) ? 'done' : i === firstUnattendedIndex ? 'next' : 'locked',
   }))
 }
