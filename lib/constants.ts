@@ -49,7 +49,7 @@ export const PROGRAM_TRACKS = [
     icon: '🤖',
     title: 'Robótica',
     description: 'Construye y programa robots reales. Aprende electrónica y mecánica.',
-    bullets: ['Edades 8-14 años', 'Kit de robótica incluido', 'Competencias inter-grupo'],
+    bullets: ['Edades 8-14 años', 'Robots de la academia', 'Competencias inter-grupo'],
     borderColor: 'border-accent-500',
     iconColor: 'text-accent-500',
   },
@@ -79,7 +79,10 @@ export const USER_ROLES = {
   admin: 'Administrador',
 }
 
-// Pricing — Clases personalizadas (en casa o virtuales), precios reales del negocio
+// Planes — grupos de máximo 8 niños, presenciales o virtuales.
+// OJO: el campo `price` de cada plan es solo el precio de referencia que muestra
+// la home. El precio que se cobra de verdad vive en la tabla course_plan_prices,
+// porque depende de la combinación curso × plan (ver lib/plans.ts).
 export const PRICING_PLANS = [
   {
     id: 'mes',
@@ -93,7 +96,6 @@ export const PRICING_PLANS = [
     classes: 4,
     price: 340000,
     originalPrice: null as number | null,
-    includesKit: false,
     highlight: false,
   },
   {
@@ -108,7 +110,6 @@ export const PRICING_PLANS = [
     classes: 12,
     price: 890000,
     originalPrice: 1020000 as number | null,
-    includesKit: false,
     highlight: true,
   },
   {
@@ -118,12 +119,11 @@ export const PRICING_PLANS = [
     levelIcon: '🚀',
     tagline: 'Máximo compromiso, máximos resultados',
     description:
-      'El plan de quienes van en serio: tu hijo construye su portafolio de proyectos y domina las bases de un lenguaje o de robótica, con el kit incluido sin costo extra.',
+      'El plan de quienes van en serio: tu hijo construye su portafolio de proyectos y domina las bases de un lenguaje o de robótica, con el mejor precio por clase de todos los planes.',
     unlocks: 'Certificado mayor + portafolio de 4 proyectos publicable en su perfil',
     classes: 24,
     price: 1860000,
     originalPrice: 2040000 as number | null,
-    includesKit: true,
     highlight: false,
   },
 ]

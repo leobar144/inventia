@@ -213,6 +213,114 @@ export async function getAllInstructors(): Promise<InstructorOption[]> {
   return data ?? []
 }
 
+export interface ChildOption {
+  id: string
+  full_name: string
+  parent_name: string
+  parent_email: string
+}
+
+/** Todos los niños registrados, con el nombre del acudiente, para el selector
+ *  de pago manual en /admin/pagos. */
+export async function getAllChildrenWithParent(): Promise<ChildOption[]> {
+  const supabase = createServiceRoleClient()
+
+  const { data: children, error } = await supabase
+    .from('children')
+    .select('id, full_name, parent_id')
+    .order('full_name', { ascending: true })
+
+  if (error) throw error
+  if (!children || children.length === 0) return []
+
+  const parentIds = [...new Set(children.map((c) => c.parent_id))]
+  const { data: parents } = await supabase
+    .from('profiles')
+    .select('id, full_name, email')
+    .in('id', parentIds)
+
+  const parentById = new Map((parents ?? []).map((p) => [p.id, p]))
+
+  return children.map((c) => {
+    const parent = parentById.get(c.parent_id)
+    return {
+      id: c.id,
+      full_name: c.full_name,
+      parent_name: parent?.full_name || 'Sin nombre',
+      parent_email: parent?.email || '',
+    }
+  })
+}
+
+export interface ManualPaymentRow {
+  id: string
+  reference: string
+  amount: number
+  method: string
+  notes: string | null
+  created_at: string
+  child_name: string
+  course_title: string
+  recorded_by_name: string
+}
+
+/** Últimos pagos registrados a mano — el libro de caja de la academia. */
+export async function getRecentManualPayments(limit = 25): Promise<ManualPaymentRow[]> {
+  const supabase = createServiceRoleClient()
+
+  const { data: payments, error } = await supabase
+    .from('payments')
+    .select('id, reference, amount_in_cents, payment_method, notes, created_at, enrollment_id, recorded_by')
+    .neq('payment_method', 'wompi')
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error) throw error
+  if (!payments || payments.length === 0) return []
+
+  const enrollmentIds = payments.map((p) => p.enrollment_id).filter(Boolean)
+  const { data: enrollments } = await supabase
+    .from('enrollments')
+    .select('id, student_id, course_id')
+    .in('id', enrollmentIds)
+
+  const childIds = [...new Set((enrollments ?? []).map((e) => e.student_id))]
+  const courseIds = [...new Set((enrollments ?? []).map((e) => e.course_id))]
+  const adminIds = [...new Set(payments.map((p) => p.recorded_by).filter(Boolean))] as string[]
+
+  const [{ data: children }, { data: courses }, { data: admins }] = await Promise.all([
+    childIds.length > 0
+      ? supabase.from('children').select('id, full_name').in('id', childIds)
+      : Promise.resolve({ data: [] }),
+    courseIds.length > 0
+      ? supabase.from('courses').select('id, title').in('id', courseIds)
+      : Promise.resolve({ data: [] }),
+    adminIds.length > 0
+      ? supabase.from('profiles').select('id, full_name').in('id', adminIds)
+      : Promise.resolve({ data: [] }),
+  ])
+
+  const enrollmentById = new Map((enrollments ?? []).map((e) => [e.id, e]))
+  const childNameById = new Map((children ?? []).map((c) => [c.id, c.full_name]))
+  const courseTitleById = new Map((courses ?? []).map((c) => [c.id, c.title]))
+  const adminNameById = new Map((admins ?? []).map((a) => [a.id, a.full_name]))
+
+  return payments.map((p) => {
+    const enrollment = enrollmentById.get(p.enrollment_id)
+    return {
+      id: p.id,
+      reference: p.reference,
+      amount: p.amount_in_cents / 100,
+      method: p.payment_method,
+      notes: p.notes,
+      created_at: p.created_at,
+      child_name: enrollment ? (childNameById.get(enrollment.student_id) ?? '—') : '—',
+      course_title: enrollment ? (courseTitleById.get(enrollment.course_id) ?? '—') : '—',
+      recorded_by_name: p.recorded_by ? (adminNameById.get(p.recorded_by) ?? '—') : '—',
+    }
+  })
+}
+
 export interface SessionAttendanceRow {
   sessionId: string
   sessionTitle: string

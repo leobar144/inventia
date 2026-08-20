@@ -181,11 +181,6 @@ function CheckoutContent({ params }: { params: Promise<{ courseId: string }> }) 
                                       Más elegido
                                     </span>
                                   )}
-                                  {plan.includesKit && (
-                                    <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-secondary-100 text-secondary-700">
-                                      Kit incluido
-                                    </span>
-                                  )}
                                 </div>
                                 <p className="text-sm text-gray-600 mt-1">
                                   {plan.classes} clases · ${perClass.toLocaleString('es-CO')} por

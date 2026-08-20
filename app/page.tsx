@@ -208,9 +208,10 @@ export default function Home() {
       <section id="precios" className="section bg-white">
         <div className="section-container">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Clases Personalizadas</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Grupos pequeños, atención real</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              En casa o virtuales — elige el plan que mejor se acomode a tu hijo
+              Máximo 8 niños por clase, presenciales o virtuales — elige el plan que mejor se
+              acomode a tu hijo
             </p>
           </div>
 
@@ -262,13 +263,6 @@ export default function Home() {
                   {plan.originalPrice && (
                     <p className="text-center text-sm font-bold text-primary-600 mb-2">
                       Ahorras ${(plan.originalPrice - plan.price).toLocaleString('es-CO')}
-                    </p>
-                  )}
-                  {plan.includesKit && (
-                    <p className="text-center mb-2">
-                      <span className="inline-block px-3 py-1 bg-accent-500 text-white text-xs font-bold rounded-full">
-                        🎁 ¡Incluye kit gratis!
-                      </span>
                     </p>
                   )}
 
@@ -333,7 +327,7 @@ export default function Home() {
               },
               {
                 q: '¿Qué necesito para las clases virtuales?',
-                a: 'Solo un computador con conexión estable a internet. Para el curso de Robótica, el kit necesario está incluido en la inscripción.',
+                a: 'Solo un computador con conexión estable a internet. En Robótica presencial los robots los ponemos nosotros — no tienes que comprar nada.',
               },
               {
                 q: '¿Cómo reservo un cupo o resuelvo más dudas?',

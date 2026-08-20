@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { generateWompiSignature, pesosToWompiCents } from '@/lib/wompi'
 import { getPlan, isValidPlanId } from '@/lib/plans'
-
-const REFERRAL_DISCOUNT_CENTS = 5_000_000 // $50.000 COP
+import { resolveReferralDiscount } from '@/lib/payments'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -119,45 +118,8 @@ export async function POST(request: Request) {
   //   1. Un crédito propio ya ganado (de haber referido a alguien antes).
   //   2. Un código de otro padre, solo válido en el primer pago aprobado
   //      de esta cuenta (evita reusar códigos repetidamente).
-  let discountCents = 0
-  let referredByCode: string | null = null
-  let referrerParentId: string | null = null
-  let consumedCreditId: string | null = null
-
-  const { data: ownCredit } = await admin
-    .from('referral_credits')
-    .select('id, amount_cents')
-    .eq('referrer_parent_id', user.id)
-    .eq('used', false)
-    .order('created_at', { ascending: true })
-    .limit(1)
-    .maybeSingle()
-
-  if (ownCredit) {
-    discountCents = ownCredit.amount_cents
-    consumedCreditId = ownCredit.id
-  } else if (referralCode?.trim()) {
-    const code = referralCode.trim().toUpperCase()
-
-    const { count: priorApprovedCount } = await admin
-      .from('payments')
-      .select('id', { count: 'exact', head: true })
-      .eq('parent_id', user.id)
-      .eq('status', 'APPROVED')
-
-    if (!priorApprovedCount || priorApprovedCount === 0) {
-      const { data: parentProfiles } = await admin.from('profiles').select('id').eq('role', 'parent')
-      const referrer = (parentProfiles ?? []).find(
-        (p) => p.id.slice(0, 8).toUpperCase() === code && p.id !== user.id
-      )
-
-      if (referrer) {
-        discountCents = REFERRAL_DISCOUNT_CENTS
-        referredByCode = code
-        referrerParentId = referrer.id
-      }
-    }
-  }
+  const { discountCents, referredByCode, referrerParentId, consumedCreditId } =
+    await resolveReferralDiscount(admin, user.id, referralCode)
 
   const fullAmountInCents = pesosToWompiCents(planPrice.price)
   const amountInCents = Math.max(fullAmountInCents - discountCents, 0)

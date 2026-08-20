@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServiceRoleClient } from '@/lib/supabase/server'
 import { verifyWompiWebhookSignature } from '@/lib/wompi'
+import { applyApprovedPayment } from '@/lib/payments'
 
 interface WompiTransaction {
   id: string
@@ -56,25 +57,7 @@ export async function POST(request: Request) {
     .eq('id', payment.id)
 
   if (transaction.status === 'APPROVED') {
-    await admin
-      .from('enrollments')
-      .update({ status: 'active', enrolled_date: new Date().toISOString() })
-      .eq('id', payment.enrollment_id)
-
-    // Referidos: solo se acredita/consume una vez que el pago quedó
-    // realmente aprobado — nunca antes de cobrar de verdad.
-    if (payment.referrer_parent_id) {
-      await admin.from('referral_credits').insert({
-        referrer_parent_id: payment.referrer_parent_id,
-        source_payment_id: payment.id,
-      })
-    }
-    if (payment.consumed_credit_id) {
-      await admin
-        .from('referral_credits')
-        .update({ used: true, used_payment_id: payment.id })
-        .eq('id', payment.consumed_credit_id)
-    }
+    await applyApprovedPayment(admin, payment)
   }
 
   return NextResponse.json({ received: true })
