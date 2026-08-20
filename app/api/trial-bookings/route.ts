@@ -43,6 +43,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Faltan datos' }, { status: 400 })
   }
 
+  // Sin autorización de tratamiento de datos no se guarda nada (Ley 1581/2012).
+  if (!body.dataConsent) {
+    return NextResponse.json(
+      { error: 'Necesitamos tu autorización para tratar los datos.' },
+      { status: 400 }
+    )
+  }
+
   const supabase = createServiceRoleClient()
 
   const { data: booking, error } = await supabase
@@ -57,6 +65,8 @@ export async function POST(request: Request) {
       whatsapp: body.whatsapp,
       parent_email: body.parentEmail,
       referred_by_code: body.referredByCode?.trim().toUpperCase() || null,
+      data_consent_at: new Date().toISOString(),
+      data_consent_version: body.dataConsentVersion || null,
     })
     .select('id')
     .single()

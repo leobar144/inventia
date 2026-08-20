@@ -5,12 +5,14 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { createClient } from '@/lib/supabase/client'
+import { CONSENT_VERSION } from '@/lib/legal'
 
 interface FormData {
   fullName: string
   email: string
   phone: string
   password: string
+  dataConsent: boolean
 }
 
 function RegistroForm() {
@@ -38,7 +40,14 @@ function RegistroForm() {
       email: formData.email,
       password: formData.password,
       options: {
-        data: { full_name: formData.fullName, phone: formData.phone },
+        data: {
+          full_name: formData.fullName,
+          phone: formData.phone,
+          // Queda registrado como prueba de la autorización que exige el
+          // artículo 9 de la Ley 1581 de 2012.
+          data_consent: true,
+          data_consent_version: CONSENT_VERSION,
+        },
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     })
@@ -127,6 +136,41 @@ function RegistroForm() {
             />
             {errors.password && (
               <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>
+            )}
+          </div>
+
+          <div className="pt-2">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                className="mt-1 h-4 w-4 shrink-0 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                {...register('dataConsent', {
+                  required: 'Necesitamos tu autorización para continuar',
+                })}
+              />
+              <span className="text-sm text-gray-600 leading-snug">
+                Soy el padre, madre o representante legal del menor que inscribiré, y autorizo a
+                INVENTIA el tratamiento de mis datos personales y los del menor conforme a la{' '}
+                <Link
+                  href="/privacidad"
+                  target="_blank"
+                  className="text-primary-600 font-medium hover:underline"
+                >
+                  Política de Tratamiento de Datos
+                </Link>{' '}
+                y los{' '}
+                <Link
+                  href="/terminos"
+                  target="_blank"
+                  className="text-primary-600 font-medium hover:underline"
+                >
+                  Términos y Condiciones
+                </Link>
+                .
+              </span>
+            </label>
+            {errors.dataConsent && (
+              <p className="text-red-600 text-sm mt-1">{errors.dataConsent.message}</p>
             )}
           </div>
 

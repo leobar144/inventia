@@ -30,13 +30,19 @@ export async function POST(request: Request) {
 
   const { data: payment } = await admin
     .from('payments')
-    .select('id, enrollment_id, parent_id, referrer_parent_id, consumed_credit_id')
+    .select('id, enrollment_id, parent_id, referrer_parent_id, consumed_credit_id, status')
     .eq('reference', transaction.reference)
     .single()
 
   if (!payment) {
     // Referencia desconocida — no es un pago que hayamos creado nosotros, ignorar.
     return NextResponse.json({ received: true })
+  }
+
+  // Wompi reintenta los webhooks. Si este pago ya quedó APPROVED, no volvemos a
+  // acreditar referidos ni a tocar la inscripción: acusamos recibo y salimos.
+  if (payment.status === 'APPROVED') {
+    return NextResponse.json({ received: true, alreadyProcessed: true })
   }
 
   await admin

@@ -108,10 +108,10 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm">
           <p>&copy; {currentYear} INVENTIA. Todos los derechos reservados.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="/privacy" className="hover:text-primary-400 transition-colors">
+            <Link href="/privacidad" className="hover:text-primary-400 transition-colors">
               Privacidad
             </Link>
-            <Link href="/terms" className="hover:text-primary-400 transition-colors">
+            <Link href="/terminos" className="hover:text-primary-400 transition-colors">
               Términos
             </Link>
           </div>

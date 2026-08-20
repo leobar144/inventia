@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FaArrowLeft, FaArrowRight, FaSpinner } from 'react-icons/fa'
+import { CONSENT_VERSION } from '@/lib/legal'
 import type { AvailableSlotDay } from '@/types'
 
 const COURSES = [
@@ -43,6 +45,7 @@ export default function ClaseDePruebaPage() {
   const [whatsapp, setWhatsapp] = useState('')
   const [parentEmail, setParentEmail] = useState('')
   const [referredByCode, setReferredByCode] = useState('')
+  const [dataConsent, setDataConsent] = useState(false)
 
   const [days, setDays] = useState<AvailableSlotDay[] | null>(null)
   const [loadingDays, setLoadingDays] = useState(false)
@@ -93,6 +96,8 @@ export default function ClaseDePruebaPage() {
         whatsapp,
         parentEmail,
         referredByCode: referredByCode || undefined,
+        dataConsent,
+        dataConsentVersion: CONSENT_VERSION,
       }),
     })
 
@@ -318,6 +323,27 @@ export default function ClaseDePruebaPage() {
                   {selectedSlot && formatTimeLabel(selectedSlot.time)}
                 </p>
               </div>
+              <label className="flex items-start gap-3 cursor-pointer pt-1">
+                <input
+                  type="checkbox"
+                  checked={dataConsent}
+                  onChange={(e) => setDataConsent(e.target.checked)}
+                  className="mt-1 h-4 w-4 shrink-0 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                />
+                <span className="text-sm text-gray-600 leading-snug">
+                  Soy el padre, madre o representante legal de {childName || 'el menor'} y autorizo a
+                  INVENTIA el tratamiento de nuestros datos personales conforme a la{' '}
+                  <Link
+                    href="/privacidad"
+                    target="_blank"
+                    className="text-primary-600 font-medium hover:underline"
+                  >
+                    Política de Tratamiento de Datos
+                  </Link>
+                  .
+                </span>
+              </label>
+
               {submitError && (
                 <p className="text-red-600 text-sm">{submitError}</p>
               )}
@@ -348,8 +374,8 @@ export default function ClaseDePruebaPage() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={submitting}
-                className="btn btn-primary"
+                disabled={submitting || !dataConsent}
+                className="btn btn-primary disabled:opacity-40"
               >
                 {submitting ? 'Reservando...' : 'Confirmar reserva'}
               </button>
