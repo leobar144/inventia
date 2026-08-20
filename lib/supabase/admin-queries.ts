@@ -15,6 +15,7 @@ export interface CourseWithInstructor {
   instructor_name: string | null
   curriculum_level_id: string | null
   plan_prices: { plan_id: string; price: number }[]
+  session_count: number
 }
 
 export interface InstructorOption {
@@ -189,10 +190,24 @@ export async function getAllCoursesWithInstructor(): Promise<CourseWithInstructo
     pricesByCourse.set(row.course_id, list)
   }
 
+  const { data: sessions } = await supabase
+    .from('class_sessions')
+    .select('course_id')
+    .in(
+      'course_id',
+      courses.map((c) => c.id)
+    )
+
+  const sessionCountByCourse = new Map<string, number>()
+  for (const s of sessions ?? []) {
+    sessionCountByCourse.set(s.course_id, (sessionCountByCourse.get(s.course_id) ?? 0) + 1)
+  }
+
   return courses.map((c) => ({
     ...c,
     instructor_name: c.instructor_id ? (nameById.get(c.instructor_id) ?? null) : null,
     plan_prices: sortByPlanOrder(pricesByCourse.get(c.id) ?? []),
+    session_count: sessionCountByCourse.get(c.id) ?? 0,
   }))
 }
 

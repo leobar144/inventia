@@ -4,6 +4,7 @@ import CourseInstructorSelect from '@/components/admin/CourseInstructorSelect'
 import CourseCurriculumSelect from '@/components/admin/CourseCurriculumSelect'
 import NewCourseForm from '@/components/admin/NewCourseForm'
 import NewSessionForm from '@/components/admin/NewSessionForm'
+import BulkSessionForm from '@/components/admin/BulkSessionForm'
 import InviteInstructorForm from '@/components/admin/InviteInstructorForm'
 
 export default async function AdminCursosPage() {
@@ -23,6 +24,7 @@ export default async function AdminCursosPage() {
           <InviteInstructorForm />
           <NewCourseForm instructors={instructors} />
           {courses.length > 0 && <NewSessionForm courses={courses} />}
+          {courses.length > 0 && <BulkSessionForm courses={courses} />}
         </div>
       </div>
 
@@ -42,8 +44,15 @@ export default async function AdminCursosPage() {
               <div>
                 <p className="font-bold">{course.title}</p>
                 <p className="text-sm text-gray-500">
-                  {course.schedule || 'Sin horario definido'}
+                  {course.schedule || 'Sin horario definido'} · {course.session_count} clase
+                  {course.session_count === 1 ? '' : 's'} programada
+                  {course.session_count === 1 ? '' : 's'}
                 </p>
+                {course.session_count === 0 && (
+                  <p className="text-sm text-red-700 mt-1">
+                    🔴 Sin clases programadas — si un padre paga, no verá nada en su portal.
+                  </p>
+                )}
                 {course.plan_prices.length === 0 ? (
                   <p className="text-sm text-accent-700 mt-1">
                     ⚠️ Sin planes con precio — no se puede inscribir todavía.

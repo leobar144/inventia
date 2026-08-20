@@ -255,8 +255,12 @@ export default function Home() {
                         ${plan.originalPrice.toLocaleString('es-CO')}
                       </p>
                     )}
+                    <span className="text-xs text-gray-500 block">Desde</span>
                     <span className="text-3xl font-bold text-gray-900">
                       ${plan.price.toLocaleString('es-CO')}
+                    </span>
+                    <span className="text-xs text-gray-500 block mt-1">
+                      {plan.classes} clases · según el curso
                     </span>
                   </div>
 
