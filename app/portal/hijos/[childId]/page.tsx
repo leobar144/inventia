@@ -90,14 +90,19 @@ export default async function ChildDashboardPage({
 
   return (
     <div className="space-y-10">
-      <div className="flex items-center space-x-4">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-400 to-secondary-400 flex items-center justify-center text-white text-2xl font-bold">
-          {child.full_name.charAt(0).toUpperCase()}
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center space-x-4">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-400 to-secondary-400 flex items-center justify-center text-white text-2xl font-bold">
+            {child.full_name.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h1 className="text-3xl font-heading font-bold">{child.full_name}</h1>
+            <p className="text-gray-600">{calculateAge(child.birth_date)} años</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-3xl font-heading font-bold">{child.full_name}</h1>
-          <p className="text-gray-600">{calculateAge(child.birth_date)} años</p>
-        </div>
+        <Link href={`/portal/hijos/${child.id}/aula`} className="btn btn-primary">
+          🚀 Ir al Aula INVENTIA
+        </Link>
       </div>
 
       {/* Insignia de nivel */}
