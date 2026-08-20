@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getCachedUser } from '@/lib/supabase/server'
 import { getChildrenForParent } from '@/lib/supabase/portal-queries'
 import { FaPlus, FaChild } from 'react-icons/fa'
 import ReferralCodeCard from '@/components/portal/ReferralCodeCard'
@@ -11,10 +11,9 @@ function calculateAge(birthDate: string): number {
 }
 
 export default async function PortalHomePage() {
-  const supabase = await createClient()
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await getCachedUser()
 
   const children = user ? await getChildrenForParent(user.id) : []
 

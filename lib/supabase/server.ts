@@ -1,6 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
+import { cache } from 'react'
 
 interface CookieToSet {
   name: string
@@ -33,6 +34,17 @@ export async function createClient() {
     }
   )
 }
+
+// Memoiza "¿quién es el usuario logueado?" para que, dentro de una misma
+// carga de página, el layout y la página no le pregunten cada uno por su
+// lado a Supabase (cada getUser() es un viaje de ida y vuelta real a la
+// API de autenticación). react.cache() la reutiliza durante ese único
+// render — el middleware sigue haciendo su propia llamada aparte, porque
+// corre en un contexto distinto (Edge) antes de que esto exista.
+export const getCachedUser = cache(async () => {
+  const supabase = await createClient()
+  return supabase.auth.getUser()
+})
 
 export function createServiceRoleClient() {
   return createSupabaseClient(

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getCachedUser } from '@/lib/supabase/server'
 import { getChildById, getEnrollmentsForChild } from '@/lib/supabase/portal-queries'
 import CertificateCard from '@/components/CertificateCard'
 import CertificatePrintButton from '@/components/CertificatePrintButton'
@@ -10,10 +10,9 @@ export default async function CertificadoCursoPage({
   params: Promise<{ childId: string; courseId: string }>
 }) {
   const { childId, courseId } = await params
-  const supabase = await createClient()
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await getCachedUser()
 
   if (!user) notFound()
 

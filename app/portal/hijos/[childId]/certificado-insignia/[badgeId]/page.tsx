@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getCachedUser } from '@/lib/supabase/server'
 import { getChildById } from '@/lib/supabase/portal-queries'
 import { BADGE_LEVELS } from '@/lib/badges'
 import CertificateCard from '@/components/CertificateCard'
@@ -11,10 +11,9 @@ export default async function CertificadoInsigniaPage({
   params: Promise<{ childId: string; badgeId: string }>
 }) {
   const { childId, badgeId } = await params
-  const supabase = await createClient()
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await getCachedUser()
 
   if (!user) notFound()
 

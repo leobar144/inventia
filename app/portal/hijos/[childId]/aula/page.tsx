@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { FaArrowLeft, FaExternalLinkAlt } from 'react-icons/fa'
-import { createClient } from '@/lib/supabase/server'
+import { getCachedUser } from '@/lib/supabase/server'
 import {
   getChildById,
   getActiveCurriculumLevelsForChild,
@@ -22,10 +22,9 @@ export default async function AulaPage({
   params: Promise<{ childId: string }>
 }) {
   const { childId } = await params
-  const supabase = await createClient()
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await getCachedUser()
 
   if (!user) notFound()
 

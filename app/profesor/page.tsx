@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { FaUsers } from 'react-icons/fa'
-import { createClient } from '@/lib/supabase/server'
+import { getCachedUser } from '@/lib/supabase/server'
 import {
   getUpcomingSessionsForInstructor,
   getCoursesForInstructor,
@@ -8,10 +8,9 @@ import {
 import InstructorSessionCard from '@/components/profesor/InstructorSessionCard'
 
 export default async function ProfesorPage() {
-  const supabase = await createClient()
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await getCachedUser()
 
   const [sessions, courses] = user
     ? await Promise.all([

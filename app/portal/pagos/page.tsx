@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getCachedUser } from '@/lib/supabase/server'
 import { getPaymentsForParent } from '@/lib/supabase/portal-queries'
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
@@ -10,10 +10,9 @@ const STATUS_LABELS: Record<string, { label: string; className: string }> = {
 }
 
 export default async function PagosPage() {
-  const supabase = await createClient()
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await getCachedUser()
 
   const payments = user ? await getPaymentsForParent(user.id) : []
 
