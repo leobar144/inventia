@@ -52,9 +52,9 @@ export default async function ProfesorEstudiantesPage({
                 <th className="text-left py-2 pr-4 sticky left-0 bg-white">Estudiante</th>
                 <th className="text-left py-2 pr-4">Estado</th>
                 <th className="text-left py-2 pr-4">Avance</th>
-                {data.sessions.map((session, i) => (
+                {data.sessions.map((session) => (
                   <th key={session.id} className="py-2 px-2 text-center font-normal">
-                    <span className="block text-xs text-gray-500">Clase {i + 1}</span>
+                    <span className="block text-xs text-gray-500">{session.title}</span>
                     {session.moduleTitle && (
                       <span className="block text-[10px] text-gray-400 max-w-[80px] truncate" title={session.moduleTitle}>
                         {session.moduleTitle}
