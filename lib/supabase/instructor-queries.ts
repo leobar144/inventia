@@ -112,3 +112,119 @@ export async function getUpcomingSessionsForInstructor(
     }
   })
 }
+
+export interface InstructorCourseOption {
+  id: string
+  title: string
+}
+
+/** Cursos que dicta un profesor — para armar los enlaces a "Mis estudiantes". */
+export async function getCoursesForInstructor(
+  instructorId: string
+): Promise<InstructorCourseOption[]> {
+  const supabase = createServiceRoleClient()
+
+  const { data, error } = await supabase
+    .from('courses')
+    .select('id, title')
+    .eq('instructor_id', instructorId)
+    .order('title', { ascending: true })
+
+  if (error) throw error
+  return data ?? []
+}
+
+export interface StudentAttendanceRow {
+  childId: string
+  childName: string
+  enrollmentStatus: 'pending_payment' | 'active' | 'completed' | 'dropped'
+  progress: number
+  attendance: { sessionId: string; attended: boolean }[]
+}
+
+export interface CourseStudentsData {
+  courseTitle: string
+  sessions: { id: string; title: string; scheduledAt: string; moduleTitle: string | null }[]
+  students: StudentAttendanceRow[]
+}
+
+/**
+ * Historial completo de asistencia por estudiante para un curso — todas las
+ * sesiones (pasadas y futuras) como columnas, todos los inscritos (cualquier
+ * estado) como filas. Verifica que el curso sea del profesor que la llama
+ * antes de devolver nada (devuelve null si no le pertenece).
+ */
+export async function getStudentsForCourse(
+  instructorId: string,
+  courseId: string
+): Promise<CourseStudentsData | null> {
+  const supabase = createServiceRoleClient()
+
+  const { data: course, error: courseError } = await supabase
+    .from('courses')
+    .select('id, title, instructor_id, curriculum_level_id')
+    .eq('id', courseId)
+    .single()
+
+  if (courseError || !course || course.instructor_id !== instructorId) return null
+
+  const courseLevel = CURRICULUM_LEVELS.find((l) => l.id === course.curriculum_level_id)
+
+  const [
+    { data: sessions, error: sessionsError },
+    { data: enrollments, error: enrollmentsError },
+  ] = await Promise.all([
+    supabase
+      .from('class_sessions')
+      .select('id, title, scheduled_at, module_number')
+      .eq('course_id', courseId)
+      .order('scheduled_at', { ascending: true }),
+    supabase.from('enrollments').select('student_id, status, progress').eq('course_id', courseId),
+  ])
+
+  if (sessionsError) throw sessionsError
+  if (enrollmentsError) throw enrollmentsError
+
+  const sessionIds = (sessions ?? []).map((s) => s.id)
+  const childIds = [...new Set((enrollments ?? []).map((e) => e.student_id))]
+
+  const [
+    { data: children, error: childrenError },
+    { data: attendance, error: attendanceError },
+  ] = await Promise.all([
+    childIds.length > 0
+      ? supabase.from('children').select('id, full_name').in('id', childIds)
+      : Promise.resolve({ data: [], error: null }),
+    sessionIds.length > 0
+      ? supabase.from('class_attendance').select('session_id, child_id').in('session_id', sessionIds)
+      : Promise.resolve({ data: [], error: null }),
+  ])
+
+  if (childrenError) throw childrenError
+  if (attendanceError) throw attendanceError
+
+  const childById = new Map((children ?? []).map((c) => [c.id, c.full_name]))
+  const attendedSet = new Set((attendance ?? []).map((a) => `${a.session_id}_${a.child_id}`))
+
+  return {
+    courseTitle: course.title,
+    sessions: (sessions ?? []).map((s) => ({
+      id: s.id,
+      title: s.title,
+      scheduledAt: s.scheduled_at,
+      moduleTitle: courseLevel?.modules.find((m) => m.number === s.module_number)?.title ?? null,
+    })),
+    students: (enrollments ?? [])
+      .filter((e) => childById.has(e.student_id))
+      .map((e) => ({
+        childId: e.student_id,
+        childName: childById.get(e.student_id) as string,
+        enrollmentStatus: e.status as 'pending_payment' | 'active' | 'completed' | 'dropped',
+        progress: e.progress,
+        attendance: (sessions ?? []).map((s) => ({
+          sessionId: s.id,
+          attended: attendedSet.has(`${s.id}_${e.student_id}`),
+        })),
+      })),
+  }
+}
