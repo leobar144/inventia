@@ -80,7 +80,8 @@ export async function POST(request: Request) {
     }
   }
 
-  // Total de sesiones que tiene el curso — denominador del % de avance del curso
+  // Denominador de respaldo: total de sesiones del curso. Solo se usa para
+  // inscripciones viejas que no registraron plan (anteriores a la migración 017).
   const { count: totalSessionsInCourse } = await admin
     .from('class_sessions')
     .select('id', { count: 'exact', head: true })
@@ -97,6 +98,17 @@ export async function POST(request: Request) {
       .single()
 
     const previousBadge = getBadgeProgress(child?.classes_completed ?? 0)
+
+    const { data: enrollment } = await admin
+      .from('enrollments')
+      .select('id, renewal_alert_sent, classes_purchased')
+      .eq('student_id', childId)
+      .eq('course_id', session.course_id)
+      .maybeSingle()
+
+    // El avance se mide contra lo que la familia COMPRÓ (4, 12 o 24 clases), no
+    // contra cuántas sesiones tenga el calendario del curso.
+    const totalForProgress = enrollment?.classes_purchased ?? totalSessionsInCourse ?? 0
 
     const { count: totalCompleted } = await admin
       .from('class_attendance')
@@ -125,8 +137,8 @@ export async function POST(request: Request) {
         : { count: 0 }
 
     const progress =
-      totalSessionsInCourse && totalSessionsInCourse > 0
-        ? Math.min(100, Math.round(((attendedInCourse ?? 0) / totalSessionsInCourse) * 100))
+      totalForProgress > 0
+        ? Math.min(100, Math.round(((attendedInCourse ?? 0) / totalForProgress) * 100))
         : 0
 
     await admin
@@ -171,15 +183,8 @@ export async function POST(request: Request) {
 
         // Alerta de renovación — solo una vez por inscripción, cuando quedan
         // pocas clases y el curso sigue activo (no si ya se completó).
-        const classesRemaining = (totalSessionsInCourse ?? 0) - (attendedInCourse ?? 0)
+        const classesRemaining = totalForProgress - (attendedInCourse ?? 0)
         if (classesRemaining > 0 && classesRemaining <= 2 && progress < 100) {
-          const { data: enrollment } = await admin
-            .from('enrollments')
-            .select('id, renewal_alert_sent')
-            .eq('student_id', childId)
-            .eq('course_id', session.course_id)
-            .single()
-
           if (enrollment && !enrollment.renewal_alert_sent) {
             await sendRenewalAlertToParent({
               parentEmail: parentProfile.email,

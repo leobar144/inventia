@@ -68,6 +68,17 @@ export interface Enrollment {
   completion_date?: string
   status: 'pending_payment' | 'active' | 'completed' | 'dropped'
   progress: number // 0-100
+  plan_id: string | null // 'mes' | 'trimestre' | 'semestre'
+  classes_purchased: number | null // denominador del avance
+}
+
+/** Precio de una combinación curso × plan. Fuente de verdad de lo que se cobra. */
+export interface CoursePlanPrice {
+  id: string
+  course_id: string
+  plan_id: string
+  price: number
+  is_active: boolean
 }
 
 // Class/Meeting Types

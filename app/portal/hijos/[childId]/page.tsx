@@ -90,6 +90,19 @@ export default async function ChildDashboardPage({
       ? await coursesQuery.not('id', 'in', `(${enrolledCourseIds.join(',')})`)
       : await coursesQuery
 
+  // El precio de un curso ya no es un número único: depende del plan. Aquí solo
+  // mostramos el punto de entrada ("desde $X") y el detalle vive en el checkout.
+  const { data: planPrices } = await supabase
+    .from('course_plan_prices')
+    .select('course_id, price')
+    .eq('is_active', true)
+
+  const minPriceByCourse = new Map<string, number>()
+  for (const row of planPrices ?? []) {
+    const current = minPriceByCourse.get(row.course_id)
+    if (current == null || row.price < current) minPriceByCourse.set(row.course_id, row.price)
+  }
+
   return (
     <div className="space-y-10">
       <div className="flex items-center justify-between flex-wrap gap-4">
@@ -221,9 +234,12 @@ export default async function ChildDashboardPage({
                 <div>
                   <h3 className="font-bold mb-1">{course.title}</h3>
                   <p className="text-sm text-gray-600 mb-3">{course.description}</p>
-                  <p className="font-bold text-primary-600">
-                    ${course.price?.toLocaleString('es-CO')} {course.currency}
-                  </p>
+                  {minPriceByCourse.has(course.id) && (
+                    <p className="font-bold text-primary-600">
+                      Desde ${minPriceByCourse.get(course.id)?.toLocaleString('es-CO')}{' '}
+                      {course.currency}
+                    </p>
+                  )}
                 </div>
                 <Link
                   href={`/checkout/${course.id}?childId=${child.id}`}

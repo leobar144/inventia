@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { generateWompiSignature, pesosToWompiCents } from '@/lib/wompi'
+import { getPlan, isValidPlanId } from '@/lib/plans'
 
 const REFERRAL_DISCOUNT_CENTS = 5_000_000 // $50.000 COP
 
@@ -14,13 +15,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
   }
 
-  const { courseId, childId, referralCode } = (await request.json()) as {
+  const { courseId, childId, planId, referralCode } = (await request.json()) as {
     courseId: string
     childId: string
+    planId: string
     referralCode?: string
   }
-  if (!courseId || !childId) {
+  if (!courseId || !childId || !planId) {
     return NextResponse.json({ error: 'Faltan datos' }, { status: 400 })
+  }
+
+  if (!isValidPlanId(planId)) {
+    return NextResponse.json({ error: 'Plan inválido' }, { status: 400 })
+  }
+
+  const plan = getPlan(planId)
+  if (!plan) {
+    return NextResponse.json({ error: 'Plan inválido' }, { status: 400 })
   }
 
   const admin = createServiceRoleClient()
@@ -39,12 +50,29 @@ export async function POST(request: Request) {
 
   const { data: course } = await admin
     .from('courses')
-    .select('id, price, currency')
+    .select('id, currency')
     .eq('id', courseId)
     .single()
 
   if (!course) {
     return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 })
+  }
+
+  // El precio SIEMPRE se lee del servidor, nunca del cliente: quien llama esta
+  // ruta solo escoge qué plan quiere, no cuánto cuesta.
+  const { data: planPrice } = await admin
+    .from('course_plan_prices')
+    .select('price')
+    .eq('course_id', courseId)
+    .eq('plan_id', planId)
+    .eq('is_active', true)
+    .maybeSingle()
+
+  if (!planPrice) {
+    return NextResponse.json(
+      { error: 'Ese plan no está disponible para este curso' },
+      { status: 404 }
+    )
   }
 
   // Reutiliza una inscripción pendiente si ya existe, en vez de duplicar
@@ -61,13 +89,29 @@ export async function POST(request: Request) {
     (
       await admin
         .from('enrollments')
-        .insert({ student_id: childId, course_id: courseId, status: 'pending_payment', progress: 0 })
+        .insert({
+          student_id: childId,
+          course_id: courseId,
+          status: 'pending_payment',
+          progress: 0,
+          plan_id: planId,
+          classes_purchased: plan.classes,
+        })
         .select('id')
         .single()
     ).data?.id
 
   if (!enrollmentId) {
     return NextResponse.json({ error: 'No se pudo crear la inscripción' }, { status: 500 })
+  }
+
+  // Si la familia había dejado una inscripción pendiente con otro plan y ahora
+  // escoge uno distinto, mandan los datos de esta compra.
+  if (existingEnrollment?.id) {
+    await admin
+      .from('enrollments')
+      .update({ plan_id: planId, classes_purchased: plan.classes })
+      .eq('id', existingEnrollment.id)
   }
 
   // --- Descuento de referidos: $50.000 para el que refiere y para el
@@ -115,7 +159,7 @@ export async function POST(request: Request) {
     }
   }
 
-  const fullAmountInCents = pesosToWompiCents(course.price)
+  const fullAmountInCents = pesosToWompiCents(planPrice.price)
   const amountInCents = Math.max(fullAmountInCents - discountCents, 0)
   const currency = course.currency || 'COP'
   const reference = `INV-${enrollmentId}-${Date.now()}`
@@ -150,5 +194,8 @@ export async function POST(request: Request) {
     signature,
     publicKey: process.env.NEXT_PUBLIC_WOMPI_PUBLIC_KEY,
     discountCents,
+    planId,
+    planName: plan.name,
+    classes: plan.classes,
   })
 }

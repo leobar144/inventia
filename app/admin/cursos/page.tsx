@@ -1,4 +1,5 @@
 import { getAllCoursesWithInstructor, getAllInstructors } from '@/lib/supabase/admin-queries'
+import { getPlan } from '@/lib/plans'
 import CourseInstructorSelect from '@/components/admin/CourseInstructorSelect'
 import CourseCurriculumSelect from '@/components/admin/CourseCurriculumSelect'
 import NewCourseForm from '@/components/admin/NewCourseForm'
@@ -41,9 +42,25 @@ export default async function AdminCursosPage() {
               <div>
                 <p className="font-bold">{course.title}</p>
                 <p className="text-sm text-gray-500">
-                  {course.schedule || 'Sin horario definido'} · $
-                  {course.price.toLocaleString('es-CO')} {course.currency}
+                  {course.schedule || 'Sin horario definido'}
                 </p>
+                {course.plan_prices.length === 0 ? (
+                  <p className="text-sm text-accent-700 mt-1">
+                    ⚠️ Sin planes con precio — no se puede inscribir todavía.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {course.plan_prices.map((pp) => (
+                      <span
+                        key={pp.plan_id}
+                        className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700"
+                      >
+                        {getPlan(pp.plan_id)?.name ?? pp.plan_id}: $
+                        {pp.price.toLocaleString('es-CO')}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="flex flex-col gap-2 items-end">
                 <CourseInstructorSelect

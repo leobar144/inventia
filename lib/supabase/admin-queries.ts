@@ -1,10 +1,12 @@
 import { createServiceRoleClient } from './server'
+import { sortByPlanOrder } from '../plans'
 
 export interface CourseWithInstructor {
   id: string
   title: string
   description: string
   level: string
+  /** @deprecated desde la migración 017 — el precio real está en plan_prices. */
   price: number
   currency: string
   schedule: string | null
@@ -12,6 +14,7 @@ export interface CourseWithInstructor {
   instructor_id: string | null
   instructor_name: string | null
   curriculum_level_id: string | null
+  plan_prices: { plan_id: string; price: number }[]
 }
 
 export interface InstructorOption {
@@ -56,7 +59,10 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
       .eq('status', 'APPROVED')
       .gte('created_at', monthStart),
     supabase.from('payments').select('amount_in_cents').eq('status', 'APPROVED'),
-    supabase.from('enrollments').select('id, student_id, course_id').eq('status', 'active'),
+    supabase
+      .from('enrollments')
+      .select('id, student_id, course_id, classes_purchased')
+      .eq('status', 'active'),
     supabase.from('children').select('id', { count: 'exact', head: true }),
   ])
 
@@ -114,12 +120,15 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
     const parentEmailById = new Map((parents ?? []).map((p) => [p.id, p.email]))
 
     for (const enrollment of activeEnrollments) {
-      const totalSessions = sessionCountByCourse.get(enrollment.course_id) ?? 0
+      // Se mide contra el plan comprado; el conteo de sesiones del curso solo es
+      // respaldo para inscripciones anteriores a la migración 017.
+      const total =
+        enrollment.classes_purchased ?? sessionCountByCourse.get(enrollment.course_id) ?? 0
       const attended = attendedCountByChildCourse.get(`${enrollment.student_id}_${enrollment.course_id}`) ?? 0
-      const classesRemaining = totalSessions - attended
+      const classesRemaining = total - attended
       const child = childById.get(enrollment.student_id)
 
-      if (totalSessions > 0 && classesRemaining > 0 && classesRemaining <= 2 && child) {
+      if (total > 0 && classesRemaining > 0 && classesRemaining <= 2 && child) {
         renewalCandidates.push({
           childName: child.full_name,
           courseTitle: courseTitleById.get(enrollment.course_id) ?? '',
@@ -165,9 +174,25 @@ export async function getAllCoursesWithInstructor(): Promise<CourseWithInstructo
   if (instructorsError) throw instructorsError
   const nameById = new Map((instructors ?? []).map((i) => [i.id, i.full_name]))
 
+  const { data: planPrices } = await supabase
+    .from('course_plan_prices')
+    .select('course_id, plan_id, price')
+    .in(
+      'course_id',
+      courses.map((c) => c.id)
+    )
+
+  const pricesByCourse = new Map<string, { plan_id: string; price: number }[]>()
+  for (const row of planPrices ?? []) {
+    const list = pricesByCourse.get(row.course_id) ?? []
+    list.push({ plan_id: row.plan_id, price: row.price })
+    pricesByCourse.set(row.course_id, list)
+  }
+
   return courses.map((c) => ({
     ...c,
     instructor_name: c.instructor_id ? (nameById.get(c.instructor_id) ?? null) : null,
+    plan_prices: sortByPlanOrder(pricesByCourse.get(c.id) ?? []),
   }))
 }
 

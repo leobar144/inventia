@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
+import { PRICING_PLANS } from '@/lib/constants'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -49,20 +50,41 @@ export async function POST(request: Request) {
 
   const admin = createServiceRoleClient()
 
-  const { error: insertError } = await admin.from('courses').insert({
-    title,
-    description,
-    level,
-    price,
-    currency,
-    schedule: schedule || null,
-    max_students: maxStudents || null,
-    instructor_id: instructorId || null,
-    curriculum_level_id: curriculumLevelId || null,
-  })
+  const { data: created, error: insertError } = await admin
+    .from('courses')
+    .insert({
+      title,
+      description,
+      level,
+      price,
+      currency,
+      schedule: schedule || null,
+      max_students: maxStudents || null,
+      instructor_id: instructorId || null,
+      curriculum_level_id: curriculumLevelId || null,
+    })
+    .select('id')
+    .single()
 
-  if (insertError) {
+  if (insertError || !created) {
     return NextResponse.json({ error: 'No pudimos crear el curso' }, { status: 500 })
+  }
+
+  // Un curso sin planes con precio no se puede comprar. Se siembra con los
+  // precios base publicados; el administrador los ajusta después por curso.
+  const { error: pricesError } = await admin.from('course_plan_prices').insert(
+    PRICING_PLANS.map((plan) => ({
+      course_id: created.id,
+      plan_id: plan.id,
+      price: plan.price,
+    }))
+  )
+
+  if (pricesError) {
+    return NextResponse.json(
+      { error: 'Se creó el curso, pero no pudimos asignarle los planes de precio' },
+      { status: 500 }
+    )
   }
 
   return NextResponse.json({ success: true })
