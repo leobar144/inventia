@@ -8,6 +8,7 @@ import {
   type SessionPathState,
 } from '@/lib/supabase/portal-queries'
 import { getBadgeProgress } from '@/lib/badges'
+import { computeAttendanceStreak } from '@/lib/streak'
 import BadgeIcon from '@/components/BadgeIcon'
 import ClassPath from '@/components/portal/ClassPath'
 import NextClassCard from '@/components/portal/NextClassCard'
@@ -166,17 +167,25 @@ export default async function ChildDashboardPage({
               <div key={enrollment.id} className="card p-6">
                 <div className="flex justify-between items-start mb-4 flex-wrap gap-2">
                   <h3 className="font-bold">{enrollment.course.title}</h3>
-                  <span
-                    className={`text-xs font-medium px-2 py-1 rounded-full ${
-                      enrollment.status === 'active'
-                        ? 'bg-primary-100 text-primary-700'
-                        : enrollment.status === 'pending_payment'
-                          ? 'bg-accent-100 text-accent-700'
-                          : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    {STATUS_LABELS[enrollment.status]}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {pathByEnrollmentId.has(enrollment.id) &&
+                      computeAttendanceStreak(pathByEnrollmentId.get(enrollment.id) ?? []) >= 2 && (
+                        <span className="text-xs font-bold px-2 py-1 rounded-full bg-accent-100 text-accent-700">
+                          🔥 {computeAttendanceStreak(pathByEnrollmentId.get(enrollment.id) ?? [])} clases seguidas
+                        </span>
+                      )}
+                    <span
+                      className={`text-xs font-medium px-2 py-1 rounded-full ${
+                        enrollment.status === 'active'
+                          ? 'bg-primary-100 text-primary-700'
+                          : enrollment.status === 'pending_payment'
+                            ? 'bg-accent-100 text-accent-700'
+                            : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      {STATUS_LABELS[enrollment.status]}
+                    </span>
+                  </div>
                 </div>
 
                 {pathByEnrollmentId.has(enrollment.id) ? (

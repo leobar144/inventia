@@ -56,6 +56,7 @@ export async function POST(request: Request) {
       parent_name: body.parentName,
       whatsapp: body.whatsapp,
       parent_email: body.parentEmail,
+      referred_by_code: body.referredByCode?.trim().toUpperCase() || null,
     })
     .select('id')
     .single()

@@ -149,6 +149,7 @@ export interface TrialBookingInput {
   parentName: string
   whatsapp: string
   parentEmail: string
+  referredByCode?: string
 }
 
 export interface AvailableSlotDay {

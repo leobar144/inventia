@@ -42,6 +42,7 @@ export default function ClaseDePruebaPage() {
   const [parentName, setParentName] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
   const [parentEmail, setParentEmail] = useState('')
+  const [referredByCode, setReferredByCode] = useState('')
 
   const [days, setDays] = useState<AvailableSlotDay[] | null>(null)
   const [loadingDays, setLoadingDays] = useState(false)
@@ -91,6 +92,7 @@ export default function ClaseDePruebaPage() {
         parentName,
         whatsapp,
         parentEmail,
+        referredByCode: referredByCode || undefined,
       }),
     })
 
@@ -220,6 +222,18 @@ export default function ClaseDePruebaPage() {
                 <p className="text-xs text-gray-500 mt-1">
                   Te enviamos ahí la confirmación con el link de la clase.
                 </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ¿Alguien te recomendó INVENTIA? (opcional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Código de referido"
+                  className="input-field"
+                  value={referredByCode}
+                  onChange={(e) => setReferredByCode(e.target.value)}
+                />
               </div>
             </div>
           )}

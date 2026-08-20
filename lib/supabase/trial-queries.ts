@@ -70,6 +70,7 @@ export interface BookingWithTime {
   parent_name: string
   whatsapp: string
   parent_email: string | null
+  referred_by_code: string | null
   created_at: string
   trial_availability: { time: string } | null
 }

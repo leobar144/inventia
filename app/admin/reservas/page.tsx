@@ -52,6 +52,15 @@ export default async function AdminReservasPage() {
         </a>
         {b.parent_email && <p className="text-gray-500">{b.parent_email}</p>}
       </td>
+      <td className="px-4 py-3 text-sm">
+        {b.referred_by_code ? (
+          <span className="font-bold px-2 py-1 rounded-full bg-secondary-100 text-secondary-700">
+            🎁 {b.referred_by_code}
+          </span>
+        ) : (
+          <span className="text-gray-300">—</span>
+        )}
+      </td>
     </tr>
   )
 
@@ -75,6 +84,7 @@ export default async function AdminReservasPage() {
                   <th className="px-4 py-3 text-sm font-medium text-gray-600">Curso</th>
                   <th className="px-4 py-3 text-sm font-medium text-gray-600">Horario</th>
                   <th className="px-4 py-3 text-sm font-medium text-gray-600">Contacto</th>
+                  <th className="px-4 py-3 text-sm font-medium text-gray-600">Referido</th>
                 </tr>
               </thead>
               <tbody>{upcoming.map(renderRow)}</tbody>

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getChildrenForParent } from '@/lib/supabase/portal-queries'
 import { FaPlus, FaChild } from 'react-icons/fa'
+import ReferralCodeCard from '@/components/portal/ReferralCodeCard'
 
 function calculateAge(birthDate: string): number {
   const birth = new Date(birthDate)
@@ -28,6 +29,8 @@ export default async function PortalHomePage() {
           <FaPlus className="mr-2" /> Agregar hijo/a
         </Link>
       </div>
+
+      {user && <ReferralCodeCard code={user.id.slice(0, 8).toUpperCase()} />}
 
       {children.length === 0 ? (
         <div className="card p-12 text-center">

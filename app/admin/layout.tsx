@@ -22,8 +22,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="min-h-screen bg-gray-50">
       <header className="bg-secondary-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <span className="font-heading font-bold">INVENTIA · Administración</span>
+          <Link href="/admin" className="font-heading font-bold">
+            INVENTIA · Administración
+          </Link>
           <nav className="flex items-center space-x-6 text-sm">
+            <Link href="/admin" className="text-secondary-200 hover:text-white">
+              Métricas
+            </Link>
             <Link href="/admin/reservas" className="text-secondary-200 hover:text-white">
               Reservas
             </Link>
