@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { FaVideo } from 'react-icons/fa'
+import ClassNoteEditor from './ClassNoteEditor'
 import type { InstructorSessionRow } from '@/lib/supabase/instructor-queries'
 
 export default function InstructorSessionCard({ session }: { session: InstructorSessionRow }) {
@@ -82,25 +83,37 @@ export default function InstructorSessionCard({ session }: { session: Instructor
       ) : (
         <div className="space-y-2 mb-4">
           {session.roster.map((child) => (
-            <div key={child.childId} className="flex items-center justify-between text-sm">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={checked.has(child.childId)}
-                  onChange={() => toggle(child.childId)}
-                  className="w-auto"
-                />
-                <span>{child.childName}</span>
-              </label>
-              <span
-                className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                  child.enrollmentStatus === 'active'
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'bg-accent-100 text-accent-700'
-                }`}
-              >
-                {child.enrollmentStatus === 'active' ? 'Pagado' : 'Pago pendiente'}
-              </span>
+            <div key={child.childId} className="text-sm">
+              <div className="flex items-center justify-between">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={checked.has(child.childId)}
+                    onChange={() => toggle(child.childId)}
+                    className="w-auto"
+                  />
+                  <span>{child.childName}</span>
+                </label>
+                <div className="flex items-center gap-3">
+                  <ClassNoteEditor
+                    childId={child.childId}
+                    childName={child.childName}
+                    sessionId={session.sessionId}
+                    initialNote={child.note}
+                    hasPhoto={child.hasPhoto}
+                    photoConsent={child.photoConsent}
+                  />
+                  <span
+                    className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                      child.enrollmentStatus === 'active'
+                        ? 'bg-primary-100 text-primary-700'
+                        : 'bg-accent-100 text-accent-700'
+                    }`}
+                  >
+                    {child.enrollmentStatus === 'active' ? 'Pagado' : 'Pago pendiente'}
+                  </span>
+                </div>
+              </div>
             </div>
           ))}
         </div>

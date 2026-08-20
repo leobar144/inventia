@@ -5,6 +5,7 @@ import {
   getChildById,
   getEnrollmentsForChild,
   getClassPathForCourse,
+  getClassNotesForChild,
   type SessionPathState,
 } from '@/lib/supabase/portal-queries'
 import { getBadgeProgress } from '@/lib/badges'
@@ -13,6 +14,7 @@ import BadgeIcon from '@/components/BadgeIcon'
 import ClassPath from '@/components/portal/ClassPath'
 import NextClassCard from '@/components/portal/NextClassCard'
 import ShareProfileCard from '@/components/portal/ShareProfileCard'
+import ClassDiary from '@/components/portal/ClassDiary'
 
 function calculateAge(birthDate: string): number {
   const birth = new Date(birthDate)
@@ -44,7 +46,10 @@ export default async function ChildDashboardPage({
   const child = await getChildById(childId, user.id)
   if (!child) notFound()
 
-  const enrollments = await getEnrollmentsForChild(childId)
+  const [enrollments, classNotes] = await Promise.all([
+    getEnrollmentsForChild(childId),
+    getClassNotesForChild(childId, user.id),
+  ])
 
   // El camino de clases solo aplica a cursos ya pagados (activos o
   // completados) — un curso pendiente de pago todavía no tiene sesiones
@@ -170,6 +175,13 @@ export default async function ChildDashboardPage({
         <h2 className="text-xl font-bold mb-4">Próxima clase</h2>
         <NextClassCard nextClass={nextClass} />
       </section>
+
+      <ClassDiary
+        childId={child.id}
+        childName={child.full_name}
+        entries={classNotes}
+        photoConsent={child.photo_consent}
+      />
 
       <ShareProfileCard
         childId={child.id}

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { createClient } from '@/lib/supabase/client'
 import { CONSENT_VERSION } from '@/lib/legal'
+import { checkPasswordBreached } from '@/lib/passwordSecurity'
 
 interface FormData {
   fullName: string
@@ -34,6 +35,15 @@ function RegistroForm() {
   const onSubmit = async (formData: FormData) => {
     setError(null)
     setLoading(true)
+
+    // Se rechazan contraseñas que ya aparecieron en filtraciones conocidas.
+    const breachWarning = await checkPasswordBreached(formData.password)
+    if (breachWarning) {
+      setLoading(false)
+      setError(breachWarning)
+      return
+    }
+
     const supabase = createClient()
 
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({

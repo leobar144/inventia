@@ -14,6 +14,11 @@ export interface InstructorSessionRow {
     childName: string
     enrollmentStatus: 'pending_payment' | 'active' | 'completed' | 'dropped'
     alreadyMarked: boolean
+    /** Si el acudiente autorizó fotos del menor. Sin esto no se permite subir imagen. */
+    photoConsent: boolean
+    /** Nota ya guardada para esta clase, si la hay. */
+    note: string | null
+    hasPhoto: boolean
   }[]
 }
 
@@ -79,13 +84,21 @@ export async function getUpcomingSessionsForInstructor(
   const markedSet = new Set((attendance ?? []).map((a) => `${a.session_id}_${a.child_id}`))
 
   const childIds = [...new Set((enrollments ?? []).map((e) => e.student_id))]
-  const { data: children, error: childrenError } =
+  const [{ data: children, error: childrenError }, { data: notes }] = await Promise.all([
     childIds.length > 0
-      ? await supabase.from('children').select('id, full_name').in('id', childIds)
-      : { data: [], error: null }
+      ? supabase.from('children').select('id, full_name, photo_consent').in('id', childIds)
+      : Promise.resolve({ data: [], error: null }),
+    supabase
+      .from('class_notes')
+      .select('child_id, session_id, note, photo_path')
+      .in('session_id', sessionIds),
+  ])
 
   if (childrenError) throw childrenError
-  const childById = new Map((children ?? []).map((c) => [c.id, c.full_name]))
+  const childById = new Map((children ?? []).map((c) => [c.id, c]))
+  const noteByKey = new Map(
+    (notes ?? []).map((n) => [`${n.session_id}_${n.child_id}`, n])
+  )
 
   return sessions.map((session) => {
     const rosterForCourse = (enrollments ?? []).filter((e) => e.course_id === session.course_id)
@@ -105,12 +118,19 @@ export async function getUpcomingSessionsForInstructor(
       modality: (session.modality as 'presencial' | 'virtual') ?? 'virtual',
       roster: rosterForCourse
         .filter((e) => childById.has(e.student_id))
-        .map((e) => ({
-          childId: e.student_id,
-          childName: childById.get(e.student_id) as string,
-          enrollmentStatus: e.status as 'pending_payment' | 'active' | 'completed' | 'dropped',
-          alreadyMarked: markedSet.has(`${session.id}_${e.student_id}`),
-        })),
+        .map((e) => {
+          const child = childById.get(e.student_id)!
+          const existingNote = noteByKey.get(`${session.id}_${e.student_id}`)
+          return {
+            childId: e.student_id,
+            childName: child.full_name,
+            enrollmentStatus: e.status as 'pending_payment' | 'active' | 'completed' | 'dropped',
+            alreadyMarked: markedSet.has(`${session.id}_${e.student_id}`),
+            photoConsent: child.photo_consent ?? false,
+            note: existingNote?.note ?? null,
+            hasPhoto: Boolean(existingNote?.photo_path),
+          }
+        }),
     }
   })
 }

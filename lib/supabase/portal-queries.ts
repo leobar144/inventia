@@ -2,6 +2,96 @@ import { createClient, createServiceRoleClient } from './server'
 import type { Child, Course, ClassSession, Enrollment, Payment, ChildProject } from '@/types'
 import { CURRICULUM_LEVELS } from '@/lib/curriculum'
 
+export interface ClassNoteEntry {
+  id: string
+  note: string | null
+  photoUrl: string | null
+  sessionTitle: string
+  courseTitle: string
+  scheduledAt: string
+}
+
+/**
+ * Bitácora de clases del niño: qué hizo en cada una, con foto si la hay.
+ *
+ * Las fotos viven en un bucket PRIVADO. Aquí se generan enlaces firmados que
+ * expiran en una hora — nunca existe una URL permanente y abierta a la foto de
+ * un menor. Por eso usa service role: firmar requiere esa llave.
+ *
+ * La pertenencia se verifica explícitamente contra parent_id, ya que el service
+ * role se salta las políticas de RLS.
+ */
+export async function getClassNotesForChild(
+  childId: string,
+  parentId: string
+): Promise<ClassNoteEntry[]> {
+  const admin = createServiceRoleClient()
+
+  const { data: child } = await admin
+    .from('children')
+    .select('id')
+    .eq('id', childId)
+    .eq('parent_id', parentId)
+    .maybeSingle()
+
+  if (!child) return []
+
+  const { data: notes } = await admin
+    .from('class_notes')
+    .select('id, note, photo_path, session_id')
+    .eq('child_id', childId)
+    .order('created_at', { ascending: false })
+    .limit(30)
+
+  if (!notes || notes.length === 0) return []
+
+  const { data: sessions } = await admin
+    .from('class_sessions')
+    .select('id, title, scheduled_at, course_id')
+    .in(
+      'id',
+      notes.map((n) => n.session_id)
+    )
+
+  const sessionById = new Map((sessions ?? []).map((s) => [s.id, s]))
+  const courseIds = [...new Set((sessions ?? []).map((s) => s.course_id))]
+  const { data: courses } =
+    courseIds.length > 0
+      ? await admin.from('courses').select('id, title').in('id', courseIds)
+      : { data: [] }
+  const courseTitleById = new Map((courses ?? []).map((c) => [c.id, c.title]))
+
+  const withPhotos = notes.filter((n) => n.photo_path)
+  const signedByPath = new Map<string, string>()
+
+  if (withPhotos.length > 0) {
+    const { data: signed } = await admin.storage
+      .from('class-evidence')
+      .createSignedUrls(
+        withPhotos.map((n) => n.photo_path as string),
+        60 * 60
+      )
+
+    for (const item of signed ?? []) {
+      if (item.signedUrl && item.path) signedByPath.set(item.path, item.signedUrl)
+    }
+  }
+
+  return notes
+    .map((n) => {
+      const session = sessionById.get(n.session_id)
+      return {
+        id: n.id,
+        note: n.note,
+        photoUrl: n.photo_path ? (signedByPath.get(n.photo_path) ?? null) : null,
+        sessionTitle: session?.title ?? '',
+        courseTitle: session ? (courseTitleById.get(session.course_id) ?? '') : '',
+        scheduledAt: session?.scheduled_at ?? '',
+      }
+    })
+    .sort((a, b) => b.scheduledAt.localeCompare(a.scheduledAt))
+}
+
 export async function getProjectsForChild(childId: string): Promise<ChildProject[]> {
   const supabase = await createClient()
   const { data, error } = await supabase

@@ -25,6 +25,8 @@ export interface Child {
   is_public: boolean
   /** Token del enlace público. Null hasta que se activa por primera vez. */
   public_slug: string | null
+  /** Autorización para tomar y guardar fotos del menor. Independiente de is_public. */
+  photo_consent: boolean
 }
 
 export interface ClassAttendance {

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { checkPasswordBreached } from '@/lib/passwordSecurity'
 
 // El cliente se crea una sola vez, en el render inicial.
 //
@@ -61,6 +62,13 @@ export default function RestablecerPasswordPage() {
     }
 
     setLoading(true)
+
+    const breachWarning = await checkPasswordBreached(password)
+    if (breachWarning) {
+      setLoading(false)
+      setError(breachWarning)
+      return
+    }
 
     const { error: updateError } = await supabase.auth.updateUser({ password })
 

@@ -53,8 +53,15 @@ export default function PrivacidadPage() {
             <p className="mb-3">
               <strong>Del niño, niña o adolescente:</strong> nombre, fecha de nacimiento o edad,
               curso en el que está inscrito, asistencia a clases, avance académico, insignias
-              obtenidas y —cuando el padre o la madre decide agregarlos— enlaces a los proyectos que
-              construye en clase.
+              obtenidas, notas del instructor sobre lo que trabajó en cada clase, y —cuando el padre
+              o la madre decide agregarlos— enlaces a los proyectos que construye.
+            </p>
+            <p className="mb-3">
+              <strong>Fotografías del menor:</strong> solo si el acudiente activa expresamente ese
+              permiso en el portal. Es una autorización aparte, apagada por defecto, que puede
+              revocarse en cualquier momento. Las fotos se guardan en almacenamiento privado, se
+              muestran únicamente al acudiente dentro de su portal, y{' '}
+              <strong>nunca se publican ni se incluyen en el perfil compartible</strong>.
             </p>
             <p>
               No recolectamos datos sensibles (origen racial o étnico, orientación política,
@@ -99,6 +106,10 @@ export default function PrivacidadPage() {
               <li>Gestionar la inscripción, matrícula y participación en los cursos.</li>
               <li>Registrar asistencia y avance académico, y reportarlo a la familia.</li>
               <li>Emitir certificados e insignias de logro.</li>
+              <li>
+                Dejar constancia de lo que el estudiante trabajó en cada clase, para reportárselo a
+                su familia.
+              </li>
               <li>Procesar pagos y cumplir obligaciones contables y tributarias.</li>
               <li>
                 Enviar comunicaciones operativas: recordatorios de clase, confirmaciones de reserva,
