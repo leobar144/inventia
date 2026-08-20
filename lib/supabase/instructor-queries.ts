@@ -57,13 +57,25 @@ export async function getUpcomingSessionsForInstructor(
   if (sessionsError) throw sessionsError
   if (!sessions || sessions.length === 0) return []
 
-  const { data: enrollments, error: enrollmentsError } = await supabase
-    .from('enrollments')
-    .select('course_id, student_id, status')
-    .in('course_id', courseIds)
-    .in('status', ['active', 'pending_payment'])
+  const sessionIds = sessions.map((s) => s.id)
+
+  // enrollments y attendance no dependen entre sí — se piden en paralelo en
+  // vez de uno tras otro para no sumar viajes de ida y vuelta innecesarios.
+  const [
+    { data: enrollments, error: enrollmentsError },
+    { data: attendance, error: attendanceError },
+  ] = await Promise.all([
+    supabase
+      .from('enrollments')
+      .select('course_id, student_id, status')
+      .in('course_id', courseIds)
+      .in('status', ['active', 'pending_payment']),
+    supabase.from('class_attendance').select('session_id, child_id').in('session_id', sessionIds),
+  ])
 
   if (enrollmentsError) throw enrollmentsError
+  if (attendanceError) throw attendanceError
+  const markedSet = new Set((attendance ?? []).map((a) => `${a.session_id}_${a.child_id}`))
 
   const childIds = [...new Set((enrollments ?? []).map((e) => e.student_id))]
   const { data: children, error: childrenError } =
@@ -73,15 +85,6 @@ export async function getUpcomingSessionsForInstructor(
 
   if (childrenError) throw childrenError
   const childById = new Map((children ?? []).map((c) => [c.id, c.full_name]))
-
-  const sessionIds = sessions.map((s) => s.id)
-  const { data: attendance, error: attendanceError } = await supabase
-    .from('class_attendance')
-    .select('session_id, child_id')
-    .in('session_id', sessionIds)
-
-  if (attendanceError) throw attendanceError
-  const markedSet = new Set((attendance ?? []).map((a) => `${a.session_id}_${a.child_id}`))
 
   return sessions.map((session) => {
     const rosterForCourse = (enrollments ?? []).filter((e) => e.course_id === session.course_id)

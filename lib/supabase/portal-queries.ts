@@ -91,20 +91,22 @@ export async function getClassPathForCourse(
 ): Promise<SessionPathState[]> {
   const admin = createServiceRoleClient()
 
-  const { data: course, error: courseError } = await admin
-    .from('courses')
-    .select('curriculum_level_id')
-    .eq('id', courseId)
-    .single()
+  // El curso (para el nivel del currículo) y las sesiones no dependen entre
+  // sí — se piden en paralelo en vez de uno tras otro.
+  const [
+    { data: course, error: courseError },
+    { data: sessions, error },
+  ] = await Promise.all([
+    admin.from('courses').select('curriculum_level_id').eq('id', courseId).single(),
+    admin
+      .from('class_sessions')
+      .select('id, title, scheduled_at, google_meet_link, module_number')
+      .eq('course_id', courseId)
+      .order('scheduled_at', { ascending: true }),
+  ])
 
   if (courseError) throw courseError
   const curriculumLevel = CURRICULUM_LEVELS.find((l) => l.id === course?.curriculum_level_id)
-
-  const { data: sessions, error } = await admin
-    .from('class_sessions')
-    .select('id, title, scheduled_at, google_meet_link, module_number')
-    .eq('course_id', courseId)
-    .order('scheduled_at', { ascending: true })
 
   if (error) throw error
   if (!sessions || sessions.length === 0) return []
