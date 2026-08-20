@@ -21,6 +21,10 @@ export interface Child {
   avatar_url?: string
   classes_completed: number
   created_at: string
+  /** Autorización del acudiente para mostrar el perfil público. Apagado por defecto. */
+  is_public: boolean
+  /** Token del enlace público. Null hasta que se activa por primera vez. */
+  public_slug: string | null
 }
 
 export interface ClassAttendance {

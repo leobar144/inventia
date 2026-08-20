@@ -12,6 +12,7 @@ import { computeAttendanceStreak } from '@/lib/streak'
 import BadgeIcon from '@/components/BadgeIcon'
 import ClassPath from '@/components/portal/ClassPath'
 import NextClassCard from '@/components/portal/NextClassCard'
+import ShareProfileCard from '@/components/portal/ShareProfileCard'
 
 function calculateAge(birthDate: string): number {
   const birth = new Date(birthDate)
@@ -169,6 +170,13 @@ export default async function ChildDashboardPage({
         <h2 className="text-xl font-bold mb-4">Próxima clase</h2>
         <NextClassCard nextClass={nextClass} />
       </section>
+
+      <ShareProfileCard
+        childId={child.id}
+        childName={child.full_name}
+        isPublic={child.is_public}
+        slug={child.public_slug}
+      />
 
       {/* Cursos inscritos, con su camino de clases */}
       <section>
