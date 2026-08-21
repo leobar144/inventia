@@ -21,6 +21,7 @@ export const NAV_LINKS = [
   { label: 'Inicio', href: '/' },
   { label: 'Cursos', href: '/cursos' },
   { label: 'Por qué INVENTIA', href: '/acerca-de' },
+  { label: 'Jardines y colegios', href: '/instituciones' },
   { label: 'Contacto', href: '/#contacto' },
 ]
 

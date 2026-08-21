@@ -138,6 +138,48 @@ export async function sendRenewalAlertToParent(data: RenewalAlertParent) {
   })
 }
 
+interface SchoolLeadNotification {
+  institutionName: string
+  contactName: string
+  contactRole: string
+  email: string
+  phone: string
+  studentCount: number | null
+  grades: string
+  message: string
+}
+
+/** Aviso interno: un jardín o colegio pidió una demostración. */
+export async function sendSchoolLeadNotification(data: SchoolLeadNotification) {
+  const apiKey = process.env.RESEND_API_KEY
+  const to = process.env.ADMIN_NOTIFICATION_EMAIL
+
+  if (!apiKey || !to) {
+    console.warn('Resend no configurado — se omite el aviso de lead institucional')
+    return
+  }
+
+  const resend = new Resend(apiKey)
+  const whatsappLink = `https://wa.me/57${data.phone.replace(/\D/g, '')}`
+
+  await resend.emails.send({
+    from: FROM,
+    to,
+    subject: `🏫 ${data.institutionName} pide una demostración`,
+    html: `
+      <h2>Nueva solicitud institucional</h2>
+      <p><strong>Institución:</strong> ${data.institutionName}</p>
+      <p><strong>Contacto:</strong> ${data.contactName} (${data.contactRole})</p>
+      <p><strong>Correo:</strong> ${data.email}</p>
+      <p><strong>WhatsApp:</strong> <a href="${whatsappLink}">${data.phone}</a></p>
+      <p><strong>Estudiantes:</strong> ${data.studentCount ?? 'No especificado'}</p>
+      <p><strong>Edades:</strong> ${data.grades}</p>
+      ${data.message ? `<p><strong>Mensaje:</strong> ${data.message}</p>` : ''}
+      <p>Responde rápido: en venta institucional el primero que contesta suele ganar.</p>
+    `,
+  })
+}
+
 interface TrialFollowUp {
   parentEmail: string
   parentName: string

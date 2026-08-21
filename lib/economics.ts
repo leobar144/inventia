@@ -30,6 +30,19 @@ export const COORDINATOR_MONTHLY_COP = 2_900_000
 /** Comisión efectiva de Wompi: 2,65% + $700 + IVA. */
 export const PAYMENT_FEE_RATE = 0.034
 
+/** Cupos por grupo. */
+export const MAX_STUDENTS_PER_GROUP = 8
+
+/**
+ * Cuántos grupos simultáneos se pueden sostener hoy con el equipo disponible.
+ * Sirve para saber si una solicitud institucional cabe o hay que contratar
+ * antes de comprometerse. Súbelo cuando entren más instructores.
+ */
+export const MAX_CONCURRENT_GROUPS = 4
+
+/** Estudiantes que se pueden atender al tiempo con el equipo actual. */
+export const CURRENT_STUDENT_CAPACITY = MAX_CONCURRENT_GROUPS * MAX_STUDENTS_PER_GROUP
+
 export type OccupancyHealth = 'sano' | 'justo' | 'critico'
 
 export interface CourseEconomics {

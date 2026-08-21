@@ -229,6 +229,46 @@ export async function getAllInstructors(): Promise<InstructorOption[]> {
   return data ?? []
 }
 
+export interface SchoolLeadRow {
+  id: string
+  institutionName: string
+  contactName: string
+  contactRole: string | null
+  email: string
+  phone: string
+  studentCount: number | null
+  grades: string | null
+  message: string | null
+  status: string
+  createdAt: string
+}
+
+/** Solicitudes de jardines y colegios, la más reciente primero. */
+export async function getSchoolLeads(): Promise<SchoolLeadRow[]> {
+  const supabase = createServiceRoleClient()
+
+  const { data, error } = await supabase
+    .from('school_leads')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+
+  return (data ?? []).map((l) => ({
+    id: l.id,
+    institutionName: l.institution_name,
+    contactName: l.contact_name,
+    contactRole: l.contact_role,
+    email: l.email,
+    phone: l.phone,
+    studentCount: l.student_count,
+    grades: l.grades,
+    message: l.message,
+    status: l.status,
+    createdAt: l.created_at,
+  }))
+}
+
 export interface CourseOccupancyRow {
   courseId: string
   courseTitle: string
