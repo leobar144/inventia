@@ -1,5 +1,6 @@
 import { createServiceRoleClient } from './server'
 import { sortByPlanOrder } from '../plans'
+import { computeCourseEconomics, type CourseEconomics } from '../economics'
 
 export interface CourseWithInstructor {
   id: string
@@ -226,6 +227,60 @@ export async function getAllInstructors(): Promise<InstructorOption[]> {
 
   if (error) throw error
   return data ?? []
+}
+
+export interface CourseOccupancyRow {
+  courseId: string
+  courseTitle: string
+  economics: CourseEconomics
+}
+
+/**
+ * Ocupación y margen real de cada grupo.
+ *
+ * Es la métrica que faltaba: el costo del instructor ($160.000 por clase) no
+ * cambia con cuántos niños haya, así que un grupo a media capacidad puede estar
+ * perdiendo plata sin que nadie lo note hasta que el mes cierra mal.
+ *
+ * El aporte de cada niño sale de su plan real (precio ÷ clases que cubre), no
+ * de un promedio: un niño de Semestre aporta menos por clase que uno de Mes.
+ */
+export async function getCourseOccupancy(): Promise<CourseOccupancyRow[]> {
+  const supabase = createServiceRoleClient()
+
+  const [{ data: courses }, { data: enrollments }, { data: planPrices }] = await Promise.all([
+    supabase.from('courses').select('id, title, max_students').order('title'),
+    supabase
+      .from('enrollments')
+      .select('course_id, plan_id, classes_purchased')
+      .eq('status', 'active'),
+    supabase.from('course_plan_prices').select('course_id, plan_id, price'),
+  ])
+
+  if (!courses) return []
+
+  const priceByCoursePlan = new Map(
+    (planPrices ?? []).map((p) => [`${p.course_id}_${p.plan_id}`, p.price])
+  )
+
+  const revenueByCourse = new Map<string, number[]>()
+  for (const e of enrollments ?? []) {
+    const price = priceByCoursePlan.get(`${e.course_id}_${e.plan_id}`)
+    const classes = e.classes_purchased
+    // Sin plan o sin precio no se puede calcular el aporte — cuenta como cero
+    // para no inflar el margen con supuestos.
+    const perClass = price && classes && classes > 0 ? price / classes : 0
+
+    const list = revenueByCourse.get(e.course_id) ?? []
+    list.push(perClass)
+    revenueByCourse.set(e.course_id, list)
+  }
+
+  return courses.map((c) => ({
+    courseId: c.id,
+    courseTitle: c.title,
+    economics: computeCourseEconomics(revenueByCourse.get(c.id) ?? [], c.max_students ?? 8),
+  }))
 }
 
 export interface ChildOption {
