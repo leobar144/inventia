@@ -27,31 +27,53 @@ export async function getClassNotesForChild(
 ): Promise<ClassNoteEntry[]> {
   const admin = createServiceRoleClient()
 
-  const { data: child } = await admin
-    .from('children')
-    .select('id')
-    .eq('id', childId)
-    .eq('parent_id', parentId)
-    .maybeSingle()
+  // La verificación de pertenencia va en paralelo con la lectura de notas, no
+  // antes: si el niño no es de este acudiente igual se descarta todo abajo, y
+  // así se ahorra un viaje completo a la base.
+  const [{ data: child }, { data: notes }] = await Promise.all([
+    admin
+      .from('children')
+      .select('id')
+      .eq('id', childId)
+      .eq('parent_id', parentId)
+      .maybeSingle(),
+    admin
+      .from('class_notes')
+      .select('id, note, photo_path, session_id')
+      .eq('child_id', childId)
+      .order('created_at', { ascending: false })
+      .limit(30),
+  ])
 
   if (!child) return []
-
-  const { data: notes } = await admin
-    .from('class_notes')
-    .select('id, note, photo_path, session_id')
-    .eq('child_id', childId)
-    .order('created_at', { ascending: false })
-    .limit(30)
-
   if (!notes || notes.length === 0) return []
 
-  const { data: sessions } = await admin
-    .from('class_sessions')
-    .select('id, title, scheduled_at, course_id')
-    .in(
-      'id',
-      notes.map((n) => n.session_id)
-    )
+  // Firmar las fotos solo depende de las notas, no de las sesiones — así que
+  // ambas cosas se piden al tiempo en vez de una tras otra.
+  const withPhotos = notes.filter((n) => n.photo_path)
+
+  const [{ data: sessions }, signedResult] = await Promise.all([
+    admin
+      .from('class_sessions')
+      .select('id, title, scheduled_at, course_id')
+      .in(
+        'id',
+        notes.map((n) => n.session_id)
+      ),
+    withPhotos.length > 0
+      ? admin.storage
+          .from('class-evidence')
+          .createSignedUrls(
+            withPhotos.map((n) => n.photo_path as string),
+            60 * 60
+          )
+      : Promise.resolve({ data: [] }),
+  ])
+
+  const signedByPath = new Map<string, string>()
+  for (const item of signedResult.data ?? []) {
+    if (item.signedUrl && item.path) signedByPath.set(item.path, item.signedUrl)
+  }
 
   const sessionById = new Map((sessions ?? []).map((s) => [s.id, s]))
   const courseIds = [...new Set((sessions ?? []).map((s) => s.course_id))]
@@ -60,22 +82,6 @@ export async function getClassNotesForChild(
       ? await admin.from('courses').select('id, title').in('id', courseIds)
       : { data: [] }
   const courseTitleById = new Map((courses ?? []).map((c) => [c.id, c.title]))
-
-  const withPhotos = notes.filter((n) => n.photo_path)
-  const signedByPath = new Map<string, string>()
-
-  if (withPhotos.length > 0) {
-    const { data: signed } = await admin.storage
-      .from('class-evidence')
-      .createSignedUrls(
-        withPhotos.map((n) => n.photo_path as string),
-        60 * 60
-      )
-
-    for (const item of signed ?? []) {
-      if (item.signedUrl && item.path) signedByPath.set(item.path, item.signedUrl)
-    }
-  }
 
   return notes
     .map((n) => {

@@ -43,13 +43,16 @@ export default async function ChildDashboardPage({
 
   const supabase = await createClient()
 
-  const child = await getChildById(childId, user.id)
-  if (!child) notFound()
-
-  const [enrollments, classNotes] = await Promise.all([
+  // Las tres consultas son independientes entre sí: ninguna necesita el
+  // resultado de la otra. En cadena eran tres viajes Vercel→Supabase; así son
+  // uno solo. La pertenencia se valida igual justo debajo.
+  const [child, enrollments, classNotes] = await Promise.all([
+    getChildById(childId, user.id),
     getEnrollmentsForChild(childId),
     getClassNotesForChild(childId, user.id),
   ])
+
+  if (!child) notFound()
 
   // El camino de clases solo aplica a cursos ya pagados (activos o
   // completados) — un curso pendiente de pago todavía no tiene sesiones
@@ -57,13 +60,33 @@ export default async function ChildDashboardPage({
   const pathableEnrollments = enrollments.filter(
     (e) => e.status === 'active' || e.status === 'completed'
   )
-  const classPaths = await Promise.all(
-    pathableEnrollments.map(async (e) => ({
-      enrollment: e,
-      path: await getClassPathForCourse(childId, e.course_id),
-    }))
-  )
+  // El camino de clases, los cursos disponibles y sus precios tampoco dependen
+  // entre sí — todo sale en la misma tanda.
+  const enrolledCourseIds = enrollments.map((e) => e.course_id)
+  const coursesQuery = supabase.from('courses').select('*')
+
+  const [classPaths, { data: availableCourses }, { data: planPrices }] = await Promise.all([
+    Promise.all(
+      pathableEnrollments.map(async (e) => ({
+        enrollment: e,
+        path: await getClassPathForCourse(childId, e.course_id),
+      }))
+    ),
+    enrolledCourseIds.length > 0
+      ? coursesQuery.not('id', 'in', `(${enrolledCourseIds.join(',')})`)
+      : coursesQuery,
+    supabase.from('course_plan_prices').select('course_id, price').eq('is_active', true),
+  ])
+
   const pathByEnrollmentId = new Map(classPaths.map((cp) => [cp.enrollment.id, cp.path]))
+
+  // El precio de un curso ya no es un número único: depende del plan. Aquí solo
+  // mostramos el punto de entrada ("desde $X") y el detalle vive en el checkout.
+  const minPriceByCourse = new Map<string, number>()
+  for (const row of planPrices ?? []) {
+    const current = minPriceByCourse.get(row.course_id)
+    if (current == null || row.price < current) minPriceByCourse.set(row.course_id, row.price)
+  }
 
   // La próxima clase global: entre todos los cursos, la sesión "next" más próxima en el tiempo.
   let nextClass: {
@@ -87,26 +110,6 @@ export default async function ChildDashboardPage({
         modality: next.modality,
       }
     }
-  }
-
-  const enrolledCourseIds = enrollments.map((e) => e.course_id)
-  const coursesQuery = supabase.from('courses').select('*')
-  const { data: availableCourses } =
-    enrolledCourseIds.length > 0
-      ? await coursesQuery.not('id', 'in', `(${enrolledCourseIds.join(',')})`)
-      : await coursesQuery
-
-  // El precio de un curso ya no es un número único: depende del plan. Aquí solo
-  // mostramos el punto de entrada ("desde $X") y el detalle vive en el checkout.
-  const { data: planPrices } = await supabase
-    .from('course_plan_prices')
-    .select('course_id, price')
-    .eq('is_active', true)
-
-  const minPriceByCourse = new Map<string, number>()
-  for (const row of planPrices ?? []) {
-    const current = minPriceByCourse.get(row.course_id)
-    if (current == null || row.price < current) minPriceByCourse.set(row.course_id, row.price)
   }
 
   return (
