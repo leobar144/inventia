@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { getPlan, isValidPlanId } from '@/lib/plans'
-import {
-  applyApprovedPayment,
-  isManualPaymentMethod,
-  resolveReferralDiscount,
-} from '@/lib/payments'
+import { applyApprovedPayment, isManualPaymentMethod, resolveBestDiscount } from '@/lib/payments'
 import { pesosToWompiCents } from '@/lib/wompi'
 
 /**
@@ -100,12 +96,18 @@ export async function POST(request: Request) {
     )
   }
 
-  const referral = await resolveReferralDiscount(admin, child.parent_id, referralCode)
+  const listAmountCents = pesosToWompiCents(planPrice.price)
+  const referral = await resolveBestDiscount(
+    admin,
+    child.parent_id,
+    childId,
+    listAmountCents,
+    referralCode
+  )
 
   // El administrador puede registrar un monto distinto al de lista (un acuerdo
   // puntual, un abono). Si no manda nada, se cobra el precio del plan menos el
-  // descuento de referido que corresponda.
-  const listAmountCents = pesosToWompiCents(planPrice.price)
+  // descuento que corresponda.
   const defaultAmountCents = Math.max(listAmountCents - referral.discountCents, 0)
   const amountInCents =
     amount != null && amount >= 0 ? pesosToWompiCents(amount) : defaultAmountCents
@@ -161,6 +163,7 @@ export async function POST(request: Request) {
       recorded_by: user.id,
       notes: notes?.trim() || null,
       discount_cents: referral.discountCents,
+      discount_reason: referral.reason,
       referred_by_code: referral.referredByCode,
       referrer_parent_id: referral.referrerParentId,
       consumed_credit_id: referral.consumedCreditId,

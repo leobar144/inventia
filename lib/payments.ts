@@ -1,4 +1,5 @@
 import type { createServiceRoleClient } from './supabase/server'
+import { siblingDiscountCents } from './siblings'
 
 type AdminClient = ReturnType<typeof createServiceRoleClient>
 
@@ -92,6 +93,79 @@ export async function resolveReferralDiscount(
     referredByCode: code,
     referrerParentId: referrer.id,
     consumedCreditId: null,
+  }
+}
+
+/**
+ * ¿Este acudiente ya tiene OTRO hijo inscrito y activo?
+ *
+ * Se exige que el hermano esté 'active' o 'completed' — es decir, que haya un
+ * pago aprobado detrás. Una inscripción en 'pending_payment' no habilita el
+ * descuento: si no, bastaría con abrir dos checkouts al tiempo para que el
+ * segundo se descontara sin que el primero se haya pagado nunca.
+ */
+export async function hasEnrolledSibling(
+  admin: AdminClient,
+  parentId: string,
+  childId: string
+): Promise<boolean> {
+  const { data: siblings } = await admin
+    .from('children')
+    .select('id')
+    .eq('parent_id', parentId)
+    .neq('id', childId)
+
+  if (!siblings || siblings.length === 0) return false
+
+  const { count } = await admin
+    .from('enrollments')
+    .select('id', { count: 'exact', head: true })
+    .in(
+      'student_id',
+      siblings.map((s) => s.id)
+    )
+    .in('status', ['active', 'completed'])
+
+  return (count ?? 0) > 0
+}
+
+export interface AppliedDiscount extends ReferralOutcome {
+  reason: 'referido' | 'hermano' | null
+}
+
+/**
+ * Decide qué descuento se aplica a este pago.
+ *
+ * Nunca se suman: se toma el MAYOR entre el de referido y el de hermano.
+ * Acumularlos podía llegar a ~30% sobre el plan y comerse el margen del grupo.
+ */
+export async function resolveBestDiscount(
+  admin: AdminClient,
+  parentId: string,
+  childId: string,
+  fullAmountCents: number,
+  referralCode?: string
+): Promise<AppliedDiscount> {
+  const [referral, siblingApplies] = await Promise.all([
+    resolveReferralDiscount(admin, parentId, referralCode),
+    hasEnrolledSibling(admin, parentId, childId),
+  ])
+
+  const siblingCents = siblingApplies ? siblingDiscountCents(fullAmountCents) : 0
+
+  if (siblingCents > referral.discountCents) {
+    return {
+      discountCents: siblingCents,
+      referredByCode: null,
+      referrerParentId: null,
+      consumedCreditId: null,
+      reason: 'hermano',
+    }
+  }
+
+  return {
+    ...referral,
+    reason: referral.discountCents > 0 ? 'referido' : null,
   }
 }
 

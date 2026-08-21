@@ -14,6 +14,7 @@ interface PaymentData {
   signature: string
   publicKey: string
   discountCents: number
+  discountReason: 'referido' | 'hermano' | null
   planId: string
   planName: string
   classes: number
@@ -232,8 +233,9 @@ function CheckoutContent({ params }: { params: Promise<{ courseId: string }> }) 
 
                 {payment.discountCents > 0 && (
                   <div className="mb-4 p-3 bg-primary-50 text-primary-700 rounded-lg text-sm font-medium">
-                    🎁 Descuento de referido aplicado: -$
-                    {(payment.discountCents / 100).toLocaleString('es-CO')}
+                    {payment.discountReason === 'hermano' ? '👨‍👩‍👧‍👦' : '🎁'} Descuento{' '}
+                    {payment.discountReason === 'hermano' ? 'por hermano' : 'de referido'} aplicado:
+                    -${(payment.discountCents / 100).toLocaleString('es-CO')}
                   </div>
                 )}
                 <div className="flex justify-between items-center mb-6">

@@ -3,6 +3,7 @@ import { getCachedUser } from '@/lib/supabase/server'
 import { getChildrenForParent } from '@/lib/supabase/portal-queries'
 import { FaPlus, FaChild } from 'react-icons/fa'
 import ReferralCodeCard from '@/components/portal/ReferralCodeCard'
+import { SIBLING_DISCOUNT_PERCENT } from '@/lib/siblings'
 
 function calculateAge(birthDate: string): number {
   const birth = new Date(birthDate)
@@ -30,6 +31,22 @@ export default async function PortalHomePage() {
       </div>
 
       {user && <ReferralCodeCard code={user.id.slice(0, 8).toUpperCase()} />}
+
+      {children.length === 1 && (
+        <div className="card p-5 flex items-center justify-between gap-4 flex-wrap border-l-4 border-l-secondary-500">
+          <div>
+            <p className="font-bold">
+              👨‍👩‍👧‍👦 ¿Tienes otro hijo/a? Tiene {SIBLING_DISCOUNT_PERCENT}% de descuento
+            </p>
+            <p className="text-sm text-gray-600">
+              El descuento por hermano se aplica solo al inscribirlo, sin códigos ni trámites.
+            </p>
+          </div>
+          <Link href="/portal/hijos/nuevo" className="btn btn-outline text-sm">
+            Agregar hijo/a
+          </Link>
+        </div>
+      )}
 
       {children.length === 0 ? (
         <div className="card p-12 text-center">

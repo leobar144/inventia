@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { LEGAL_INFO } from '@/lib/legal'
+import { SIBLING_DISCOUNT_PERCENT } from '@/lib/siblings'
 
 export const metadata: Metadata = {
   title: 'Términos y Condiciones',
@@ -86,6 +87,23 @@ export default function TerminosPage() {
               <li>
                 INVENTIA puede modificar o terminar el programa en cualquier momento, respetando los
                 créditos ya generados.
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-gray-900 mb-3">
+              5.1. Descuento por hermano
+            </h2>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                Las familias que ya tienen un hijo o hija con inscripción activa reciben un{' '}
+                <strong>{SIBLING_DISCOUNT_PERCENT}% de descuento</strong> al inscribir a otro. Se
+                aplica automáticamente, sin códigos.
+              </li>
+              <li>
+                El descuento por hermano y el de referido{' '}
+                <strong>no son acumulables</strong>: se aplica el que resulte mayor.
               </li>
             </ul>
           </section>

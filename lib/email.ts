@@ -138,6 +138,66 @@ export async function sendRenewalAlertToParent(data: RenewalAlertParent) {
   })
 }
 
+interface TrialFollowUp {
+  parentEmail: string
+  parentName: string
+  childName: string
+  coursesUrl: string
+  whatsappUrl: string
+}
+
+/** Día +1 tras la clase de prueba: agradecer y abrir la conversación. */
+export async function sendTrialFollowUpDay1(data: TrialFollowUp) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey || !data.parentEmail) return
+
+  const resend = new Resend(apiKey)
+  const firstName = data.childName.trim().split(/\s+/)[0]
+
+  await resend.emails.send({
+    from: FROM,
+    to: data.parentEmail,
+    subject: `¿Cómo le fue a ${firstName} en su clase?`,
+    html: `
+      <h2>¿Qué te contó ${firstName}? 🚀</h2>
+      <p>Hola ${data.parentName}, gracias por traer a ${firstName} a su clase de prueba en INVENTIA.</p>
+      <p>Nos encantaría saber cómo la vivió. Si tienes cualquier duda sobre los cursos, los horarios
+      o cómo funciona, respóndenos este correo o escríbenos por WhatsApp — te contestamos de una.</p>
+      <p>Si ${firstName} quedó con ganas de más, estos son los planes disponibles. Los grupos son de
+      máximo 8 niños, así que los cupos son limitados:</p>
+      <p><a href="${data.coursesUrl}">Ver planes y cupos disponibles →</a></p>
+      <p><a href="${data.whatsappUrl}">O escríbenos por WhatsApp</a></p>
+      <p>— El equipo de INVENTIA</p>
+    `,
+  })
+}
+
+/** Día +4: última llamada, con urgencia real (los cupos sí son 8). */
+export async function sendTrialFollowUpDay4(data: TrialFollowUp) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey || !data.parentEmail) return
+
+  const resend = new Resend(apiKey)
+  const firstName = data.childName.trim().split(/\s+/)[0]
+
+  await resend.emails.send({
+    from: FROM,
+    to: data.parentEmail,
+    subject: `Todavía guardamos un cupo para ${firstName}`,
+    html: `
+      <h2>El cupo de ${firstName} sigue disponible</h2>
+      <p>Hola ${data.parentName}, sabemos que estas decisiones toman tiempo.</p>
+      <p>Solo queríamos contarte que todavía hay espacio en el grupo de ${firstName}. Como trabajamos
+      con máximo 8 niños por clase para que cada uno reciba atención real, los cupos se van rápido.</p>
+      <p>Si tienes alguna duda sobre el método, los horarios o el costo, escríbenos y lo resolvemos
+      en dos minutos. Y si por ahora no es el momento, no hay problema — aquí estaremos.</p>
+      <p><a href="${data.coursesUrl}">Ver planes →</a></p>
+      <p><a href="${data.whatsappUrl}">Hablar por WhatsApp</a></p>
+      <p>— El equipo de INVENTIA</p>
+    `,
+  })
+}
+
 interface RenewalAlertAdmin {
   childName: string
   courseTitle: string

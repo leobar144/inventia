@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServiceRoleClient } from '@/lib/supabase/server'
 import { sendClassReminderEmail } from '@/lib/email'
+import { sendPendingTrialFollowUps } from '@/lib/trialFollowUp'
 
 // Corre una vez al día (ver vercel.json) — el plan gratuito de Vercel no
 // permite cron jobs más frecuentes. Por eso el recordatorio es "hoy tienes
@@ -12,6 +13,16 @@ export async function GET(request: Request) {
   }
 
   const admin = createServiceRoleClient()
+
+  // Seguimiento de clases de prueba. Comparte esta corrida porque el plan
+  // gratuito de Vercel no permite un segundo cron job. Se ejecuta primero y
+  // aislado: si algo falla aquí, los recordatorios de clase igual salen.
+  let followUps = { day1: 0, day4: 0 }
+  try {
+    followUps = await sendPendingTrialFollowUps()
+  } catch (error) {
+    console.error('Error enviando seguimientos de clase de prueba:', error)
+  }
 
   // Colombia es UTC-5 todo el año (sin horario de verano) — se calcula el
   // rango del "día de hoy en Bogotá" directamente en horas UTC.
@@ -32,11 +43,11 @@ export async function GET(request: Request) {
     .eq('reminder_sent', false)
 
   if (sessionsError) {
-    return NextResponse.json({ error: sessionsError.message }, { status: 500 })
+    return NextResponse.json({ error: sessionsError.message, followUps }, { status: 500 })
   }
 
   if (!sessions || sessions.length === 0) {
-    return NextResponse.json({ sent: 0 })
+    return NextResponse.json({ sent: 0, followUps })
   }
 
   const courseIds = [...new Set(sessions.map((s) => s.course_id))]
@@ -121,5 +132,5 @@ export async function GET(request: Request) {
       sessions.map((s) => s.id)
     )
 
-  return NextResponse.json({ sent })
+  return NextResponse.json({ sent, followUps })
 }

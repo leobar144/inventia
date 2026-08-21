@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { generateWompiSignature, pesosToWompiCents } from '@/lib/wompi'
 import { getPlan, isValidPlanId } from '@/lib/plans'
-import { resolveReferralDiscount } from '@/lib/payments'
+import { resolveBestDiscount } from '@/lib/payments'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -118,10 +118,11 @@ export async function POST(request: Request) {
   //   1. Un crédito propio ya ganado (de haber referido a alguien antes).
   //   2. Un código de otro padre, solo válido en el primer pago aprobado
   //      de esta cuenta (evita reusar códigos repetidamente).
-  const { discountCents, referredByCode, referrerParentId, consumedCreditId } =
-    await resolveReferralDiscount(admin, user.id, referralCode)
-
   const fullAmountInCents = pesosToWompiCents(planPrice.price)
+
+  const { discountCents, referredByCode, referrerParentId, consumedCreditId, reason } =
+    await resolveBestDiscount(admin, user.id, childId, fullAmountInCents, referralCode)
+
   const amountInCents = Math.max(fullAmountInCents - discountCents, 0)
   const currency = course.currency || 'COP'
   const reference = `INV-${enrollmentId}-${Date.now()}`
@@ -136,6 +137,7 @@ export async function POST(request: Request) {
       currency,
       status: 'PENDING',
       discount_cents: discountCents,
+      discount_reason: reason,
       referred_by_code: referredByCode,
       referrer_parent_id: referrerParentId,
       consumed_credit_id: consumedCreditId,
@@ -156,6 +158,7 @@ export async function POST(request: Request) {
     signature,
     publicKey: process.env.NEXT_PUBLIC_WOMPI_PUBLIC_KEY,
     discountCents,
+    discountReason: reason,
     planId,
     planName: plan.name,
     classes: plan.classes,
