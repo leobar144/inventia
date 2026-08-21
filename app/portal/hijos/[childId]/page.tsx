@@ -15,6 +15,8 @@ import ClassPath from '@/components/portal/ClassPath'
 import NextClassCard from '@/components/portal/NextClassCard'
 import ShareProfileCard from '@/components/portal/ShareProfileCard'
 import ClassDiary from '@/components/portal/ClassDiary'
+import MakeupCard from '@/components/portal/MakeupCard'
+import { getMakeupInfoForChild } from '@/lib/supabase/makeup-queries'
 
 function calculateAge(birthDate: string): number {
   const birth = new Date(birthDate)
@@ -46,10 +48,11 @@ export default async function ChildDashboardPage({
   // Las tres consultas son independientes entre sí: ninguna necesita el
   // resultado de la otra. En cadena eran tres viajes Vercel→Supabase; así son
   // uno solo. La pertenencia se valida igual justo debajo.
-  const [child, enrollments, classNotes] = await Promise.all([
+  const [child, enrollments, classNotes, makeupInfo] = await Promise.all([
     getChildById(childId, user.id),
     getEnrollmentsForChild(childId),
     getClassNotesForChild(childId, user.id),
+    getMakeupInfoForChild(childId, user.id),
   ])
 
   if (!child) notFound()
@@ -178,6 +181,8 @@ export default async function ChildDashboardPage({
         <h2 className="text-xl font-bold mb-4">Próxima clase</h2>
         <NextClassCard nextClass={nextClass} />
       </section>
+
+      <MakeupCard childId={child.id} childName={child.full_name} info={makeupInfo} />
 
       <ClassDiary
         childId={child.id}

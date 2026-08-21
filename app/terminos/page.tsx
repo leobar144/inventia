@@ -112,10 +112,31 @@ export default function TerminosPage() {
             <h2 className="text-xl font-bold text-gray-900 mb-3">
               7. Cancelación o reprogramación de clases
             </h2>
-            <p>
+            <p className="mb-3">
               Si INVENTIA cancela una clase por causa propia, la reprograma sin costo o la abona al
-              plan de la familia. Si el estudiante falta, la clase se considera dictada, salvo acuerdo
-              previo.
+              plan de la familia.
+            </p>
+            <p className="mb-3">
+              Si el estudiante falta, la familia puede <strong>reponer la clase sin costo</strong>{' '}
+              desde el portal, en otro horario del mismo curso que tenga cupo disponible, bajo estas
+              condiciones:
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                <strong>Una reposición por cada cuatro clases del plan</strong> (plan Mes: 1;
+                Trimestre: 3; Semestre: 6).
+              </li>
+              <li>
+                La reposición debe agendarse dentro de los <strong>treinta (30) días</strong>{' '}
+                siguientes a la clase perdida.
+              </li>
+              <li>
+                Está sujeta a la disponibilidad de cupo del grupo receptor, que mantiene el límite
+                de ocho estudiantes.
+              </li>
+            </ul>
+            <p className="mt-3">
+              Las clases que no se repongan dentro de esas condiciones se consideran dictadas.
             </p>
           </section>
 
