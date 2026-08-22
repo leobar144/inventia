@@ -240,7 +240,25 @@ export interface SchoolLeadRow {
   grades: string | null
   message: string | null
   status: string
+  assignedTo: string | null
+  assignedToName: string | null
   createdAt: string
+}
+
+/**
+ * Cuántas solicitudes institucionales están sin atender.
+ * Alimenta el aviso del menú: sin él nadie entra a la sección y el lead se
+ * pierde, que en venta institucional cuesta caro.
+ */
+export async function getNewSchoolLeadsCount(): Promise<number> {
+  const supabase = createServiceRoleClient()
+
+  const { count } = await supabase
+    .from('school_leads')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'nuevo')
+
+  return count ?? 0
 }
 
 /** Solicitudes de jardines y colegios, la más reciente primero. */
@@ -253,8 +271,16 @@ export async function getSchoolLeads(): Promise<SchoolLeadRow[]> {
     .order('created_at', { ascending: false })
 
   if (error) throw error
+  if (!data || data.length === 0) return []
 
-  return (data ?? []).map((l) => ({
+  const assignedIds = [...new Set(data.map((l) => l.assigned_to).filter(Boolean))] as string[]
+  const { data: team } =
+    assignedIds.length > 0
+      ? await supabase.from('profiles').select('id, full_name').in('id', assignedIds)
+      : { data: [] }
+  const nameById = new Map((team ?? []).map((t) => [t.id, t.full_name]))
+
+  return data.map((l) => ({
     id: l.id,
     institutionName: l.institution_name,
     contactName: l.contact_name,
@@ -265,8 +291,24 @@ export async function getSchoolLeads(): Promise<SchoolLeadRow[]> {
     grades: l.grades,
     message: l.message,
     status: l.status,
+    assignedTo: l.assigned_to,
+    assignedToName: l.assigned_to ? (nameById.get(l.assigned_to) ?? null) : null,
     createdAt: l.created_at,
   }))
+}
+
+/** Equipo al que se le puede asignar una solicitud: administradores e instructores. */
+export async function getTeamMembers(): Promise<InstructorOption[]> {
+  const supabase = createServiceRoleClient()
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, full_name, email')
+    .in('role', ['admin', 'instructor'])
+    .order('full_name', { ascending: true })
+
+  if (error) throw error
+  return data ?? []
 }
 
 export interface CourseOccupancyRow {

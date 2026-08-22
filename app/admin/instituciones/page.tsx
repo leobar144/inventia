@@ -1,12 +1,15 @@
-import { getSchoolLeads } from '@/lib/supabase/admin-queries'
+import { getSchoolLeads, getTeamMembers } from '@/lib/supabase/admin-queries'
 import {
   CURRENT_STUDENT_CAPACITY,
   MAX_CONCURRENT_GROUPS,
   MAX_STUDENTS_PER_GROUP,
 } from '@/lib/economics'
+import { leadStatusLabel, leadStatusClass } from '@/lib/leads'
+import SchoolLeadActions from '@/components/admin/SchoolLeadActions'
 
 export default async function AdminInstitucionesPage() {
-  const leads = await getSchoolLeads()
+  const [leads, team] = await Promise.all([getSchoolLeads(), getTeamMembers()])
+  const pending = leads.filter((l) => l.status === 'nuevo').length
 
   return (
     <div className="space-y-6">
@@ -16,6 +19,17 @@ export default async function AdminInstitucionesPage() {
           Solicitudes de demostración del canal institucional.
         </p>
       </div>
+
+      {pending > 0 && (
+        <div className="card p-4 border-l-4 border-l-accent-500 bg-accent-50">
+          <p className="font-bold text-accent-900">
+            ⚡ {pending} solicitud{pending === 1 ? '' : 'es'} sin responder
+          </p>
+          <p className="text-sm text-accent-800">
+            En venta institucional el primero que contesta suele quedarse con el negocio.
+          </p>
+        </div>
+      )}
 
       <div className="card p-5 border-l-4 border-l-secondary-500">
         <p className="text-sm text-gray-500 mb-1">Capacidad actual</p>
@@ -52,12 +66,22 @@ export default async function AdminInstitucionesPage() {
                       {lead.contactRole && ` · ${lead.contactRole}`}
                     </p>
                   </div>
-                  <p className="text-xs text-gray-500">
-                    {new Date(lead.createdAt).toLocaleDateString('es-CO', {
-                      day: 'numeric',
-                      month: 'long',
-                    })}
-                  </p>
+                  <div className="text-right">
+                    <span
+                      className={`inline-block text-xs font-bold px-2 py-1 rounded-full ${leadStatusClass(lead.status)}`}
+                    >
+                      {leadStatusLabel(lead.status)}
+                    </span>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(lead.createdAt).toLocaleDateString('es-CO', {
+                        day: 'numeric',
+                        month: 'long',
+                      })}
+                    </p>
+                    {lead.assignedToName && (
+                      <p className="text-xs text-gray-500">→ {lead.assignedToName}</p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-3">
@@ -96,14 +120,7 @@ export default async function AdminInstitucionesPage() {
                 )}
 
                 <div className="flex flex-wrap gap-3 text-sm">
-                  <a
-                    href={`https://wa.me/57${lead.phone.replace(/\D/g, '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary-600 font-medium hover:underline"
-                  >
-                    WhatsApp {lead.phone}
-                  </a>
+                  <span className="text-gray-600">{lead.phone}</span>
                   <a
                     href={`mailto:${lead.email}`}
                     className="text-gray-600 hover:text-primary-600"
@@ -111,6 +128,16 @@ export default async function AdminInstitucionesPage() {
                     {lead.email}
                   </a>
                 </div>
+
+                <SchoolLeadActions
+                  leadId={lead.id}
+                  contactName={lead.contactName}
+                  institutionName={lead.institutionName}
+                  phone={lead.phone}
+                  status={lead.status}
+                  assignedTo={lead.assignedTo}
+                  team={team}
+                />
               </div>
             )
           })}

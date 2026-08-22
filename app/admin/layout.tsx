@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient, getCachedUser } from '@/lib/supabase/server'
+import { getNewSchoolLeadsCount } from '@/lib/supabase/admin-queries'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const {
@@ -17,6 +18,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .single()
 
   if (profile?.role !== 'admin') redirect('/portal')
+
+  const newLeads = await getNewSchoolLeadsCount()
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -41,8 +44,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Link href="/admin/pagos" className="text-secondary-200 hover:text-white">
               Pagos
             </Link>
-            <Link href="/admin/instituciones" className="text-secondary-200 hover:text-white">
+            <Link
+              href="/admin/instituciones"
+              className="text-secondary-200 hover:text-white flex items-center gap-1.5"
+            >
               Jardines
+              {newLeads > 0 && (
+                <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-accent-500 text-white text-xs font-bold">
+                  {newLeads}
+                </span>
+              )}
             </Link>
             <Link href="/portal" className="text-secondary-200 hover:text-white">
               Portal de Padres
