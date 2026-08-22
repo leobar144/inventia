@@ -184,7 +184,7 @@ export default function SessionRow({
             {session.modality === 'presencial' ? '📍 Presencial' : '💻 Virtual'}
           </span>
         </p>
-        <p className="text-sm text-gray-600 capitalize">
+        <p className="text-sm text-gray-600 first-letter:uppercase">
           {new Date(session.scheduledAt).toLocaleString('es-CO', {
             weekday: 'long',
             day: 'numeric',

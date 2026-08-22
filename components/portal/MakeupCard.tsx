@@ -79,7 +79,7 @@ export default function MakeupCard({
                   <p className="font-medium">
                     {missed.title} · <span className="text-gray-500">{missed.courseTitle}</span>
                   </p>
-                  <p className="text-xs text-gray-500 capitalize">
+                  <p className="text-xs text-gray-500 first-letter:uppercase">
                     Era el {formatWhen(missed.scheduledAt)}
                   </p>
                 </div>
@@ -87,7 +87,7 @@ export default function MakeupCard({
                 {missed.bookedInto ? (
                   <span className="text-sm text-primary-700 font-medium flex items-center gap-1.5">
                     <FaCheckCircle size={13} />
-                    <span className="capitalize">
+                    <span className="first-letter:uppercase">
                       Repone el {formatWhen(missed.bookedInto.scheduledAt)}
                     </span>
                   </span>
@@ -129,7 +129,7 @@ export default function MakeupCard({
                         onClick={() => handleBook(missed.sessionId, slot.sessionId)}
                         className="text-left rounded-lg border border-gray-200 p-3 hover:border-primary-400 transition-colors disabled:opacity-50"
                       >
-                        <p className="text-sm font-medium capitalize">
+                        <p className="text-sm font-medium first-letter:uppercase">
                           {formatWhen(slot.scheduledAt)}
                         </p>
                         <p className="text-xs text-gray-500">

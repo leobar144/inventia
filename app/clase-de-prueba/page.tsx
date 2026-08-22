@@ -319,7 +319,7 @@ export default function ClaseDePruebaPage() {
                 <p><strong>Niño/a:</strong> {childName}, {childAge} años</p>
                 <p><strong>Curso:</strong> {COURSES.find((c) => c.id === courseInterest)?.label}</p>
                 <p><strong>Contacto:</strong> {parentName} · {whatsapp} · {parentEmail}</p>
-                <p className="capitalize">
+                <p className="first-letter:uppercase">
                   <strong>Horario:</strong> {selectedDateLabel} ·{' '}
                   {selectedSlot && formatTimeLabel(selectedSlot.time)}
                 </p>

@@ -6,6 +6,7 @@ import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection
 import WelcomePopup from '@/components/WelcomePopup'
 import MobileStickyBar from '@/components/MobileStickyBar'
 import InventiaBot from '@/components/InventiaBot'
+import ContactSection from '@/components/ContactSection'
 
 export default function Home() {
   return (
@@ -422,6 +423,8 @@ export default function Home() {
           </FadeInGrid>
         </div>
       </section>
+
+      <ContactSection />
 
       {/* CTA Section */}
       <section className="section pb-24 md:pb-12 bg-gradient-to-r from-secondary-600 to-primary-600 text-white">

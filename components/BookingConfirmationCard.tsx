@@ -44,7 +44,7 @@ export default function BookingConfirmationCard({
         <p className="text-gray-600 mb-1">
           <strong>{childName}</strong> tiene su clase el:
         </p>
-        <p className="text-xl font-bold text-primary-600 mb-6 capitalize">
+        <p className="text-xl font-bold text-primary-600 mb-6 first-letter:uppercase">
           {dateLabel} · {timeLabel}
         </p>
 

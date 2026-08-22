@@ -360,3 +360,18 @@ export const CURRICULUM_LEVELS: CurriculumLevel[] = [
     ],
   },
 ]
+
+/**
+ * Qué nivel del currículo le corresponde a un niño según su edad.
+ *
+ * El rango vive en `ageRange` como texto ("4-6 años") porque es lo que se
+ * muestra en la malla; aquí se interpreta para poder recomendarle a un padre
+ * el nivel correcto sin duplicar los rangos en otro lado.
+ */
+export function getLevelForAge(age: number): CurriculumLevel | null {
+  for (const level of CURRICULUM_LEVELS) {
+    const [min, max] = level.ageRange.replace(/[^\d-]/g, '').split('-').map(Number)
+    if (age >= min && age <= max) return level
+  }
+  return null
+}
