@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { FaExternalLinkAlt } from 'react-icons/fa'
 import { getPublicChildProfile } from '@/lib/supabase/public-queries'
-import { getBadgeProgress, BADGE_LEVELS } from '@/lib/badges'
+import { getBadgeProgress } from '@/lib/badges'
 import BadgeIcon from '@/components/BadgeIcon'
 
 export async function generateMetadata({
@@ -37,8 +37,11 @@ export default async function PerfilPublicoPage({
   // cuál de los dos casos fue.
   if (!profile) notFound()
 
+  // getBadgeProgress ya resuelve cuál es la siguiente insignia. BADGE_LEVELS
+  // está ordenado de mayor a menor, así que buscarlo a mano con un .find()
+  // devolvía siempre el nivel más alto ("le faltan 48 para Maestro Inventor"
+  // con 0 clases) en vez del inmediato siguiente.
   const badge = getBadgeProgress(profile.classesCompleted)
-  const nextLevel = BADGE_LEVELS.find((l) => l.threshold > profile.classesCompleted)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary-50 via-white to-primary-50 py-12 px-4">
@@ -71,10 +74,9 @@ export default async function PerfilPublicoPage({
             {profile.classesCompleted === 1 ? '' : 's'}
           </p>
 
-          {nextLevel && (
+          {badge.next && (
             <p className="text-sm text-gray-500 mt-2">
-              Le faltan {nextLevel.threshold - profile.classesCompleted} para{' '}
-              {nextLevel.icon} {nextLevel.name}
+              Le faltan {badge.classesUntilNext} para {badge.next.icon} {badge.next.name}
             </p>
           )}
         </div>
