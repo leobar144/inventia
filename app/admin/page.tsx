@@ -1,5 +1,5 @@
 import { getAdminMetrics, getCourseOccupancy } from '@/lib/supabase/admin-queries'
-import { COORDINATOR_MONTHLY_COP, INSTRUCTOR_COST_PER_CLASS } from '@/lib/economics'
+import { COORDINATOR_MONTHLY_COP, INSTRUCTOR_HOURLY_COP } from '@/lib/economics'
 
 const HEALTH_STYLES = {
   sano: { badge: 'bg-primary-100 text-primary-700', label: '🟢 Sano', bar: 'bg-primary-500' },
@@ -47,8 +47,8 @@ export default async function AdminMetricsPage() {
         <div className="flex justify-between items-end mb-1 flex-wrap gap-2">
           <h2 className="text-xl font-bold">Ocupación de grupos</h2>
           <p className="text-sm text-gray-500">
-            Costo del instructor: ${INSTRUCTOR_COST_PER_CLASS.toLocaleString('es-CO')} por clase,
-            sin importar cuántos niños haya
+            Instructor: ${INSTRUCTOR_HOURLY_COP.toLocaleString('es-CO')} por hora dictada, sin
+            importar cuántos niños haya
           </p>
         </div>
         <p className="text-sm text-gray-600 mb-4">
@@ -116,7 +116,7 @@ export default async function AdminMetricsPage() {
                   {e.students === 0 ? (
                     <p className="text-sm text-gray-500">
                       Sin alumnos activos. Cada clase que se dicte cuesta $
-                      {INSTRUCTOR_COST_PER_CLASS.toLocaleString('es-CO')} y no genera ingreso.
+                      {e.instructorCostIfRun.toLocaleString('es-CO')} y no genera ingreso.
                     </p>
                   ) : (
                     <div className="grid sm:grid-cols-3 gap-3 text-sm">

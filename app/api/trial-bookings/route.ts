@@ -5,6 +5,7 @@ import { sendTrialBookingNotification, sendParentConfirmationEmail } from '@/lib
 import type { TrialBookingInput } from '@/types'
 
 const COURSE_LABELS: Record<string, string> = {
+  exploradores: 'Exploradores (4-6 años)',
   scratch: 'Scratch & Bloques',
   python: 'Python & Código Real',
   robotica: 'Robótica',

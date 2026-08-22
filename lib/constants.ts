@@ -28,6 +28,16 @@ export const NAV_LINKS = [
 // Programas — contenido compartido entre la sección "Cursos" de la home y /cursos
 export const PROGRAM_TRACKS = [
   {
+    id: 'exploradores',
+    icon: '🧸',
+    title: 'Exploradores',
+    description:
+      'Robótica sin pantallas para los más pequeños. Programan robots de piso con tarjetas físicas.',
+    bullets: ['Edades 4-6 años', 'Clases de 1 hora', 'Grupos de máximo 6 niños'],
+    borderColor: 'border-accent-500',
+    iconColor: 'text-accent-500',
+  },
+  {
     id: 'scratch',
     icon: '🎨',
     title: 'Scratch & Bloques',

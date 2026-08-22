@@ -331,7 +331,7 @@ export async function getCourseOccupancy(): Promise<CourseOccupancyRow[]> {
   const supabase = createServiceRoleClient()
 
   const [{ data: courses }, { data: enrollments }, { data: planPrices }] = await Promise.all([
-    supabase.from('courses').select('id, title, max_students').order('title'),
+    supabase.from('courses').select('id, title, max_students, class_hours').order('title'),
     supabase
       .from('enrollments')
       .select('course_id, plan_id, classes_purchased')
@@ -361,7 +361,11 @@ export async function getCourseOccupancy(): Promise<CourseOccupancyRow[]> {
   return courses.map((c) => ({
     courseId: c.id,
     courseTitle: c.title,
-    economics: computeCourseEconomics(revenueByCourse.get(c.id) ?? [], c.max_students ?? 8),
+    economics: computeCourseEconomics(
+      revenueByCourse.get(c.id) ?? [],
+      c.max_students ?? 8,
+      Number(c.class_hours) || 2
+    ),
   }))
 }
 

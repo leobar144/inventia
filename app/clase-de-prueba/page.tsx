@@ -8,6 +8,7 @@ import { CONSENT_VERSION } from '@/lib/legal'
 import type { AvailableSlotDay } from '@/types'
 
 const COURSES = [
+  { id: 'exploradores', label: 'Exploradores (4-6 años)', icon: '🧸' },
   { id: 'scratch', label: 'Scratch & Bloques', icon: '🎨' },
   { id: 'python', label: 'Python & Código Real', icon: '🐍' },
   { id: 'robotica', label: 'Robótica', icon: '🤖' },

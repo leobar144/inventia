@@ -11,14 +11,23 @@
 /** Lo que se le paga al instructor por hora dictada. */
 export const INSTRUCTOR_HOURLY_COP = 80_000
 
-/** Duración de una clase, en horas. */
+/** Duración por defecto de una clase, en horas. */
 export const CLASS_HOURS = 2
 
 /**
  * Costo del instructor por clase dictada. NO depende de cuántos niños haya —
  * por eso el llenado del grupo es lo que determina el margen.
+ *
+ * La duración varía por curso: Exploradores (4-6 años) dura 1 hora porque a esa
+ * edad no da la atención para más, el resto dura 2. Por eso se lee de
+ * `courses.class_hours` en vez de asumir un valor único.
  */
-export const INSTRUCTOR_COST_PER_CLASS = INSTRUCTOR_HOURLY_COP * CLASS_HOURS
+export function instructorCostPerClass(classHours: number = CLASS_HOURS): number {
+  return INSTRUCTOR_HOURLY_COP * classHours
+}
+
+/** Costo de una clase estándar de 2 horas. */
+export const INSTRUCTOR_COST_PER_CLASS = instructorCostPerClass()
 
 /**
  * Costo mensual de la coordinadora: salario mínimo 2026 ($1.750.905) más
@@ -51,6 +60,12 @@ export interface CourseEconomics {
   /** Ingreso por clase dictada, sumando lo que aporta cada niño según su plan. */
   revenuePerClass: number
   costPerClass: number
+  /**
+   * Lo que cuesta dictar una clase de este curso, haya o no alumnos. Se expone
+   * aparte de `costPerClass` (que es 0 sin alumnos) porque es justo el dato que
+   * hay que mostrar cuando el grupo está vacío.
+   */
+  instructorCostIfRun: number
   marginPerClass: number
   marginPercent: number
   health: OccupancyHealth
@@ -72,14 +87,15 @@ export function classifyHealth(marginPercent: number): OccupancyHealth {
  */
 export function computeCourseEconomics(
   revenuePerStudentPerClass: number[],
-  maxStudents: number
+  maxStudents: number,
+  classHours: number = CLASS_HOURS
 ): CourseEconomics {
   const students = revenuePerStudentPerClass.length
   const grossPerClass = revenuePerStudentPerClass.reduce((sum, r) => sum + r, 0)
   // El ingreso se cuenta después de la comisión de la pasarela: esa plata nunca
   // llegó a la caja.
   const revenuePerClass = grossPerClass * (1 - PAYMENT_FEE_RATE)
-  const costPerClass = students > 0 ? INSTRUCTOR_COST_PER_CLASS : 0
+  const costPerClass = students > 0 ? instructorCostPerClass(classHours) : 0
   const marginPerClass = revenuePerClass - costPerClass
   const marginPercent = revenuePerClass > 0 ? (marginPerClass / revenuePerClass) * 100 : 0
 
@@ -96,6 +112,7 @@ export function computeCourseEconomics(
     maxStudents,
     revenuePerClass,
     costPerClass,
+    instructorCostIfRun: instructorCostPerClass(classHours),
     marginPerClass,
     marginPercent,
     health: students === 0 ? 'critico' : classifyHealth(marginPercent),
