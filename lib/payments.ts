@@ -79,10 +79,15 @@ export async function resolveReferralDiscount(
 
   if (priorApprovedCount && priorApprovedCount > 0) return none
 
-  // El código son los primeros 8 caracteres del id del padre. Se compara en JS
-  // en vez de en SQL para no depender de un cast sobre una columna uuid.
-  const { data: parentProfiles } = await admin.from('profiles').select('id').eq('role', 'parent')
-  const referrer = (parentProfiles ?? []).find(
+  // El código son los primeros 8 caracteres del id de quien refiere. Se compara
+  // en JS en vez de en SQL para no depender de un cast sobre una columna uuid.
+  //
+  // No se filtra por rol a propósito: antes solo se buscaba entre role='parent',
+  // así que el código de la dueña (role='admin') nunca encontraba coincidencia y
+  // su recomendación silenciosamente no daba descuento. Cualquiera con cuenta
+  // puede referir; lo único que no se permite es referirse a uno mismo.
+  const { data: profiles } = await admin.from('profiles').select('id')
+  const referrer = (profiles ?? []).find(
     (p) => p.id.slice(0, 8).toUpperCase() === code && p.id !== parentId
   )
 
