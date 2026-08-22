@@ -40,8 +40,13 @@ export default function InstructorSessionCard({ session }: { session: Instructor
     <div className="card p-5">
       <div className="flex justify-between items-start mb-1">
         <div>
-          <p className="font-bold">{session.sessionTitle}</p>
-          <p className="text-sm text-gray-500">{session.courseTitle}</p>
+          {/* El curso va primero: un profesor que dicta dos cursos veía dos
+              "Clase 3" seguidas y tenía que leer la línea de abajo para saber
+              cuál era cuál. Cada curso numera sus clases desde 1. */}
+          <p className="font-bold">
+            {session.courseTitle} <span className="text-gray-400 font-normal">·</span>{' '}
+            <span className="text-gray-600">{session.sessionTitle}</span>
+          </p>
           {session.moduleTitle && (
             <p className="text-xs text-primary-600 font-medium mt-0.5">
               Módulo: {session.moduleTitle}
