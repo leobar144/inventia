@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Fraunces } from 'next/font/google'
+import { Inter, Figtree } from 'next/font/google'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import WhatsAppChatButton from '@/components/WhatsAppChatButton'
@@ -8,17 +8,20 @@ import '@/styles/globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 /**
- * Titulares en Fraunces, no en Poppins.
+ * Titulares en Figtree.
  *
- * Poppins es la fuente por defecto de toda academia infantil — usarla nos
- * mimetizaba con la competencia en vez de diferenciarnos. Una serif con carácter
- * va a contramano de la categoría (todos usan geométricas redondeadas) y sostiene
- * mejor un producto de varios cientos de miles al mes: lee como criterio, no
- * como plantilla.
+ * Poppins, la anterior, es la fuente por defecto de toda academia infantil:
+ * usarla nos mimetizaba con la competencia. Se probó Fraunces (serif) buscando
+ * diferenciación, pero su contraste alto entre trazos leía editorial —de revista
+ * o bufete— y chocaba con una marca de robótica para niños.
+ *
+ * Figtree queda en el punto medio: cálida y moderna como pide el público
+ * infantil, más adulta que Poppins para sostener el precio, y sin rarezas que
+ * hagan dudar a un padre que llega de un anuncio.
  */
-const fraunces = Fraunces({
+const figtree = Figtree({
   subsets: ['latin'],
-  weight: ['400', '600', '700', '900'],
+  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-heading',
 })
 
@@ -71,7 +74,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={`${inter.variable} ${fraunces.variable}`}>
+    <html lang="es" className={`${inter.variable} ${figtree.variable}`}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

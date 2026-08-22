@@ -48,7 +48,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        heading: ['var(--font-heading)', 'Fraunces', 'Georgia', 'serif'],
+        heading: ['var(--font-heading)', 'Figtree', 'system-ui', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in',
