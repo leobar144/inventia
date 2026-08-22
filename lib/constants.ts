@@ -16,6 +16,33 @@ export const SITE_CONFIG = {
   },
 }
 
+/**
+ * Campaña vigente (campamento, promoción de temporada, etc.).
+ *
+ * Antes la fecha "5-12 de octubre" estaba escrita a mano en cinco lugares
+ * distintos: el badge del hero, el popup, las preguntas frecuentes y dos
+ * llamados a la acción. El 13 de octubre toda la web habría quedado anunciando
+ * algo vencido — y una web con fechas viejas destruye la credibilidad más
+ * rápido que cualquier otra cosa.
+ *
+ * Ahora vive aquí. Para cambiar de campaña se editan estas líneas; cuando pasa
+ * `endDate` los avisos desaparecen solos, sin tocar código.
+ */
+export const CAMPAIGN = {
+  enabled: true,
+  name: 'Campamento STEM',
+  dateLabel: '5-12 de octubre',
+  /** Último día en que la campaña sigue anunciándose (hora de Bogotá). */
+  endDate: '2026-10-12',
+  whatsappMessage: '¡Hola INVENTIA! Quiero reservar un cupo para el campamento.',
+} as const
+
+/** Si la campaña sigue vigente hoy. Colombia es UTC-5 todo el año. */
+export function isCampaignActive(now: Date = new Date()): boolean {
+  if (!CAMPAIGN.enabled) return false
+  return now.getTime() <= new Date(`${CAMPAIGN.endDate}T23:59:59-05:00`).getTime()
+}
+
 // Navigation
 export const NAV_LINKS = [
   { label: 'Inicio', href: '/' },

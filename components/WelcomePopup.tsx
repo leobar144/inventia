@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { FaTimes, FaWhatsapp, FaCalendarCheck } from 'react-icons/fa'
-import { SITE_CONFIG } from '@/lib/constants'
+import { SITE_CONFIG, CAMPAIGN, isCampaignActive } from '@/lib/constants'
 import PopupIllustration from './PopupIllustration'
 import InventiaBot from './InventiaBot'
 
@@ -12,22 +12,53 @@ const STORAGE_KEY = 'inventia_welcome_popup_seen'
 export default function WelcomePopup() {
   const [isOpen, setIsOpen] = useState(false)
 
+  /**
+   * Se muestra por INTENCIÓN, no por reloj.
+   *
+   * Antes saltaba a los 2,5 segundos, antes de que el visitante alcanzara a leer
+   * nada — interrumpir a alguien que todavía no se enganchó es de los patrones
+   * que más conversión destruyen. Ahora aparece cuando la persona ya demostró
+   * interés (bajó más de la mitad de la página) o cuando está a punto de irse
+   * (el cursor sale por arriba de la ventana).
+   */
   useEffect(() => {
-    const alreadySeen = sessionStorage.getItem(STORAGE_KEY)
-    if (alreadySeen) return
+    if (sessionStorage.getItem(STORAGE_KEY)) return
 
-    const timer = setTimeout(() => {
+    const show = () => {
       setIsOpen(true)
       sessionStorage.setItem(STORAGE_KEY, 'true')
-    }, 2500)
+      cleanup()
+    }
 
-    return () => clearTimeout(timer)
+    const onScroll = () => {
+      const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight)
+      if (scrolled > 0.5) show()
+    }
+
+    // Salida del cursor por el borde superior: la señal clásica de "me voy".
+    // En móvil no existe, por eso el scroll es el disparador principal.
+    const onMouseOut = (e: MouseEvent) => {
+      if (e.clientY <= 0 && !e.relatedTarget) show()
+    }
+
+    const cleanup = () => {
+      window.removeEventListener('scroll', onScroll)
+      document.removeEventListener('mouseout', onMouseOut)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    document.addEventListener('mouseout', onMouseOut)
+
+    return cleanup
   }, [])
 
   if (!isOpen) return null
 
+  const campaignActive = isCampaignActive()
   const message = encodeURIComponent(
-    'Hola INVENTIA! Quiero reservar un cupo para el campamento de octubre.'
+    campaignActive
+      ? CAMPAIGN.whatsappMessage
+      : '¡Hola INVENTIA! Quiero saber más sobre la clase de prueba gratis.'
   )
   const whatsappUrl = `https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=${message}`
 
@@ -60,13 +91,17 @@ export default function WelcomePopup() {
             Construye. Programa. Innova.
           </h3>
           <p className="text-lg font-bold text-gray-800 mb-1">
-            Reserva un cupo en el Campamento STEM
+            La primera clase es gratis
           </p>
-          <p className="text-gray-600 mb-3">5-12 de octubre · Cupos limitados</p>
+          <p className="text-gray-600 mb-4">
+            Sin costo y sin compromiso. Tú ves si le gusta antes de decidir.
+          </p>
 
-          <div className="inline-flex items-center gap-2 border-2 border-dashed border-accent-400 bg-accent-50 text-accent-700 font-bold px-4 py-2 rounded-lg mb-4">
-            🎉 30% OFF en el Campamento STEM
-          </div>
+          {campaignActive && (
+            <div className="inline-flex items-center gap-2 border-2 border-dashed border-accent-400 bg-accent-50 text-accent-700 font-bold px-4 py-2 rounded-lg mb-4">
+              🎉 {CAMPAIGN.name} · {CAMPAIGN.dateLabel}
+            </div>
+          )}
 
           <Link
             href="/clase-de-prueba"
@@ -87,7 +122,7 @@ export default function WelcomePopup() {
           </a>
 
           <p className="text-xs text-gray-500 mt-4">
-            Menciona esta promoción al escribirnos · Sin compromiso · Respondemos en minutos
+            Grupos de máximo 8 niños · 4 a 16 años · Bogotá, presencial o virtual
           </p>
         </div>
       </div>

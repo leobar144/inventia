@@ -1,7 +1,14 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { FaCheckCircle } from 'react-icons/fa'
-import { SITE_CONFIG, FEATURES, PRICING_PLANS, PROGRAM_TRACKS } from '@/lib/constants'
+import {
+  SITE_CONFIG,
+  FEATURES,
+  PRICING_PLANS,
+  PROGRAM_TRACKS,
+  CAMPAIGN,
+  isCampaignActive,
+} from '@/lib/constants'
 import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
 import WelcomePopup from '@/components/WelcomePopup'
 import MobileStickyBar from '@/components/MobileStickyBar'
@@ -9,6 +16,9 @@ import InventiaBot from '@/components/InventiaBot'
 import ContactSection from '@/components/ContactSection'
 
 export default function Home() {
+  const campaignActive = isCampaignActive()
+  const minPlanPrice = Math.min(...PRICING_PLANS.map((p) => p.price))
+
   return (
     <>
       <WelcomePopup />
@@ -20,11 +30,13 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="space-y-6 animate-fade-in">
-              <div className="inline-block">
-                <span className="px-4 py-2 bg-accent-100 text-accent-700 rounded-full text-sm font-bold">
-                  🚀 Campamento STEM 5-12 de Octubre
-                </span>
-              </div>
+              {campaignActive && (
+                <div className="inline-block">
+                  <span className="px-4 py-2 bg-accent-100 text-accent-700 rounded-full text-sm font-bold">
+                    🚀 {CAMPAIGN.name} {CAMPAIGN.dateLabel}
+                  </span>
+                </div>
+              )}
 
               <h1 className="text-5xl md:text-6xl font-heading font-bold">
                 Tu hijo no usa{' '}
@@ -32,32 +44,40 @@ export default function Home() {
               </h1>
 
               <p className="text-xl text-gray-600 leading-relaxed">
-                <span className="font-bold">La inventa.</span> En INVENTIA, aprendes creando.
-                Construye robots, programas videojuegos y entiende el futuro con IA.
+                <span className="font-bold">La inventa.</span> Robótica, programación e IA para
+                niños de <strong>4 a 16 años</strong> en <strong>Bogotá</strong>, presencial o
+                virtual, en grupos de máximo 8.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              {/* Un solo llamado principal: el segundo botón se llevaba gente
+                  que ya venía decidida a agendar. */}
+              <div className="pt-2">
                 <Link href="/clase-de-prueba" className="btn btn-primary text-lg">
-                  📅 Reservar Clase de Prueba Gratis
+                  📅 Reservar clase de prueba gratis
                 </Link>
-                <Link href="#cursos" className="btn btn-outline text-lg">
-                  Conocer Cursos
-                </Link>
+                <p className="text-sm text-gray-500 mt-3">
+                  Sin costo y sin compromiso · Planes desde{' '}
+                  <strong className="text-gray-700">
+                    ${minPlanPrice.toLocaleString('es-CO')} al mes
+                  </strong>
+                </p>
               </div>
 
-              {/* Stats */}
+              {/* Datos verificables en vez de cifras redondas. Un papá compara
+                  "máximo 8 niños" con la academia de al lado; "100+ alumnos" lo
+                  dice todo el mundo y no significa nada. */}
               <div className="grid grid-cols-3 gap-4 pt-8 border-t border-gray-200">
                 <div>
-                  <p className="text-3xl font-bold gradient-text">100+</p>
-                  <p className="text-sm text-gray-600">Niños capacitados</p>
-                </div>
-                <div>
-                  <p className="text-3xl font-bold gradient-text">50+</p>
-                  <p className="text-sm text-gray-600">Proyectos creados</p>
+                  <p className="text-3xl font-bold gradient-text">8</p>
+                  <p className="text-sm text-gray-600">Niños por clase, máximo</p>
                 </div>
                 <div>
                   <p className="text-3xl font-bold gradient-text">4-16</p>
-                  <p className="text-sm text-gray-600">Años de edad</p>
+                  <p className="text-sm text-gray-600">Años, con nivel propio</p>
+                </div>
+                <div>
+                  <p className="text-3xl font-bold gradient-text">32</p>
+                  <p className="text-sm text-gray-600">Módulos de currículo</p>
                 </div>
               </div>
             </div>
@@ -324,7 +344,9 @@ export default function Home() {
               },
               {
                 q: '¿Las clases son presenciales o virtuales?',
-                a: 'Tenemos ambas modalidades: cursos en vivo por Google Meet durante todo el año, y el Campamento STEM presencial en Bogotá (próxima edición: 5-12 de octubre).',
+                a: `Tenemos ambas modalidades: clases presenciales en Bogotá y clases en vivo por Google Meet, durante todo el año.${
+                  campaignActive ? ` Además, ${CAMPAIGN.name} del ${CAMPAIGN.dateLabel}.` : ''
+                }`,
               },
               {
                 q: '¿A partir de qué edad puede empezar mi hijo?',
@@ -394,35 +416,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="section">
-        <div className="section-container">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Lo que dicen las familias</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Estamos construyendo esta sección con testimonios reales de familias INVENTIA.
-              Vuelve pronto.
-            </p>
-          </div>
-
-          <FadeInGrid className="grid md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <FadeInItem
-                key={i}
-                className="card p-8 flex flex-col items-center text-center border-2 border-dashed border-gray-200"
-              >
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-3xl mb-4">
-                  💬
-                </div>
-                <p className="text-gray-500 italic mb-4">
-                  Espacio reservado para el testimonio de una familia INVENTIA
-                </p>
-                <p className="text-sm text-gray-400">Próximamente</p>
-              </FadeInItem>
-            ))}
-          </FadeInGrid>
-        </div>
-      </section>
+      {/* Aquí iba una sección de testimonios con tres tarjetas vacías que decían
+          "Próximamente". Estaba justo en el punto del scroll donde el padre busca
+          la prueba de que otros ya confiaron — y le respondía que nadie lo ha
+          hecho. Se quita hasta tener testimonios reales: una página sin la
+          sección se lee normal, con la sección vacía se lee como negocio que no
+          arrancó. */}
 
       <ContactSection />
 
@@ -433,16 +432,27 @@ export default function Home() {
             ¿Listo para que tu hijo cree?
           </h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Campamento de receso 5-12 de octubre. Cupos limitados. Inscribe ahora.
+            {campaignActive
+              ? `${CAMPAIGN.name} ${CAMPAIGN.dateLabel}. Cupos limitados — los grupos son de máximo 8 niños.`
+              : 'La primera clase es gratis y sin compromiso. Los grupos son de máximo 8 niños.'}
           </p>
-          <a
-            href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=Hola%20INVENTIA%21%20Quiero%20reservar%20el%20campamento%20de%20octubre`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block px-8 py-4 bg-white text-primary-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors"
-          >
-            📅 Reservar Cupo Ahora
-          </a>
+          {campaignActive ? (
+            <a
+              href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=${encodeURIComponent(CAMPAIGN.whatsappMessage)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-8 py-4 bg-white text-primary-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors"
+            >
+              📅 Reservar cupo ahora
+            </a>
+          ) : (
+            <Link
+              href="/clase-de-prueba"
+              className="inline-block px-8 py-4 bg-white text-primary-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors"
+            >
+              📅 Agendar clase de prueba gratis
+            </Link>
+          )}
         </div>
       </section>
     </>

@@ -34,7 +34,11 @@ function formatTimeLabel(time: string): string {
   return `${hour12}:${String(m).padStart(2, '0')} ${period}`
 }
 
-const TOTAL_STEPS = 5
+// Antes eran 5 pasos para agendar algo GRATIS. Cada paso pierde gente, y dos de
+// esos pasos no aportaban: el curso muchos papás no lo saben todavía (ahora es
+// opcional y va junto a los datos del niño), y el último solo repetía lo que ya
+// habían escrito (ahora el resumen va junto a la elección de horario).
+const TOTAL_STEPS = 3
 
 export default function ClaseDePruebaPage() {
   const router = useRouter()
@@ -59,7 +63,7 @@ export default function ClaseDePruebaPage() {
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (step !== 4 || days !== null) return
+    if (step !== 3 || days !== null) return
     setLoadingDays(true)
     fetch('/api/trial-bookings')
       .then((res) => res.json())
@@ -72,10 +76,8 @@ export default function ClaseDePruebaPage() {
 
   const canProceed = () => {
     if (step === 1) return childName.trim() !== '' && childAge.trim() !== ''
-    if (step === 2) return courseInterest !== ''
-    if (step === 3)
+    if (step === 2)
       return parentName.trim() !== '' && whatsapp.trim() !== '' && parentEmail.trim() !== ''
-    if (step === 4) return selectedSlot !== null
     return true
   }
 
@@ -166,33 +168,41 @@ export default function ClaseDePruebaPage() {
                   onChange={(e) => setChildAge(e.target.value)}
                 />
               </div>
+
+              {/* El curso es OPCIONAL y vive aquí. Como paso propio y obligatorio
+                  frenaba a los padres que todavía no saben qué le conviene a su
+                  hijo — que son la mayoría de los que llegan de un anuncio. */}
+              <div className="pt-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ¿Ya sabes qué le interesa? <span className="text-gray-400">(opcional)</span>
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {COURSES.map((course) => (
+                    <button
+                      key={course.id}
+                      type="button"
+                      onClick={() =>
+                        setCourseInterest(courseInterest === course.id ? '' : course.id)
+                      }
+                      className={`px-3 py-2 rounded-lg border-2 text-sm transition-colors ${
+                        courseInterest === course.id
+                          ? 'border-primary-500 bg-primary-50 text-primary-700 font-medium'
+                          : 'border-gray-200 text-gray-600 hover:border-primary-300'
+                      }`}
+                    >
+                      {course.icon} {course.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Si no estás seguro, no importa — en la clase de prueba lo definimos contigo.
+                </p>
+              </div>
             </div>
           )}
 
           {/* Step 2 */}
           {step === 2 && (
-            <div className="space-y-4">
-              <h2 className="text-2xl font-heading font-bold">¿Qué curso le interesa?</h2>
-              <div className="grid grid-cols-2 gap-3">
-                {COURSES.map((course) => (
-                  <button
-                    key={course.id}
-                    type="button"
-                    onClick={() => setCourseInterest(course.id)}
-                    className={`card-hover p-4 text-center ${
-                      courseInterest === course.id ? 'border-primary-500 ring-2 ring-primary-200' : ''
-                    }`}
-                  >
-                    <div className="text-3xl mb-2">{course.icon}</div>
-                    <p className="text-sm font-medium">{course.label}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Step 3 */}
-          {step === 3 && (
             <div className="space-y-4">
               <h2 className="text-2xl font-heading font-bold">Tus datos de contacto</h2>
               <div>
@@ -245,7 +255,7 @@ export default function ClaseDePruebaPage() {
           )}
 
           {/* Step 4 */}
-          {step === 4 && (
+          {step === 3 && (
             <div className="space-y-4">
               <h2 className="text-2xl font-heading font-bold">Elige fecha y hora</h2>
 
@@ -308,22 +318,21 @@ export default function ClaseDePruebaPage() {
                   </div>
                 </>
               )}
-            </div>
-          )}
 
-          {/* Step 5 */}
-          {step === 5 && (
-            <div className="space-y-4">
-              <h2 className="text-2xl font-heading font-bold">Confirma tu reserva</h2>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
-                <p><strong>Niño/a:</strong> {childName}, {childAge} años</p>
-                <p><strong>Curso:</strong> {COURSES.find((c) => c.id === courseInterest)?.label}</p>
-                <p><strong>Contacto:</strong> {parentName} · {whatsapp} · {parentEmail}</p>
-                <p className="first-letter:uppercase">
-                  <strong>Horario:</strong> {selectedDateLabel} ·{' '}
-                  {selectedSlot && formatTimeLabel(selectedSlot.time)}
-                </p>
-              </div>
+              {/* El resumen y la autorización viven aquí, no en un paso aparte:
+                  el paso extra solo repetía lo que el padre acababa de escribir. */}
+              {selectedSlot && (
+                <div className="bg-gray-50 rounded-lg p-4 space-y-1.5 text-sm mt-6">
+                  <p className="first-letter:uppercase">
+                    <strong>{childName}</strong>, {childAge} años · {selectedDateLabel} a las{' '}
+                    {formatTimeLabel(selectedSlot.time)}
+                  </p>
+                  <p className="text-gray-600">
+                    Te confirmamos a {parentEmail} y por WhatsApp al {whatsapp}.
+                  </p>
+                </div>
+              )}
+
               <label className="flex items-start gap-3 cursor-pointer pt-1">
                 <input
                   type="checkbox"
@@ -345,9 +354,7 @@ export default function ClaseDePruebaPage() {
                 </span>
               </label>
 
-              {submitError && (
-                <p className="text-red-600 text-sm">{submitError}</p>
-              )}
+              {submitError && <p className="text-red-600 text-sm">{submitError}</p>}
             </div>
           )}
 
@@ -375,7 +382,7 @@ export default function ClaseDePruebaPage() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={submitting || !dataConsent}
+                disabled={submitting || !dataConsent || !selectedSlot}
                 className="btn btn-primary disabled:opacity-40"
               >
                 {submitting ? 'Reservando...' : 'Confirmar reserva'}
