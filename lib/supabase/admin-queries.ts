@@ -193,15 +193,37 @@ export async function getAllCoursesWithInstructor(): Promise<CourseWithInstructo
 
   const { data: sessions } = await supabase
     .from('class_sessions')
-    .select('course_id')
+    .select('course_id, scheduled_at')
     .in(
       'course_id',
       courses.map((c) => c.id)
     )
 
   const sessionCountByCourse = new Map<string, number>()
+  const slotsByCourse = new Map<string, Set<string>>()
+
   for (const s of sessions ?? []) {
     sessionCountByCourse.set(s.course_id, (sessionCountByCourse.get(s.course_id) ?? 0) + 1)
+
+    // El horario se DERIVA de las clases realmente programadas en vez de leerse
+    // de courses.schedule: ese campo es texto libre que nadie actualiza, así
+    // que terminaba diciendo "sin horario definido" aunque hubiera clases, o
+    // peor, mostrando un horario viejo que ya no era cierto.
+    const d = new Date(s.scheduled_at)
+    const day = d.toLocaleDateString('es-CO', { weekday: 'short', timeZone: 'America/Bogota' })
+    const time = d.toLocaleTimeString('es-CO', {
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZone: 'America/Bogota',
+    })
+    const set = slotsByCourse.get(s.course_id) ?? new Set<string>()
+    set.add(`${day} ${time}`)
+    slotsByCourse.set(s.course_id, set)
+  }
+
+  const scheduleByCourse = new Map<string, string>()
+  for (const [courseId, slots] of slotsByCourse) {
+    scheduleByCourse.set(courseId, [...slots].join(' · '))
   }
 
   return courses.map((c) => ({
@@ -209,6 +231,7 @@ export async function getAllCoursesWithInstructor(): Promise<CourseWithInstructo
     instructor_name: c.instructor_id ? (nameById.get(c.instructor_id) ?? null) : null,
     plan_prices: sortByPlanOrder(pricesByCourse.get(c.id) ?? []),
     session_count: sessionCountByCourse.get(c.id) ?? 0,
+    schedule: scheduleByCourse.get(c.id) ?? null,
   }))
 }
 
@@ -227,6 +250,75 @@ export async function getAllInstructors(): Promise<InstructorOption[]> {
 
   if (error) throw error
   return data ?? []
+}
+
+export interface CourseSessionRow {
+  id: string
+  title: string
+  scheduledAt: string
+  modality: 'presencial' | 'virtual'
+  googleMeetLink: string | null
+  moduleNumber: number | null
+  attendanceCount: number
+}
+
+export interface CourseWithSessions {
+  id: string
+  title: string
+  curriculumLevelId: string | null
+  instructorName: string | null
+  sessions: CourseSessionRow[]
+}
+
+/** Todas las clases de un curso, con cuánta asistencia tiene cada una. */
+export async function getCourseWithSessions(courseId: string): Promise<CourseWithSessions | null> {
+  const supabase = createServiceRoleClient()
+
+  const { data: course } = await supabase
+    .from('courses')
+    .select('id, title, curriculum_level_id, instructor_id')
+    .eq('id', courseId)
+    .maybeSingle()
+
+  if (!course) return null
+
+  const [{ data: sessions }, { data: instructor }] = await Promise.all([
+    supabase
+      .from('class_sessions')
+      .select('id, title, scheduled_at, modality, google_meet_link, module_number')
+      .eq('course_id', courseId)
+      .order('scheduled_at', { ascending: true }),
+    course.instructor_id
+      ? supabase.from('profiles').select('full_name').eq('id', course.instructor_id).maybeSingle()
+      : Promise.resolve({ data: null }),
+  ])
+
+  const sessionIds = (sessions ?? []).map((s) => s.id)
+  const { data: attendance } =
+    sessionIds.length > 0
+      ? await supabase.from('class_attendance').select('session_id').in('session_id', sessionIds)
+      : { data: [] }
+
+  const countBySession = new Map<string, number>()
+  for (const a of attendance ?? []) {
+    countBySession.set(a.session_id, (countBySession.get(a.session_id) ?? 0) + 1)
+  }
+
+  return {
+    id: course.id,
+    title: course.title,
+    curriculumLevelId: course.curriculum_level_id,
+    instructorName: instructor?.full_name ?? null,
+    sessions: (sessions ?? []).map((s) => ({
+      id: s.id,
+      title: s.title,
+      scheduledAt: s.scheduled_at,
+      modality: (s.modality as 'presencial' | 'virtual') ?? 'virtual',
+      googleMeetLink: s.google_meet_link,
+      moduleNumber: s.module_number,
+      attendanceCount: countBySession.get(s.id) ?? 0,
+    })),
+  }
 }
 
 export interface SchoolLeadRow {

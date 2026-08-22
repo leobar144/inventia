@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { getAllCoursesWithInstructor, getAllInstructors } from '@/lib/supabase/admin-queries'
 import { getPlan } from '@/lib/plans'
 import CourseInstructorSelect from '@/components/admin/CourseInstructorSelect'
@@ -44,14 +45,19 @@ export default async function AdminCursosPage() {
               <div>
                 <p className="font-bold">{course.title}</p>
                 <p className="text-sm text-gray-500">
-                  {course.schedule || 'Sin horario definido'} · {course.session_count} clase
-                  {course.session_count === 1 ? '' : 's'} programada
-                  {course.session_count === 1 ? '' : 's'}
+                  {course.schedule || 'Sin horario definido'}
                 </p>
-                {course.session_count === 0 && (
+                {course.session_count === 0 ? (
                   <p className="text-sm text-red-700 mt-1">
                     🔴 Sin clases programadas — si un padre paga, no verá nada en su portal.
                   </p>
+                ) : (
+                  <Link
+                    href={`/admin/cursos/${course.id}/sesiones`}
+                    className="text-sm text-primary-600 hover:underline"
+                  >
+                    Ver y editar sus {course.session_count} clases →
+                  </Link>
                 )}
                 {course.plan_prices.length === 0 ? (
                   <p className="text-sm text-accent-700 mt-1">
