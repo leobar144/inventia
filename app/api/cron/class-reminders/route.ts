@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createServiceRoleClient } from '@/lib/supabase/server'
 import { sendClassReminderEmail } from '@/lib/email'
 import { sendPendingTrialFollowUps } from '@/lib/trialFollowUp'
+import { alertAdmin } from '@/lib/alerts'
 
 // Corre una vez al día (ver vercel.json) — el plan gratuito de Vercel no
 // permite cron jobs más frecuentes. Por eso el recordatorio es "hoy tienes
@@ -22,6 +23,7 @@ export async function GET(request: Request) {
     followUps = await sendPendingTrialFollowUps()
   } catch (error) {
     console.error('Error enviando seguimientos de clase de prueba:', error)
+    await alertAdmin('cron: seguimientos de clase de prueba', error)
   }
 
   // Colombia es UTC-5 todo el año (sin horario de verano) — se calcula el
@@ -43,10 +45,15 @@ export async function GET(request: Request) {
     .eq('reminder_sent', false)
 
   if (sessionsError) {
+    await alertAdmin('cron: no se pudieron leer las clases del día', sessionsError.message)
+    await logCronRun({ ok: false, error: sessionsError.message, followUps })
     return NextResponse.json({ error: sessionsError.message, followUps }, { status: 500 })
   }
 
   if (!sessions || sessions.length === 0) {
+    // Un día sin clases es normal, no un fallo: igual se deja constancia de que
+    // la tarea sí corrió.
+    await logCronRun({ ok: true, sent: 0, followUps })
     return NextResponse.json({ sent: 0, followUps })
   }
 
@@ -132,5 +139,33 @@ export async function GET(request: Request) {
       sessions.map((s) => s.id)
     )
 
+  await logCronRun({ ok: true, sent, followUps })
   return NextResponse.json({ sent, followUps })
+}
+
+/**
+ * Deja constancia de que la tarea corrió y con qué resultado.
+ *
+ * Sin esta bitácora, si el cron deja de ejecutarse los recordatorios se apagan
+ * en silencio y nadie lo nota en semanas — justo cuando las familias empiezan a
+ * faltar a clase sin saber por qué.
+ */
+async function logCronRun(data: {
+  ok: boolean
+  sent?: number
+  error?: string
+  followUps: { day1: number; day4: number }
+}) {
+  try {
+    const admin = createServiceRoleClient()
+    await admin.from('cron_runs').insert({
+      job: 'class-reminders',
+      ok: data.ok,
+      reminders_sent: data.sent ?? 0,
+      follow_ups_sent: data.followUps.day1 + data.followUps.day4,
+      error: data.error ?? null,
+    })
+  } catch {
+    // La bitácora nunca debe tumbar la tarea que documenta.
+  }
 }

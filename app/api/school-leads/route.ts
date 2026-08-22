@@ -1,8 +1,22 @@
 import { NextResponse } from 'next/server'
 import { createServiceRoleClient } from '@/lib/supabase/server'
 import { sendSchoolLeadNotification } from '@/lib/email'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 export async function POST(request: Request) {
+  const limit = await checkRateLimit(request, {
+    endpoint: 'school-leads',
+    max: 3,
+    windowMinutes: 60,
+  })
+
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: 'Ya enviaste varias solicitudes. Espera un momento o escríbenos por WhatsApp.' },
+      { status: 429 }
+    )
+  }
+
   const body = (await request.json()) as {
     institutionName?: string
     contactName?: string

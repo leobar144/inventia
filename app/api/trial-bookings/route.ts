@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createServiceRoleClient } from '@/lib/supabase/server'
 import { getAvailableSlots } from '@/lib/supabase/trial-queries'
 import { sendTrialBookingNotification, sendParentConfirmationEmail } from '@/lib/email'
+import { checkRateLimit } from '@/lib/rateLimit'
 import type { TrialBookingInput } from '@/types'
 
 const COURSE_LABELS: Record<string, string> = {
@@ -30,6 +31,21 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  // Una familia agenda una vez; tres por hora deja margen para reintentos
+  // legítimos y corta cualquier automatización.
+  const limit = await checkRateLimit(request, {
+    endpoint: 'trial-bookings',
+    max: 3,
+    windowMinutes: 60,
+  })
+
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: 'Ya enviaste varias solicitudes. Espera un momento o escríbenos por WhatsApp.' },
+      { status: 429 }
+    )
+  }
+
   const body: TrialBookingInput = await request.json()
 
   if (

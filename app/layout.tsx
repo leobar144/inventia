@@ -3,6 +3,7 @@ import { Inter, Figtree } from 'next/font/google'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import WhatsAppChatButton from '@/components/WhatsAppChatButton'
+import { Analytics } from '@vercel/analytics/next'
 import '@/styles/globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
@@ -84,6 +85,9 @@ export default function RootLayout({
         <main className="flex-grow">{children}</main>
         <Footer />
         <WhatsAppChatButton />
+        {/* Sin medición no hay forma de saber si una campaña falla por el
+            anuncio, por la página o por el formulario. */}
+        <Analytics />
       </body>
     </html>
   )

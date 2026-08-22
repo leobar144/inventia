@@ -252,6 +252,47 @@ export async function getAllInstructors(): Promise<InstructorOption[]> {
   return data ?? []
 }
 
+export interface CronStatus {
+  ranAt: string | null
+  ok: boolean
+  remindersSent: number
+  followUpsSent: number
+  error: string | null
+  /** Horas desde la última corrida. Null si nunca corrió. */
+  hoursAgo: number | null
+}
+
+/**
+ * Última ejecución de la tarea diaria.
+ *
+ * Se muestra en Métricas para que un fallo silencioso se note: si el cron deja
+ * de correr, los recordatorios de clase se apagan sin que nadie se entere.
+ */
+export async function getLastCronRun(): Promise<CronStatus> {
+  const supabase = createServiceRoleClient()
+
+  const { data } = await supabase
+    .from('cron_runs')
+    .select('ran_at, ok, reminders_sent, follow_ups_sent, error')
+    .eq('job', 'class-reminders')
+    .order('ran_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (!data) {
+    return { ranAt: null, ok: false, remindersSent: 0, followUpsSent: 0, error: null, hoursAgo: null }
+  }
+
+  return {
+    ranAt: data.ran_at,
+    ok: data.ok,
+    remindersSent: data.reminders_sent,
+    followUpsSent: data.follow_ups_sent,
+    error: data.error,
+    hoursAgo: (Date.now() - new Date(data.ran_at).getTime()) / (1000 * 60 * 60),
+  }
+}
+
 export interface CourseSessionRow {
   id: string
   title: string

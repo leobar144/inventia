@@ -1,4 +1,4 @@
-import { getAdminMetrics, getCourseOccupancy } from '@/lib/supabase/admin-queries'
+import { getAdminMetrics, getCourseOccupancy, getLastCronRun } from '@/lib/supabase/admin-queries'
 import { COORDINATOR_MONTHLY_COP, INSTRUCTOR_HOURLY_COP } from '@/lib/economics'
 
 const HEALTH_STYLES = {
@@ -8,7 +8,14 @@ const HEALTH_STYLES = {
 } as const
 
 export default async function AdminMetricsPage() {
-  const [metrics, occupancy] = await Promise.all([getAdminMetrics(), getCourseOccupancy()])
+  const [metrics, occupancy, cron] = await Promise.all([
+    getAdminMetrics(),
+    getCourseOccupancy(),
+    getLastCronRun(),
+  ])
+
+  // Corre una vez al día: si pasaron más de 30 horas, algo dejó de funcionar.
+  const cronAtrasado = cron.hoursAgo === null || cron.hoursAgo > 30
 
   // Margen mensual agregado de todos los grupos, contra el costo fijo.
   const totalMarginPerClass = occupancy.reduce((sum, o) => sum + o.economics.marginPerClass, 0)
@@ -21,6 +28,21 @@ export default async function AdminMetricsPage() {
         <h1 className="text-3xl font-heading font-bold">Métricas</h1>
         <p className="text-gray-600">Vistazo rápido del negocio.</p>
       </div>
+
+      {(cronAtrasado || !cron.ok) && (
+        <div className="card p-4 border-l-4 border-l-red-500 bg-red-50">
+          <p className="font-bold text-red-900">
+            🔴 Los envíos automáticos no están corriendo
+          </p>
+          <p className="text-sm text-red-800">
+            {cron.ranAt === null
+              ? 'La tarea diaria nunca se ha ejecutado. Los recordatorios de clase y el seguimiento post-prueba no están saliendo.'
+              : cron.error
+                ? `Última corrida con error: ${cron.error}`
+                : `La última corrida fue hace ${Math.round(cron.hoursAgo ?? 0)} horas. Debería correr todos los días.`}
+          </p>
+        </div>
+      )}
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="card p-6">

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createServiceRoleClient } from '@/lib/supabase/server'
 import { verifyWompiWebhookSignature } from '@/lib/wompi'
 import { applyApprovedPayment } from '@/lib/payments'
+import { alertAdmin } from '@/lib/alerts'
 
 interface WompiTransaction {
   id: string
@@ -36,7 +37,16 @@ export async function POST(request: Request) {
     .single()
 
   if (!payment) {
-    // Referencia desconocida — no es un pago que hayamos creado nosotros, ignorar.
+    // Una referencia desconocida puede ser ruido, pero si Wompi reporta un pago
+    // APROBADO que no existe en nuestra base, alguien pagó y no quedó inscrito.
+    // Eso hay que saberlo de inmediato, no cuando el padre reclame.
+    if (transaction.status === 'APPROVED') {
+      await alertAdmin('webhook-wompi: pago aprobado sin registro', 'Referencia desconocida', {
+        referencia: transaction.reference,
+        transaccion: transaction.id,
+        monto: transaction.amount_in_cents / 100,
+      })
+    }
     return NextResponse.json({ received: true })
   }
 
@@ -57,7 +67,18 @@ export async function POST(request: Request) {
     .eq('id', payment.id)
 
   if (transaction.status === 'APPROVED') {
-    await applyApprovedPayment(admin, payment)
+    try {
+      await applyApprovedPayment(admin, payment)
+    } catch (error) {
+      // El pago ya se cobró. Si activar la inscripción falla, la familia pagó y
+      // no quedó inscrita — hay que intervenir a mano y hay que saberlo ya.
+      await alertAdmin('webhook-wompi: no se pudo activar la inscripción', error, {
+        referencia: transaction.reference,
+        pagoId: payment.id,
+        inscripcionId: payment.enrollment_id,
+      })
+      return NextResponse.json({ error: 'Error al activar' }, { status: 500 })
+    }
   }
 
   return NextResponse.json({ received: true })

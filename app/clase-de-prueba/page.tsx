@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FaArrowLeft, FaArrowRight, FaSpinner } from 'react-icons/fa'
+import { track } from '@vercel/analytics'
 import { CONSENT_VERSION } from '@/lib/legal'
 import type { AvailableSlotDay } from '@/types'
 
@@ -116,6 +117,15 @@ export default function ClaseDePruebaPage() {
     }
 
     const { bookingId } = await res.json()
+
+    // El evento que importa para medir campañas: no cuánta gente VISITA, sino
+    // cuánta COMPLETA la reserva. Sin esto, la analítica solo dice que llegó
+    // tráfico, no si el embudo funciona.
+    track('reserva_completada', {
+      edad: Number(childAge),
+      curso: courseInterest || 'sin_definir',
+    })
+
     router.push(`/clase-de-prueba/confirmacion/${bookingId}`)
   }
 
