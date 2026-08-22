@@ -67,7 +67,7 @@ export default function AcercaDePage() {
         <div className="section-container">
           <FadeInGrid className="grid md:grid-cols-3 gap-8">
             {FEATURES.map((feature, index) => (
-              <FadeInItem key={index} className="card-hover p-8 hover:border-accent-300">
+              <FadeInItem key={index} className="card-hover p-8 hover:border-primary-300">
                 <div className="text-5xl mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>

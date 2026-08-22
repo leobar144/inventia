@@ -1,14 +1,24 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Poppins } from 'next/font/google'
+import { Inter, Fraunces } from 'next/font/google'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import WhatsAppChatButton from '@/components/WhatsAppChatButton'
 import '@/styles/globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
-const poppins = Poppins({
+
+/**
+ * Titulares en Fraunces, no en Poppins.
+ *
+ * Poppins es la fuente por defecto de toda academia infantil — usarla nos
+ * mimetizaba con la competencia en vez de diferenciarnos. Una serif con carácter
+ * va a contramano de la categoría (todos usan geométricas redondeadas) y sostiene
+ * mejor un producto de varios cientos de miles al mes: lee como criterio, no
+ * como plantilla.
+ */
+const fraunces = Fraunces({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['400', '600', '700', '900'],
   variable: '--font-heading',
 })
 
@@ -61,7 +71,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="es" className={`${inter.variable} ${fraunces.variable}`}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

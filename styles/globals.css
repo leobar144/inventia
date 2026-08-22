@@ -66,8 +66,11 @@ h3 {
   @apply bg-gradient-to-br from-secondary-400 via-secondary-500 to-secondary-600;
 }
 
+/* Antes era un degradado verde→azul recortado sobre el texto. Fue tendencia
+   hacia 2021 y hoy lee como plantilla; en color sólido el mismo titular se ve
+   mucho más seguro de sí mismo y sostiene mejor el precio del producto. */
 .gradient-text {
-  @apply bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent;
+  @apply text-primary-600;
 }
 
 /* Sections */

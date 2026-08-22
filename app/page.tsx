@@ -111,8 +111,11 @@ export default function Home() {
                   />
                 </div>
               </FloatingCard>
-              <div className="absolute -bottom-4 -left-4 bg-accent-500 text-white px-4 py-2 rounded-xl shadow-lg font-bold text-sm">
-                +50 proyectos creados 🎉
+              {/* Verde, no naranja: el naranja queda reservado para urgencia
+                  (campaña, cupos). Y el dato dice lo que nos diferencia, no una
+                  cifra que cualquiera puede afirmar. */}
+              <div className="absolute -bottom-4 -left-4 bg-primary-600 text-white px-4 py-2 rounded-xl shadow-lg font-bold text-sm">
+                Máximo 8 niños por clase
               </div>
               <FloatingCard className="absolute -top-6 -right-6 bg-white rounded-full p-2 shadow-lg hidden sm:block">
                 <InventiaBot className="w-16 h-16" />
@@ -134,7 +137,7 @@ export default function Home() {
 
           <FadeInGrid className="grid md:grid-cols-3 gap-8">
             {FEATURES.map((feature, index) => (
-              <FadeInItem key={index} className="card-hover p-8 hover:border-accent-300">
+              <FadeInItem key={index} className="card-hover p-8 hover:border-primary-300">
                 <div className="text-5xl mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
@@ -332,7 +335,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="max-w-2xl mx-auto mt-8 text-center bg-gradient-to-r from-accent-50 to-accent-100 border border-accent-200 rounded-xl p-5">
+          <div className="max-w-2xl mx-auto mt-8 text-center bg-primary-50 border border-primary-200 rounded-xl p-5">
             <p className="text-gray-800">
               <span className="text-xl mr-1">🏆</span>
               <strong>¿Tu hijo llega a Inventor(a) dos veces?</strong> Desbloquea el nivel{' '}
