@@ -1,0 +1,46 @@
+# INVENTIA Lab — plataforma de programación propia, basada en Open Roberta Lab.
+#
+# FASE 1: levantarlo funcionando, SIN personalizar. Primero hay que confirmar
+# que el servidor aguanta, que los micro:bit se conectan y que los niños pueden
+# guardar sus programas. Personalizar antes de verificar eso es trabajo que se
+# puede perder.
+#
+# IMPORTANTE mientras esté sin personalizar: NO se puede presentar como
+# "INVENTIA Lab". La licencia Apache 2.0 permite usar y modificar el código,
+# pero Fraunhofer reserva el nombre y el logo. Hasta la fase 2 esto es
+# "Open Roberta Lab, alojado por INVENTIA" — nada más.
+#
+# Para levantarlo:  docker compose up -d
+# Para actualizarlo: docker compose pull && docker compose up -d
+
+services:
+  lab:
+    image: openroberta/standalone:5.2.2
+    container_name: inventia-lab
+    restart: unless-stopped
+    # No se expone el puerto al mundo: Caddy es el único que habla con él.
+    expose:
+      - '1999'
+    volumes:
+      # La base de datos de los programas de los niños. Este directorio ES el
+      # dato valioso: si se pierde, se pierden todos sus proyectos.
+      - ./datos/db:/opt/db
+      # Temporales de compilación cruzada (al generar el archivo para el robot).
+      - ./datos/tmp:/tmp/openrobertaTmp
+
+  # Caddy resuelve HTTPS solo, pidiendo el certificado a Let's Encrypt.
+  # Se usa en vez de nginx porque no hay que configurar certificados a mano ni
+  # acordarse de renovarlos.
+  caddy:
+    image: caddy:2-alpine
+    container_name: inventia-lab-caddy
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./datos/caddy:/data
+      - ./datos/caddy-config:/config
+    depends_on:
+      - lab

@@ -1,0 +1,28 @@
+# Caddy pide y renueva el certificado HTTPS solo. Lo único que hay que cambiar
+# aquí es el dominio de la primera línea, si se usa otro.
+#
+# HTTPS no es opcional: sin él el navegador bloquea la conexión por USB con el
+# micro:bit (WebUSB solo funciona en sitios seguros), y la plataforma quedaría
+# inservible para lo que se compró.
+
+lab.inventiagroup.com {
+    reverse_proxy lab:1999
+
+    encode gzip
+
+    # Cabeceras de seguridad básicas. `frame-ancestors 'none'` impide que otro
+    # sitio meta la plataforma dentro de un iframe haciéndola pasar por suya.
+    header {
+        Strict-Transport-Security "max-age=31536000"
+        X-Content-Type-Options "nosniff"
+        Content-Security-Policy "frame-ancestors 'none'"
+        -Server
+    }
+
+    log {
+        output file /data/acceso.log {
+            roll_size 10MiB
+            roll_keep 5
+        }
+    }
+}
