@@ -84,18 +84,74 @@ export default async function AulaPage({
               <p className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2.5 mb-4">
                 💡 {tool.firstStepsTip}
               </p>
-              <a
-                href={tool.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary text-sm mt-auto"
-              >
-                Abrir {tool.name} <FaExternalLinkAlt className="ml-2" size={11} />
-              </a>
+
+              <div className="mt-auto space-y-2">
+                <a
+                  href={tool.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary text-sm w-full justify-center"
+                >
+                  Abrir {tool.name} <FaExternalLinkAlt className="ml-2" size={11} />
+                </a>
+
+                {/* Nuestro espacio dentro de la herramienta. Es la forma
+                    legítima de que el niño encuentre la marca INVENTIA sin que
+                    intentemos personalizar una plataforma que no es nuestra. */}
+                {tool.inventiaSpace && (
+                  <a
+                    href={tool.inventiaSpace.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block rounded-lg border-2 border-primary-200 bg-primary-50 p-3 hover:border-primary-400 transition-colors"
+                  >
+                    <p className="text-sm font-bold text-primary-700">
+                      🚀 {tool.inventiaSpace.label}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-0.5">{tool.inventiaSpace.hint}</p>
+                  </a>
+                )}
+              </div>
             </div>
           ))}
         </div>
       )}
+
+      {/* Marca INVENTIA dentro de las herramientas: no se pueden personalizar
+          Scratch ni Code.org, pero sí lo que el niño construye adentro. */}
+      <section className="card p-6">
+        <h2 className="text-xl font-bold mb-1">Pon a NIT en tus proyectos</h2>
+        <p className="text-sm text-gray-600 mb-4">
+          Descarga a nuestro robot y el fondo de INVENTIA, y súbelos a Scratch para que tus
+          creaciones lleven nuestra marca.
+        </p>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <a
+            href="/marca/nit-sprite.svg"
+            download
+            className="rounded-xl border border-gray-200 p-4 hover:border-primary-300 transition-colors flex items-center gap-3"
+          >
+            <span className="text-3xl">🤖</span>
+            <span>
+              <span className="block font-medium text-sm">NIT, el robot</span>
+              <span className="block text-xs text-gray-500">
+                Súbelo como disfraz en Scratch
+              </span>
+            </span>
+          </a>
+          <a
+            href="/marca/fondo-inventia.svg"
+            download
+            className="rounded-xl border border-gray-200 p-4 hover:border-primary-300 transition-colors flex items-center gap-3"
+          >
+            <span className="text-3xl">🖼️</span>
+            <span>
+              <span className="block font-medium text-sm">Fondo INVENTIA</span>
+              <span className="block text-xs text-gray-500">Súbelo como escenario</span>
+            </span>
+          </a>
+        </div>
+      </section>
 
       <ProjectsSection childId={child.id} projects={projects} />
     </div>

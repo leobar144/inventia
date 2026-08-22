@@ -1,0 +1,28 @@
+<svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    NIT, la mascota de INVENTIA, lista para subir a Scratch como disfraz.
+    Fondo transparente a propósito: en Scratch los sprites no llevan fondo.
+    Scratch acepta SVG, así que se ve nítido a cualquier tamaño en el escenario.
+  -->
+  <line x1="100" y1="35" x2="100" y2="20" stroke="#e67e22" stroke-width="3"/>
+  <circle cx="100" cy="16" r="7" fill="#e67e22"/>
+
+  <rect x="65" y="35" width="70" height="55" rx="18" fill="#f5f7fa" stroke="#4680b3" stroke-width="3"/>
+  <circle cx="85" cy="62" r="9" fill="#2e9655"/>
+  <circle cx="115" cy="62" r="9" fill="#2e9655"/>
+  <circle cx="87" cy="59" r="2.5" fill="white"/>
+  <circle cx="117" cy="59" r="2.5" fill="white"/>
+  <path d="M85 78 Q100 88 115 78" stroke="#4680b3" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <rect x="55" y="95" width="90" height="65" rx="16" fill="white" stroke="#2e9655" stroke-width="3"/>
+  <rect x="80" y="112" width="40" height="10" rx="5" fill="#e67e22"/>
+  <circle cx="75" cy="140" r="6" fill="#4680b3"/>
+  <circle cx="100" cy="140" r="6" fill="#f5ad48"/>
+  <circle cx="125" cy="140" r="6" fill="#2e9655"/>
+
+  <rect x="30" y="105" width="14" height="30" rx="7" fill="#f5f7fa" stroke="#4680b3" stroke-width="3"/>
+  <rect x="156" y="105" width="14" height="30" rx="7" fill="#f5f7fa" stroke="#4680b3" stroke-width="3"/>
+
+  <rect x="70" y="160" width="16" height="20" rx="6" fill="white" stroke="#2e9655" stroke-width="3"/>
+  <rect x="114" y="160" width="16" height="20" rx="6" fill="white" stroke="#2e9655" stroke-width="3"/>
+</svg>

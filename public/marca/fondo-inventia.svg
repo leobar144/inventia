@@ -1,0 +1,44 @@
+<svg viewBox="0 0 480 360" width="480" height="360" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    Fondo (backdrop) para Scratch. 480x360 es exactamente el tamaño del
+    escenario de Scratch, así que entra sin deformarse.
+
+    Marca INVENTIA discreta abajo a la derecha: la idea es que el niño trabaje
+    sobre nuestro fondo, no que el fondo compita con su proyecto.
+  -->
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eaf5ee"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="480" height="360" fill="url(#cielo)"/>
+
+  <!-- Retícula suave, tipo papel cuadriculado de taller -->
+  <g stroke="#d6e6dc" stroke-width="1">
+    <line x1="0" y1="60" x2="480" y2="60"/>
+    <line x1="0" y1="120" x2="480" y2="120"/>
+    <line x1="0" y1="180" x2="480" y2="180"/>
+    <line x1="0" y1="240" x2="480" y2="240"/>
+    <line x1="0" y1="300" x2="480" y2="300"/>
+    <line x1="60" y1="0" x2="60" y2="360"/>
+    <line x1="120" y1="0" x2="120" y2="360"/>
+    <line x1="180" y1="0" x2="180" y2="360"/>
+    <line x1="240" y1="0" x2="240" y2="360"/>
+    <line x1="300" y1="0" x2="300" y2="360"/>
+    <line x1="360" y1="0" x2="360" y2="360"/>
+    <line x1="420" y1="0" x2="420" y2="360"/>
+  </g>
+
+  <!-- Piso -->
+  <rect x="0" y="300" width="480" height="60" fill="#2e9655" opacity="0.12"/>
+  <line x1="0" y1="300" x2="480" y2="300" stroke="#2e9655" stroke-width="2" opacity="0.4"/>
+
+  <!-- Marca, discreta -->
+  <g transform="translate(370, 325)">
+    <circle cx="0" cy="0" r="11" fill="#2e9655"/>
+    <path d="M-4 -4 L-4 4 M0 -5 L0 5 M4 -4 L4 4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <text x="20" y="5" font-family="Verdana, sans-serif" font-size="15" font-weight="bold" fill="#1a6633">INVENTIA</text>
+  </g>
+</svg>
