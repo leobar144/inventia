@@ -63,17 +63,32 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Datos verificables en vez de cifras redondas. Un papá compara
-                  "máximo 8 niños" con la academia de al lado; "100+ alumnos" lo
-                  dice todo el mundo y no significa nada. */}
-              <div className="grid grid-cols-3 gap-4 pt-8 border-t border-gray-200">
+              {/* La trayectoria va ANTES de las cifras: un número sin origen le
+                  suena a promesa a un papá; con origen le suena a respaldo, y
+                  responde de entrada la objeción de "academia nueva". */}
+              <div className="pt-6 border-t border-gray-200">
+                <p className="text-sm text-gray-600">
+                  Metodología creada con{' '}
+                  <a
+                    href="https://discdc.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-secondary-700 hover:underline"
+                  >
+                    Development Innovation System
+                  </a>{' '}
+                  en Estados Unidos, implementada en Cali. Ahora en Bogotá.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <p className="text-3xl font-bold gradient-text">+100</p>
+                  <p className="text-sm text-gray-600">Niños formados con el método</p>
+                </div>
                 <div>
                   <p className="text-3xl font-bold gradient-text">8</p>
                   <p className="text-sm text-gray-600">Niños por clase, máximo</p>
-                </div>
-                <div>
-                  <p className="text-3xl font-bold gradient-text">4-16</p>
-                  <p className="text-sm text-gray-600">Años, con nivel propio</p>
                 </div>
                 <div>
                   <p className="text-3xl font-bold gradient-text">32</p>

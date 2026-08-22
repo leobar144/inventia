@@ -9,7 +9,7 @@ import BadgeIcon from '@/components/BadgeIcon'
 export const metadata: Metadata = {
   title: 'Por qué INVENTIA',
   description:
-    'Educación STEM para niños de 4 a 16 años en Bogotá, con el Método CREA y respaldo tecnológico internacional.',
+    'Metodología STEM creada en Estados Unidos con Development Innovation System e implementada en Cali. Más de 100 niños formados. Ahora en Bogotá.',
 }
 
 export default function AcercaDePage() {
@@ -25,7 +25,45 @@ export default function AcercaDePage() {
         </div>
       </section>
 
+      {/* La trayectoria es el activo que ningún competidor puede copiar: el
+          método ya se probó en dos países antes de llegar a Bogotá. Va arriba de
+          todo porque responde la primera objeción de cualquier padre frente a
+          una academia nueva. */}
       <section className="section bg-white">
+        <div className="section-container max-w-3xl">
+          <p className="text-sm font-bold text-primary-600 uppercase tracking-wide mb-3">
+            De dónde venimos
+          </p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">No empezamos en Bogotá</h2>
+          <div className="space-y-4 text-lg text-gray-700 leading-relaxed">
+            <p>
+              INVENTIA no es una idea que arranca de cero. El método nació en{' '}
+              <strong>Estados Unidos</strong>, de la mano de{' '}
+              <a
+                href="https://discdc.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-600 font-medium hover:underline"
+              >
+                Development Innovation System
+              </a>
+              , y antes de llegar acá ya se había implementado en Colombia, en{' '}
+              <strong>Cali</strong>.
+            </p>
+            <p>
+              Más de <strong>100 niños</strong> han pasado por esta metodología. Los 32 módulos que
+              ves en la malla curricular no se escribieron en un escritorio: se ajustaron clase tras
+              clase, con niños reales que se aburrían, se equivocaban y volvían a intentarlo.
+            </p>
+            <p className="text-gray-900 font-medium">
+              Lo que llega a Bogotá es un método probado en dos países — no un experimento con tu
+              hijo.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section bg-gray-50">
         <div className="section-container">
           <FadeInGrid className="grid md:grid-cols-3 gap-8">
             {FEATURES.map((feature, index) => (
@@ -39,7 +77,7 @@ export default function AcercaDePage() {
         </div>
       </section>
 
-      <section className="section bg-gray-50">
+      <section className="section bg-white">
         <div className="section-container">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">El Método CREA</h2>
