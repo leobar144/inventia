@@ -45,15 +45,15 @@ export default function Home() {
 
               <p className="text-xl text-gray-600 leading-relaxed">
                 <span className="font-bold">La inventa.</span> Robótica, programación e IA para
-                niños de <strong>4 a 16 años</strong> en <strong>Bogotá</strong>, presencial o
-                virtual, en grupos de máximo 8.
+                niños de <strong>4 a 16 años</strong> en <strong>Bogotá</strong>, en grupos de
+                máximo 8 niños, presencial o virtual.
               </p>
 
               {/* Un solo llamado principal: el segundo botón se llevaba gente
                   que ya venía decidida a agendar. */}
               <div className="pt-2">
                 <Link href="/clase-de-prueba" className="btn btn-primary text-lg">
-                  📅 Reservar clase de prueba gratis
+                  Reservar clase de prueba gratis
                 </Link>
                 <p className="text-sm text-gray-500 mt-3">
                   Sin costo y sin compromiso · Planes desde{' '}
