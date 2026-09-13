@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createServiceRoleClient } from '@/lib/supabase/server'
 import { sendClassReminderEmail } from '@/lib/email'
 import { sendPendingTrialFollowUps } from '@/lib/trialFollowUp'
+import { runTutoringMaintenance } from '@/lib/tutoringRenewals'
 import { alertAdmin } from '@/lib/alerts'
 
 // Corre una vez al día (ver vercel.json) — el plan gratuito de Vercel no
@@ -26,6 +27,17 @@ export async function GET(request: Request) {
     await alertAdmin('cron: seguimientos de clase de prueba', error)
   }
 
+  // Mantenimiento de la Sala de Tareas: vencer mensualidades cumplidas y avisar
+  // a quien está por terminar. Aislado igual que los seguimientos: si falla, los
+  // recordatorios de clase tienen que salir de todos modos.
+  let tutoring = { expired: 0, usedUp: 0, renewalAlerts: 0 }
+  try {
+    tutoring = await runTutoringMaintenance()
+  } catch (error) {
+    console.error('Error en el mantenimiento de la Sala de Tareas:', error)
+    await alertAdmin('cron: mantenimiento de Sala de Tareas', error)
+  }
+
   // Colombia es UTC-5 todo el año (sin horario de verano) — se calcula el
   // rango del "día de hoy en Bogotá" directamente en horas UTC.
   const now = new Date()
@@ -46,15 +58,15 @@ export async function GET(request: Request) {
 
   if (sessionsError) {
     await alertAdmin('cron: no se pudieron leer las clases del día', sessionsError.message)
-    await logCronRun({ ok: false, error: sessionsError.message, followUps })
-    return NextResponse.json({ error: sessionsError.message, followUps }, { status: 500 })
+    await logCronRun({ ok: false, error: sessionsError.message, followUps, tutoring })
+    return NextResponse.json({ error: sessionsError.message, followUps, tutoring }, { status: 500 })
   }
 
   if (!sessions || sessions.length === 0) {
     // Un día sin clases es normal, no un fallo: igual se deja constancia de que
     // la tarea sí corrió.
-    await logCronRun({ ok: true, sent: 0, followUps })
-    return NextResponse.json({ sent: 0, followUps })
+    await logCronRun({ ok: true, sent: 0, followUps, tutoring })
+    return NextResponse.json({ sent: 0, followUps, tutoring })
   }
 
   const courseIds = [...new Set(sessions.map((s) => s.course_id))]
@@ -139,8 +151,8 @@ export async function GET(request: Request) {
       sessions.map((s) => s.id)
     )
 
-  await logCronRun({ ok: true, sent, followUps })
-  return NextResponse.json({ sent, followUps })
+  await logCronRun({ ok: true, sent, followUps, tutoring })
+  return NextResponse.json({ sent, followUps, tutoring })
 }
 
 /**
@@ -155,6 +167,7 @@ async function logCronRun(data: {
   sent?: number
   error?: string
   followUps: { day1: number; day4: number }
+  tutoring: { expired: number; usedUp: number; renewalAlerts: number }
 }) {
   try {
     const admin = createServiceRoleClient()
@@ -162,7 +175,8 @@ async function logCronRun(data: {
       job: 'class-reminders',
       ok: data.ok,
       reminders_sent: data.sent ?? 0,
-      follow_ups_sent: data.followUps.day1 + data.followUps.day4,
+      follow_ups_sent:
+        data.followUps.day1 + data.followUps.day4 + data.tutoring.renewalAlerts,
       error: data.error ?? null,
     })
   } catch {

@@ -119,3 +119,100 @@ export function computeCourseEconomics(
     studentsToBreakEven,
   }
 }
+
+// ---------------------------------------------------------------------------
+// Sala de Tareas
+//
+// Economía distinta a la de los cursos, y por eso va aparte: el monitor de
+// tareas no es un instructor STEM. Acompañar tareas de colegio lo hace bien un
+// estudiante de licenciatura o de ingeniería; pagarle $80.000/hora vuelve el
+// negocio inviable (con 8 niños el bloque PIERDE plata, y con 12 deja apenas
+// 28%, que no aguanta una tarde con inasistencias).
+
+/** Lo que se le paga al monitor de la Sala de Tareas por hora. */
+export const MONITOR_HOURLY_COP = 40_000
+
+/** Duración de un bloque de tarde, en horas (3:00 a 6:00 p.m.). */
+export const TUTORING_BLOCK_HOURS = 3
+
+/**
+ * Cupo de una tarde PRESENCIAL. Más alto que el de los cursos (8) porque el
+ * monitor no está dictando: está acompañando a niños que trabajan en lo suyo.
+ * El tope real lo pone el salón, no la pedagogía.
+ *
+ * Las tardes virtuales no tienen cupo (`capacity = null`): no hay sillas que se
+ * acaben. Pero sí tienen un límite de atención — ver `MONITOR_ATTENTION_LIMIT`.
+ */
+export const TUTORING_BLOCK_CAPACITY = 12
+
+/**
+ * Cuántos niños puede acompañar DE VERDAD un monitor en una tarde.
+ *
+ * No es un tope que el sistema imponga: una tarde virtual admite los que
+ * lleguen. Es el número a partir del cual el panel avisa que hace falta un
+ * segundo monitor, porque el producto que vendemos no es "un adulto conectado"
+ * sino que a cada niño le pregunten antes de responderle y le escriban su
+ * bitácora. Con 12 niños en 3 horas son 15 minutos por niño; con 24 son 7, y
+ * ahí ya no se está prestando el servicio que se cobró.
+ */
+export const MONITOR_ATTENTION_LIMIT = 12
+
+/** Costo del monitor por bloque dictado. No depende de cuántos niños lleguen. */
+export function monitorCostPerBlock(blockHours: number = TUTORING_BLOCK_HOURS): number {
+  return MONITOR_HOURLY_COP * blockHours
+}
+
+export interface TutoringBlockEconomics {
+  attendees: number
+  /** `null` = sin límite (tardes virtuales). */
+  capacity: number | null
+  revenuePerBlock: number
+  costPerBlock: number
+  /** Lo que cuesta abrir la sala, lleguen o no niños. */
+  monitorCostIfRun: number
+  marginPerBlock: number
+  marginPercent: number
+  health: OccupancyHealth
+  /** Cuántos niños más se necesitan para que la tarde no pierda plata. */
+  attendeesToBreakEven: number
+  /** Hay más niños de los que un solo monitor alcanza a acompañar. */
+  needsSecondMonitor: boolean
+}
+
+/**
+ * Economía de una tarde de sala.
+ *
+ * `revenuePerAttendee` viene de dividir el plan de cada familia entre las
+ * tardes que cubre (ver `revenuePerAttendance` en lib/homework.ts) — mismo
+ * criterio que en los cursos, nunca un promedio inventado.
+ */
+export function computeTutoringBlockEconomics(
+  revenuePerAttendee: number[],
+  capacity: number | null = TUTORING_BLOCK_CAPACITY,
+  blockHours: number = TUTORING_BLOCK_HOURS
+): TutoringBlockEconomics {
+  const attendees = revenuePerAttendee.length
+  const gross = revenuePerAttendee.reduce((sum, r) => sum + r, 0)
+  const revenuePerBlock = gross * (1 - PAYMENT_FEE_RATE)
+  const monitorCostIfRun = monitorCostPerBlock(blockHours)
+  const costPerBlock = attendees > 0 ? monitorCostIfRun : 0
+  const marginPerBlock = revenuePerBlock - costPerBlock
+  const marginPercent = revenuePerBlock > 0 ? (marginPerBlock / revenuePerBlock) * 100 : 0
+
+  const avgPerAttendee = attendees > 0 ? revenuePerBlock / attendees : 0
+  const attendeesToBreakEven =
+    marginPerBlock >= 0 || avgPerAttendee <= 0 ? 0 : Math.ceil(-marginPerBlock / avgPerAttendee)
+
+  return {
+    attendees,
+    capacity,
+    revenuePerBlock,
+    costPerBlock,
+    monitorCostIfRun,
+    marginPerBlock,
+    marginPercent,
+    health: attendees === 0 ? 'critico' : classifyHealth(marginPercent),
+    attendeesToBreakEven,
+    needsSecondMonitor: attendees > MONITOR_ATTENTION_LIMIT,
+  }
+}

@@ -175,3 +175,56 @@ export interface AvailableSlotDay {
   date: string // 'YYYY-MM-DD'
   slots: { availabilityId: string; time: string }[]
 }
+
+// --- Sala de Tareas (asesoría en tareas escolares) ---
+// Modelo aparte del de cursos a propósito: ver la migración 033.
+
+export interface TutoringPlan {
+  id: string
+  name: string
+  sessions_per_week: number
+  sessions_included: number
+  price: number
+  sort_order: number
+  is_active: boolean
+}
+
+export interface TutoringBlock {
+  id: string
+  starts_at: string
+  ends_at: string
+  monitor_id: string | null
+  capacity: number
+  modality: 'presencial' | 'virtual'
+  meeting_link: string | null
+  notes: string | null
+}
+
+export type TutoringMembershipStatus = 'pending_payment' | 'active' | 'expired' | 'cancelled'
+
+export interface TutoringMembership {
+  id: string
+  child_id: string
+  plan_id: string
+  status: TutoringMembershipStatus
+  sessions_included: number
+  starts_on: string
+  ends_on: string
+  renewal_alert_sent: boolean
+}
+
+export interface TutoringAttendance {
+  id: string
+  child_id: string
+  block_id: string
+  membership_id: string | null
+  subjects: string[]
+  what_was_done: string | null
+  stuck_on: string | null
+  /** Ver AI_USE_OPTIONS en lib/homework.ts. */
+  ai_use: 'no' | 'consulta' | 'verificacion' | 'la-hizo'
+  ai_note: string | null
+  homework_completed: boolean | null
+  created_by: string | null
+  created_at: string
+}

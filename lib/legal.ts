@@ -14,7 +14,7 @@ export const LEGAL_INFO = {
   telefono: '+57 350 211 4492',
 
   // Fecha desde la cual rige la versión vigente de las políticas.
-  vigenteDesde: '20 de agosto de 2026',
+  vigenteDesde: '13 de septiembre de 2026',
 
   // Plazo de conservación de los datos una vez termina la relación.
   conservacion: 'mientras exista la relación con la familia y, luego de terminada, por el término necesario para atender obligaciones legales, contables y tributarias.',
@@ -25,4 +25,6 @@ export const LEGAL_INFO = {
  * clase de prueba para que ambos flujos digan exactamente lo mismo — y para que
  * quede un solo lugar donde cambiarlo si el abogado lo ajusta.
  */
-export const CONSENT_VERSION = '2026-08-20'
+// 2026-09-13: se agregan las finalidades de envío de guías y novedades, y de uso
+// de imagen en redes con autorización escrita aparte.
+export const CONSENT_VERSION = '2026-09-13'

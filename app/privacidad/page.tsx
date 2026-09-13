@@ -48,7 +48,9 @@ export default function PrivacidadPage() {
             <h2 className="text-xl font-bold text-gray-900 mb-3">3. Datos que recolectamos</h2>
             <p className="mb-3">
               <strong>Del padre, madre o representante legal:</strong> nombre completo, correo
-              electrónico, número de WhatsApp o teléfono, e historial de pagos e inscripciones.
+              electrónico, número de WhatsApp o teléfono, historial de pagos e inscripciones y,
+              cuando lo indica voluntariamente al descargar una guía gratuita, el rango de edad de
+              sus hijos (nunca su nombre ni su fecha de nacimiento).
             </p>
             <p className="mb-3">
               <strong>Del niño, niña o adolescente:</strong> nombre, fecha de nacimiento o edad,
@@ -61,7 +63,10 @@ export default function PrivacidadPage() {
               permiso en el portal. Es una autorización aparte, apagada por defecto, que puede
               revocarse en cualquier momento. Las fotos se guardan en almacenamiento privado, se
               muestran únicamente al acudiente dentro de su portal, y{' '}
-              <strong>nunca se publican ni se incluyen en el perfil compartible</strong>.
+              <strong>nunca se publican ni se incluyen en el perfil compartible</strong>. Las
+              fotografías y videos que INVENTIA publique en sus redes sociales o use en publicidad
+              requieren una autorización escrita distinta, específica para ese fin, que el acudiente
+              firma aparte y puede retirar cuando quiera.
             </p>
             <p>
               No recolectamos datos sensibles (origen racial o étnico, orientación política,
@@ -94,8 +99,10 @@ export default function PrivacidadPage() {
                 cualquier momento.
               </li>
               <li>
-                No usamos los datos del menor con fines publicitarios ni los vendemos o cedemos a
-                terceros con fines comerciales.
+                No usamos la imagen ni los datos del menor con fines publicitarios sin una
+                autorización escrita, específica y separada del acudiente. Aun con ella, nunca
+                publicamos su nombre ni datos que permitan ubicarlo, y nunca vendemos ni cedemos sus
+                datos a terceros.
               </li>
             </ul>
           </section>
@@ -118,6 +125,15 @@ export default function PrivacidadPage() {
               <li>Atender consultas, solicitudes y reclamos.</li>
               <li>
                 Administrar el programa de referidos, cuando la familia decide participar en él.
+              </li>
+              <li>
+                Enviar guías gratuitas y novedades sobre programas y productos de INVENTIA por
+                WhatsApp o correo, solo a quien lo solicita y lo autoriza. Puede pedir que no le
+                escribamos más en cualquier momento.
+              </li>
+              <li>
+                Publicar fotografías y videos de las actividades en las redes sociales y la página de
+                INVENTIA, únicamente con la autorización escrita específica del acudiente.
               </li>
             </ul>
           </section>

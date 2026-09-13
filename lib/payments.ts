@@ -1,5 +1,5 @@
 import type { createServiceRoleClient } from './supabase/server'
-import { siblingDiscountCents } from './siblings'
+import { SIBLING_DISCOUNT_PERCENT, siblingDiscountCents } from './siblings'
 
 type AdminClient = ReturnType<typeof createServiceRoleClient>
 
@@ -176,7 +176,10 @@ export async function resolveBestDiscount(
 
 export interface ApprovablePayment {
   id: string
-  enrollment_id: string
+  /** Pago de un curso. Excluyente con `tutoring_membership_id`. */
+  enrollment_id: string | null
+  /** Pago de la Sala de Tareas. Excluyente con `enrollment_id`. */
+  tutoring_membership_id?: string | null
   referrer_parent_id: string | null
   consumed_credit_id: string | null
 }
@@ -192,10 +195,21 @@ export async function applyApprovedPayment(
   admin: AdminClient,
   payment: ApprovablePayment
 ): Promise<void> {
-  await admin
-    .from('enrollments')
-    .update({ status: 'active', enrolled_date: new Date().toISOString() })
-    .eq('id', payment.enrollment_id)
+  // Un pago activa un curso O una mensualidad de Sala de Tareas, nunca las dos
+  // (la migracion 033 lo garantiza con un CHECK en la tabla).
+  if (payment.enrollment_id) {
+    await admin
+      .from('enrollments')
+      .update({ status: 'active', enrolled_date: new Date().toISOString() })
+      .eq('id', payment.enrollment_id)
+  }
+
+  if (payment.tutoring_membership_id) {
+    await admin
+      .from('tutoring_memberships')
+      .update({ status: 'active', updated_at: new Date().toISOString() })
+      .eq('id', payment.tutoring_membership_id)
+  }
 
   // Los créditos solo se mueven con plata realmente cobrada, nunca antes.
   if (payment.referrer_parent_id) {
@@ -210,5 +224,81 @@ export async function applyApprovedPayment(
       .from('referral_credits')
       .update({ used: true, used_payment_id: payment.id })
       .eq('id', payment.consumed_credit_id)
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Sala de Tareas
+
+/**
+ * Descuento por ya estar en un curso STEM.
+ *
+ * La familia que ya paga Robótica o Python no cuesta nada adquirir: ya confía,
+ * ya viene al local, ya tiene cuenta. Cobrarle el precio completo por la Sala
+ * de Tareas desperdicia la única ventaja que tenemos sobre un centro de
+ * refuerzo — que el niño ya está en el edificio.
+ */
+export const STEM_STUDENT_DISCOUNT_PERCENT = 15
+
+/** ¿Este niño tiene hoy un curso STEM activo? */
+export async function hasActiveStemEnrollment(
+  admin: AdminClient,
+  childId: string
+): Promise<boolean> {
+  const { count } = await admin
+    .from('enrollments')
+    .select('id', { count: 'exact', head: true })
+    .eq('student_id', childId)
+    .eq('status', 'active')
+
+  return (count ?? 0) > 0
+}
+
+export type TutoringDiscountReason = 'referido' | 'hermano' | 'alumno-stem' | null
+
+export interface TutoringDiscount extends ReferralOutcome {
+  reason: TutoringDiscountReason
+}
+
+/**
+ * Descuento de una mensualidad de Sala de Tareas.
+ *
+ * Tres candidatos y se toma el MAYOR, nunca la suma — igual que en los cursos.
+ * Acumular alumno-STEM + hermano dejaría 30% de descuento sobre un producto
+ * cuyo margen ya es más delgado que el de las clases.
+ */
+export async function resolveTutoringDiscount(
+  admin: AdminClient,
+  parentId: string,
+  childId: string,
+  fullAmountCents: number,
+  referralCode?: string
+): Promise<TutoringDiscount> {
+  const [referral, siblingApplies, stemApplies] = await Promise.all([
+    resolveReferralDiscount(admin, parentId, referralCode),
+    hasEnrolledSibling(admin, parentId, childId),
+    hasActiveStemEnrollment(admin, childId),
+  ])
+
+  const percentCents = (percent: number) => Math.round(fullAmountCents * (percent / 100))
+
+  const candidates: { cents: number; reason: TutoringDiscountReason }[] = [
+    { cents: referral.discountCents, reason: referral.discountCents > 0 ? 'referido' : null },
+    { cents: siblingApplies ? percentCents(SIBLING_DISCOUNT_PERCENT) : 0, reason: 'hermano' },
+    { cents: stemApplies ? percentCents(STEM_STUDENT_DISCOUNT_PERCENT) : 0, reason: 'alumno-stem' },
+  ]
+
+  const best = candidates.reduce((a, b) => (b.cents > a.cents ? b : a))
+
+  // El credito de referido solo se consume si es el que efectivamente gano; si
+  // no, queda intacto para la proxima compra de la familia.
+  if (best.reason === 'referido') return { ...referral, reason: 'referido' }
+
+  return {
+    discountCents: best.cents,
+    referredByCode: null,
+    referrerParentId: null,
+    consumedCreditId: null,
+    reason: best.cents > 0 ? best.reason : null,
   }
 }

@@ -23,6 +23,9 @@ export default function ProfesorNav({ instructorName }: { instructorName: string
           <Link href="/profesor" className="text-secondary-200 hover:text-white">
             Mis Clases
           </Link>
+          <Link href="/profesor/tareas" className="text-secondary-200 hover:text-white">
+            Sala de Tareas
+          </Link>
           <Link href="/profesor/curriculo" className="text-secondary-200 hover:text-white">
             Currículo
           </Link>

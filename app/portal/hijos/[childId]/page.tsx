@@ -127,9 +127,14 @@ export default async function ChildDashboardPage({
             <p className="text-gray-600">{calculateAge(child.birth_date)} años</p>
           </div>
         </div>
-        <Link href={`/portal/hijos/${child.id}/aula`} className="btn btn-primary">
-          🚀 Ir al Aula INVENTIA
-        </Link>
+        <div className="flex gap-2 flex-wrap">
+          <Link href={`/portal/hijos/${child.id}/tareas`} className="btn btn-outline">
+            📚 Sala de Tareas
+          </Link>
+          <Link href={`/portal/hijos/${child.id}/aula`} className="btn btn-primary">
+            🚀 Ir al Aula INVENTIA
+          </Link>
+        </div>
       </div>
 
       {/* Insignia de nivel */}

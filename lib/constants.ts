@@ -5,13 +5,19 @@ export const SITE_CONFIG = {
   url: 'https://inventiagroup.com',
   ogImage: 'https://inventiagroup.com/og-image.png',
   links: {
-    instagram: 'https://instagram.com/inventia',
-    whatsapp: 'https://wa.me/3502114492',
+    // @inventiacol es la cuenta real (renombrada, confirmada por el usuario el
+    // 13/09/2026). Antes apuntaba a @inventia, que es la cuenta personal de otra
+    // persona: cada papa que hacia clic terminaba en el perfil de una desconocida.
+    instagram: 'https://instagram.com/inventiacol',
+    whatsapp: 'https://wa.me/573502114492',
     email: 'info@inventiagroup.com',
   },
   contact: {
     email: 'info@inventiagroup.com',
-    whatsapp: '3502114492',
+    // Con indicativo de país (57). wa.me exige el número en formato internacional:
+    // sin el 57, los botones de WhatsApp de toda la web no abrían el chat de
+    // INVENTIA. Corregido el 13/09/2026. Para mostrar el número se usa `phone`.
+    whatsapp: '573502114492',
     phone: '+57 350 211 4492',
   },
 }
@@ -47,6 +53,7 @@ export function isCampaignActive(now: Date = new Date()): boolean {
 export const NAV_LINKS = [
   { label: 'Inicio', href: '/' },
   { label: 'Cursos', href: '/cursos' },
+  { label: 'Asesoría de tareas', href: '/asesoria-tareas' },
   { label: 'Por qué INVENTIA', href: '/acerca-de' },
   { label: 'Jardines y colegios', href: '/instituciones' },
   { label: 'Contacto', href: '/#contacto' },

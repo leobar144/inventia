@@ -42,3 +42,6 @@ Thumbs.db
 
 # Vercel
 .vercel
+
+# Artefacto de 'tsc --noEmit'. No es codigo fuente.
+*.tsbuildinfo

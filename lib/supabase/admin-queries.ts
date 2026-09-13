@@ -559,7 +559,9 @@ export async function getRecentManualPayments(limit = 25): Promise<ManualPayment
 
   const { data: payments, error } = await supabase
     .from('payments')
-    .select('id, reference, amount_in_cents, payment_method, notes, created_at, enrollment_id, recorded_by')
+    .select(
+      'id, reference, amount_in_cents, payment_method, notes, created_at, enrollment_id, tutoring_membership_id, recorded_by'
+    )
     .neq('payment_method', 'wompi')
     .order('created_at', { ascending: false })
     .limit(limit)
@@ -568,12 +570,35 @@ export async function getRecentManualPayments(limit = 25): Promise<ManualPayment
   if (!payments || payments.length === 0) return []
 
   const enrollmentIds = payments.map((p) => p.enrollment_id).filter(Boolean)
-  const { data: enrollments } = await supabase
-    .from('enrollments')
-    .select('id, student_id, course_id')
-    .in('id', enrollmentIds)
+  const membershipIds = payments.map((p) => p.tutoring_membership_id).filter(Boolean)
 
-  const childIds = [...new Set((enrollments ?? []).map((e) => e.student_id))]
+  // Un pago apunta a una inscripcion de curso O a una mensualidad de Sala de
+  // Tareas. Si aqui solo se resolvieran las inscripciones, la venta de la sala
+  // apareceria en el libro de caja como "—" y nadie sabria de quien fue.
+  const [{ data: enrollments }, { data: memberships }] = await Promise.all([
+    enrollmentIds.length > 0
+      ? supabase.from('enrollments').select('id, student_id, course_id').in('id', enrollmentIds)
+      : Promise.resolve({ data: [] }),
+    membershipIds.length > 0
+      ? supabase
+          .from('tutoring_memberships')
+          .select('id, child_id, tutoring_plans(name)')
+          .in('id', membershipIds)
+      : Promise.resolve({ data: [] }),
+  ])
+
+  const membershipRows = (memberships ?? []).map((m) => {
+    const rel = (m as { tutoring_plans?: { name: string } | { name: string }[] }).tutoring_plans
+    const plan = Array.isArray(rel) ? rel[0] : rel
+    return { id: m.id, child_id: m.child_id, planName: plan?.name ?? '' }
+  })
+
+  const childIds = [
+    ...new Set([
+      ...(enrollments ?? []).map((e) => e.student_id),
+      ...membershipRows.map((m) => m.child_id),
+    ]),
+  ]
   const courseIds = [...new Set((enrollments ?? []).map((e) => e.course_id))]
   const adminIds = [...new Set(payments.map((p) => p.recorded_by).filter(Boolean))] as string[]
 
@@ -590,12 +615,16 @@ export async function getRecentManualPayments(limit = 25): Promise<ManualPayment
   ])
 
   const enrollmentById = new Map((enrollments ?? []).map((e) => [e.id, e]))
+  const membershipById = new Map(membershipRows.map((m) => [m.id, m]))
   const childNameById = new Map((children ?? []).map((c) => [c.id, c.full_name]))
   const courseTitleById = new Map((courses ?? []).map((c) => [c.id, c.title]))
   const adminNameById = new Map((admins ?? []).map((a) => [a.id, a.full_name]))
 
   return payments.map((p) => {
     const enrollment = enrollmentById.get(p.enrollment_id)
+    const membership = membershipById.get(p.tutoring_membership_id)
+    const childId = enrollment?.student_id ?? membership?.child_id
+
     return {
       id: p.id,
       reference: p.reference,
@@ -603,8 +632,12 @@ export async function getRecentManualPayments(limit = 25): Promise<ManualPayment
       method: p.payment_method,
       notes: p.notes,
       created_at: p.created_at,
-      child_name: enrollment ? (childNameById.get(enrollment.student_id) ?? '—') : '—',
-      course_title: enrollment ? (courseTitleById.get(enrollment.course_id) ?? '—') : '—',
+      child_name: childId ? (childNameById.get(childId) ?? '—') : '—',
+      course_title: enrollment
+        ? (courseTitleById.get(enrollment.course_id) ?? '—')
+        : membership
+          ? `Sala de Tareas · ${membership.planName}`
+          : '—',
       recorded_by_name: p.recorded_by ? (adminNameById.get(p.recorded_by) ?? '—') : '—',
     }
   })
@@ -705,4 +738,35 @@ export async function getUpcomingSessionsWithAttendance(
         })),
     }
   })
+}
+
+// ---------------------------------------------------------------------------
+// Lista de espera de la guía gratuita y del curso para padres
+
+export interface WaitlistRow {
+  id: string
+  full_name: string
+  whatsapp: string
+  email: string | null
+  child_age_band: string | null
+  wants_course: boolean
+  source: string | null
+  contacted_at: string | null
+  created_at: string
+}
+
+/** Familias de la lista, las más recientes primero. */
+export async function getDigitalWaitlist(limit = 500): Promise<WaitlistRow[]> {
+  const supabase = createServiceRoleClient()
+
+  const { data, error } = await supabase
+    .from('digital_waitlist')
+    .select(
+      'id, full_name, whatsapp, email, child_age_band, wants_course, source, contacted_at, created_at'
+    )
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error) throw error
+  return data ?? []
 }

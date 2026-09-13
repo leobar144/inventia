@@ -32,7 +32,9 @@ export async function POST(request: Request) {
 
   const { data: payment } = await admin
     .from('payments')
-    .select('id, enrollment_id, parent_id, referrer_parent_id, consumed_credit_id, status')
+    .select(
+      'id, enrollment_id, tutoring_membership_id, parent_id, referrer_parent_id, consumed_credit_id, status'
+    )
     .eq('reference', transaction.reference)
     .single()
 
@@ -72,10 +74,11 @@ export async function POST(request: Request) {
     } catch (error) {
       // El pago ya se cobró. Si activar la inscripción falla, la familia pagó y
       // no quedó inscrita — hay que intervenir a mano y hay que saberlo ya.
-      await alertAdmin('webhook-wompi: no se pudo activar la inscripción', error, {
+      await alertAdmin('webhook-wompi: no se pudo activar lo comprado', error, {
         referencia: transaction.reference,
         pagoId: payment.id,
         inscripcionId: payment.enrollment_id,
+        membresiaSalaDeTareas: payment.tutoring_membership_id,
       })
       return NextResponse.json({ error: 'Error al activar' }, { status: 500 })
     }
