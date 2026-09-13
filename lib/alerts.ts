@@ -56,7 +56,14 @@ export async function alertAdmin(
 
     if (!(await shouldSend(context))) return
 
-    const message = error instanceof Error ? error.message : String(error)
+    // Los errores de Supabase llegan como objetos con `message`, no siempre como
+    // Error: sin esto el correo decía "[object Object]" y no servía para nada.
+    const message =
+      error instanceof Error
+        ? error.message
+        : error && typeof error === 'object' && 'message' in error
+          ? String((error as { message: unknown }).message)
+          : String(error)
     const stack = error instanceof Error ? error.stack : undefined
 
     const resend = new Resend(apiKey)

@@ -69,7 +69,11 @@ export async function POST(request: Request) {
   const source = sanitizeSource(body.source)
   const now = new Date().toISOString()
 
-  try {
+  // Un 504 pasajero de Supabase no puede costar una familia. Visto en
+  // producción el 13/09/2026: la primera consulta a la tabla nueva tardó 5 s
+  // y falló; la siguiente respondió en 1 s. Se reintenta una vez antes de
+  // rendirse. Es seguro repetirlo: busca por WhatsApp y actualiza o inserta.
+  const guardarRegistro = async () => {
     const admin = createServiceRoleClient()
 
     const { data: existing, error: selectError } = await admin
@@ -111,6 +115,15 @@ export async function POST(request: Request) {
       })
 
       if (error) throw error
+    }
+  }
+
+  try {
+    try {
+      await guardarRegistro()
+    } catch {
+      await new Promise((resolve) => setTimeout(resolve, 600))
+      await guardarRegistro()
     }
   } catch (error) {
     // La familia pidió una guía gratuita: se la damos aunque falle el registro.
