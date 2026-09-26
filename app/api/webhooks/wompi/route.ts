@@ -58,22 +58,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true, alreadyProcessed: true })
   }
 
-  await admin
-    .from('payments')
-    .update({
-      wompi_transaction_id: transaction.id,
-      status: transaction.status,
-      raw_response: transaction,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', payment.id)
+  // El rastro de la transacción se guarda siempre; el estado del pago se
+  // escribe de último. El orden importa: si marcáramos APPROVED antes de
+  // activar y la activación fallara, el reintento de Wompi vería el pago ya
+  // aprobado, contestaría "ya procesado" y la familia quedaría pagando sin
+  // inscripción, sin que nada lo vuelva a intentar.
+  const registrarEstado = (status: string) =>
+    admin
+      .from('payments')
+      .update({
+        wompi_transaction_id: transaction.id,
+        status,
+        raw_response: transaction,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', payment.id)
 
   if (transaction.status === 'APPROVED') {
     try {
       await applyApprovedPayment(admin, payment)
     } catch (error) {
-      // El pago ya se cobró. Si activar la inscripción falla, la familia pagó y
-      // no quedó inscrita — hay que intervenir a mano y hay que saberlo ya.
+      // Se deja el pago con su estado anterior a propósito, para que el
+      // reintento de Wompi vuelva a intentar la activación. Aun así hay que
+      // saberlo ya: el dinero se cobró.
+      await registrarEstado(payment.status)
       await alertAdmin('webhook-wompi: no se pudo activar lo comprado', error, {
         referencia: transaction.reference,
         pagoId: payment.id,
@@ -82,6 +90,19 @@ export async function POST(request: Request) {
       })
       return NextResponse.json({ error: 'Error al activar' }, { status: 500 })
     }
+  }
+
+  const { error: registroError } = await registrarEstado(transaction.status)
+
+  if (registroError) {
+    // Lo comprado ya quedó activo, pero el pago no quedó marcado. El reintento
+    // de Wompi lo repara: activar de nuevo es idempotente.
+    await alertAdmin('webhook-wompi: no se pudo registrar el estado del pago', registroError, {
+      referencia: transaction.reference,
+      pagoId: payment.id,
+      estado: transaction.status,
+    })
+    return NextResponse.json({ error: 'Error al registrar' }, { status: 500 })
   }
 
   return NextResponse.json({ received: true })

@@ -105,22 +105,37 @@ export async function POST(request: Request) {
   const startsOn = today
   const endsOn = membershipEndDate(startsOn)
 
-  const membershipId =
-    pending?.id ??
-    (
-      await admin
+  let membershipId = pending?.id
+
+  if (!membershipId) {
+    const { data: creada, error: createError } = await admin
+      .from('tutoring_memberships')
+      .insert({
+        child_id: childId,
+        plan_id: plan.id,
+        status: 'pending_payment',
+        sessions_included: plan.sessions_included,
+        starts_on: startsOn,
+        ends_on: endsOn,
+      })
+      .select('id')
+      .single()
+
+    membershipId = creada?.id
+
+    // 23505 es dos clics seguidos: el índice único de la migración 037 deja una
+    // sola mensualidad pendiente por niño, así que se reutiliza la que ganó.
+    if (!membershipId && createError?.code === '23505') {
+      const { data: ganadora } = await admin
         .from('tutoring_memberships')
-        .insert({
-          child_id: childId,
-          plan_id: plan.id,
-          status: 'pending_payment',
-          sessions_included: plan.sessions_included,
-          starts_on: startsOn,
-          ends_on: endsOn,
-        })
         .select('id')
-        .single()
-    ).data?.id
+        .eq('child_id', childId)
+        .eq('status', 'pending_payment')
+        .maybeSingle()
+
+      membershipId = ganadora?.id
+    }
+  }
 
   if (!membershipId) {
     return NextResponse.json({ error: 'No se pudo crear la mensualidad' }, { status: 500 })

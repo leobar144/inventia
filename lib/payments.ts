@@ -195,35 +195,51 @@ export async function applyApprovedPayment(
   admin: AdminClient,
   payment: ApprovablePayment
 ): Promise<void> {
+  // Supabase NO lanza excepciones: devuelve el error dentro de la respuesta.
+  // Sin revisar cada escritura, un fallo aquí pasa callado, esta función
+  // termina "bien" y la familia queda pagando sin que se le active nada.
+  const exigir = (error: { message: string } | null, paso: string) => {
+    if (error) throw new Error(`${paso}: ${error.message}`)
+  }
+
   // Un pago activa un curso O una mensualidad de Sala de Tareas, nunca las dos
   // (la migracion 033 lo garantiza con un CHECK en la tabla).
   if (payment.enrollment_id) {
-    await admin
+    const { error } = await admin
       .from('enrollments')
       .update({ status: 'active', enrolled_date: new Date().toISOString() })
       .eq('id', payment.enrollment_id)
+    exigir(error, 'activar la inscripción')
   }
 
   if (payment.tutoring_membership_id) {
-    await admin
+    const { error } = await admin
       .from('tutoring_memberships')
       .update({ status: 'active', updated_at: new Date().toISOString() })
       .eq('id', payment.tutoring_membership_id)
+    exigir(error, 'activar la mensualidad de la Sala de Tareas')
   }
 
   // Los créditos solo se mueven con plata realmente cobrada, nunca antes.
+  // El upsert lo hace idempotente: si Wompi reintenta el webhook, el índice
+  // único por pago (migración 037) impide regalar un segundo crédito.
   if (payment.referrer_parent_id) {
-    await admin.from('referral_credits').insert({
-      referrer_parent_id: payment.referrer_parent_id,
-      source_payment_id: payment.id,
-    })
+    const { error } = await admin.from('referral_credits').upsert(
+      {
+        referrer_parent_id: payment.referrer_parent_id,
+        source_payment_id: payment.id,
+      },
+      { onConflict: 'source_payment_id', ignoreDuplicates: true }
+    )
+    exigir(error, 'acreditar el referido')
   }
 
   if (payment.consumed_credit_id) {
-    await admin
+    const { error } = await admin
       .from('referral_credits')
       .update({ used: true, used_payment_id: payment.id })
       .eq('id', payment.consumed_credit_id)
+    exigir(error, 'marcar el crédito como usado')
   }
 }
 

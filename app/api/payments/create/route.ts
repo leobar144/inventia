@@ -83,22 +83,38 @@ export async function POST(request: Request) {
     .eq('status', 'pending_payment')
     .maybeSingle()
 
-  const enrollmentId =
-    existingEnrollment?.id ??
-    (
-      await admin
+  let enrollmentId = existingEnrollment?.id
+
+  if (!enrollmentId) {
+    const { data: creada, error: createError } = await admin
+      .from('enrollments')
+      .insert({
+        student_id: childId,
+        course_id: courseId,
+        status: 'pending_payment',
+        progress: 0,
+        plan_id: planId,
+        classes_purchased: plan.classes,
+      })
+      .select('id')
+      .single()
+
+    enrollmentId = creada?.id
+
+    // 23505 es dos clics seguidos: el índice único de la migración 037 deja una
+    // sola inscripción pendiente por curso, así que se reutiliza la que ganó.
+    if (!enrollmentId && createError?.code === '23505') {
+      const { data: ganadora } = await admin
         .from('enrollments')
-        .insert({
-          student_id: childId,
-          course_id: courseId,
-          status: 'pending_payment',
-          progress: 0,
-          plan_id: planId,
-          classes_purchased: plan.classes,
-        })
         .select('id')
-        .single()
-    ).data?.id
+        .eq('student_id', childId)
+        .eq('course_id', courseId)
+        .eq('status', 'pending_payment')
+        .maybeSingle()
+
+      enrollmentId = ganadora?.id
+    }
+  }
 
   if (!enrollmentId) {
     return NextResponse.json({ error: 'No se pudo crear la inscripción' }, { status: 500 })
