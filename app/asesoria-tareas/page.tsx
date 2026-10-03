@@ -54,9 +54,9 @@ export default async function AsesoriaTareasPage() {
             <span className="text-primary-600">Le enseñamos a hacerla.</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            {SALA_DE_TAREAS.scheduleLabel} en nuestro laboratorio. Su hijo llega con lo que le
-            dejaron, se sienta a trabajarlo acompañado, y usted recibe el mismo día qué hizo y en
-            qué se atascó.
+            {SALA_DE_TAREAS.scheduleLabel}, en línea. Su hijo entra desde la casa con lo que le
+            dejaron, lo trabaja acompañado por un monitor, y usted recibe el mismo día qué hizo y
+            en qué se atascó.
           </p>
           <div className="flex flex-wrap gap-3 justify-center mt-8">
             <a
@@ -110,8 +110,8 @@ export default async function AsesoriaTareasPage() {
                   la usó — que es justo lo que ya le están pidiendo en el colegio.
                 </li>
                 <li>
-                  · Presencial: máximo {TUTORING_BLOCK_CAPACITY} niños por monitor, siempre en el
-                  mismo espacio. Virtual: cupo abierto.
+                  · En línea, con el mismo monitor todas las tardes. Cuando abramos la sede, el
+                  presencial será de máximo {TUTORING_BLOCK_CAPACITY} niños por monitor.
                 </li>
                 <li>
                   · Usted recibe el registro de cada tarde: materia, qué avanzó y en qué se trabó.
@@ -299,8 +299,8 @@ export default async function AsesoriaTareasPage() {
               ¿Su hijo ya está en un curso de INVENTIA?
             </p>
             <p className="text-sm text-gray-700">
-              Tiene <strong>15% de descuento</strong> en la Sala de Tareas. Ya está en el
-              laboratorio: solo se queda un rato más.
+              Tiene <strong>15% de descuento</strong> en la Sala de Tareas. Ya lo conocemos y él ya
+              nos conoce: solo se queda un rato más.
             </p>
           </div>
         </div>
