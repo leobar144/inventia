@@ -1,6 +1,6 @@
 import { createServiceRoleClient } from './supabase/server'
 import { sendRenewalAlertToParent } from './email'
-import { getMembershipProgress, SALA_DE_TAREAS } from './homework'
+import { getMembershipProgress, SALA_DE_TAREAS, todayInBogota } from './homework'
 
 /**
  * Mantenimiento diario de las mensualidades de la Sala de Tareas.
@@ -20,10 +20,6 @@ import { getMembershipProgress, SALA_DE_TAREAS } from './homework'
  * permite un segundo cron job).
  */
 
-/** Hoy en Bogotá (UTC-5 todo el año), en formato YYYY-MM-DD. */
-function todayInBogota(): string {
-  return new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().slice(0, 10)
-}
 
 export interface TutoringMaintenanceResult {
   /** Mensualidades cuyo mes ya pasó. */

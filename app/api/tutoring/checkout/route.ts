@@ -2,12 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { generateWompiSignature, pesosToWompiCents } from '@/lib/wompi'
 import { resolveTutoringDiscount } from '@/lib/payments'
-import { membershipEndDate } from '@/lib/homework'
-
-/** Hoy en Bogotá (UTC-5 todo el año), en formato YYYY-MM-DD. */
-function todayInBogota(): string {
-  return new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().slice(0, 10)
-}
+import { membershipEndDate, todayInBogota } from '@/lib/homework'
 
 /**
  * Compra de una mensualidad de Sala de Tareas.

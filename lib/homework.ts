@@ -257,6 +257,11 @@ export function getMembershipProgress(
  * pagarlo. Cuando el día de inicio no existe en el mes siguiente, la
  * mensualidad termina el último día de ese mes.
  */
+/** Hoy en Bogotá (UTC-5 todo el año), en formato YYYY-MM-DD. */
+export function todayInBogota(): string {
+  return new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().slice(0, 10)
+}
+
 export function membershipEndDate(startsOn: string): string {
   const [y, m, d] = startsOn.split('-').map(Number)
 
