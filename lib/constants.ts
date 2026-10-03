@@ -61,9 +61,17 @@ export function isCampaignActive(now: Date = new Date()): boolean {
 export const NAV_LINKS = [
   { label: 'Inicio', href: '/' },
   { label: 'Cursos', href: '/cursos' },
-  { label: 'Asesoría de tareas', href: '/asesoria-tareas' },
-  { label: 'Por qué INVENTIA', href: '/acerca-de' },
-  { label: 'Jardines y colegios', href: '/instituciones' },
+  // Taller de diciembre. Cuando cierren las inscripciones hay que quitar este
+  // enlace: la página sigue respondiendo (y dice que cerró), pero no tiene por
+  // qué seguir ocupando un puesto en el menú.
+  { label: 'Creadores con IA', href: '/creadores-con-ia' },
+  // Etiquetas cortas a propósito: con los nombres largos ("Asesoría de tareas",
+  // "Por qué INVENTIA", "Jardines y colegios") el menú medía 1420 px y en un
+  // portátil de 1280 se salían de la pantalla el botón de Reservar y el enlace
+  // al portal. Las URL no cambian.
+  { label: 'Sala de Tareas', href: '/asesoria-tareas' },
+  { label: 'Nosotros', href: '/acerca-de' },
+  { label: 'Colegios', href: '/instituciones' },
   { label: 'Contacto', href: '/#contacto' },
 ]
 

@@ -9,6 +9,7 @@ import {
   CAMPAIGN,
   isCampaignActive,
 } from '@/lib/constants'
+import { CREADORES_CON_IA, isCreadoresOpen } from '@/lib/creadores'
 import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
 import WelcomePopup from '@/components/WelcomePopup'
 import MobileStickyBar from '@/components/MobileStickyBar'
@@ -17,6 +18,7 @@ import ContactSection from '@/components/ContactSection'
 
 export default function Home() {
   const campaignActive = isCampaignActive()
+  const creadoresAbierto = isCreadoresOpen()
   const minPlanPrice = Math.min(...PRICING_PLANS.map((p) => p.price))
 
   return (
@@ -125,6 +127,37 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Creadores con IA — el taller de diciembre.
+          Va aquí, pegado al hero, porque es el producto de ticket más alto y el
+          único con fecha de vencimiento: en cuanto pase el 28 de noviembre la
+          franja desaparece sola (ver isCreadoresOpen). */}
+      {creadoresAbierto && (
+        <section className="bg-secondary-600 text-white">
+          <div className="section-container py-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-5 text-center md:text-left">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-white/70 mb-1">
+                  Receso de diciembre · {CREADORES_CON_IA.ageRange} · cupos para{' '}
+                  {CREADORES_CON_IA.capacity}
+                </p>
+                <h2 className="text-2xl md:text-3xl font-heading font-bold">
+                  {CREADORES_CON_IA.name}: cuatro mañanas y su hijo sale con un proyecto propio
+                </h2>
+                <p className="text-white/90 mt-1">
+                  {CREADORES_CON_IA.datesShort}, {CREADORES_CON_IA.timeLabel}, en vivo y en línea.
+                </p>
+              </div>
+              <Link
+                href={CREADORES_CON_IA.slug}
+                className="btn bg-white text-secondary-700 hover:bg-gray-100 shrink-0"
+              >
+                Ver el taller
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Features Section */}
       <section id="caracteristicas" className="section bg-white">
         <div className="section-container">
@@ -147,60 +180,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Gallery Section */}
-      <section className="section bg-gray-50">
-        <div className="section-container">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Nuestros estudiantes en acción</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Así se ve aprender creando — cada foto es un proyecto real hecho por un niño real.
-            </p>
-          </div>
+      {/* Aquí iba una galería que afirmaba: "cada foto es un proyecto real hecho
+          por un niño real". No era cierto — eran imágenes bajadas de internet, y
+          una de ellas era de la sala de otra academia. Se retiró el 3/10/2026,
+          antes de abrir la web al público: afirmar eso es publicidad engañosa y
+          las fotos no eran nuestras.
 
-          <FadeInGrid className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[160px] md:auto-rows-[200px]">
-            <FadeInItem className="col-span-2 row-span-2 relative rounded-2xl overflow-hidden group">
-              <Image
-                src="/gallery/robotica2.jpg"
-                alt="Estudiante armando un robot con ruedas"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </FadeInItem>
-            <FadeInItem className="relative rounded-2xl overflow-hidden group">
-              <Image
-                src="/gallery/robotica1.jpg"
-                alt="Estudiante programando un brazo robótico"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </FadeInItem>
-            <FadeInItem className="relative rounded-2xl overflow-hidden group">
-              <Image
-                src="/gallery/kits.webp"
-                alt="Estudiantes construyendo con kits de robótica educativa"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </FadeInItem>
-            <FadeInItem className="relative rounded-2xl overflow-hidden group">
-              <Image
-                src="/gallery/iot.jpg"
-                alt="Estudiantes trabajando en un proyecto de electrónica"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </FadeInItem>
-            <FadeInItem className="relative rounded-2xl overflow-hidden group">
-              <Image
-                src="/gallery/colaboracion.jpg"
-                alt="Dos estudiantes colaborando en un robot"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </FadeInItem>
-          </FadeInGrid>
-        </div>
-      </section>
+          Para reponerla hacen falta dos cosas, en este orden: fotos tomadas en
+          INVENTIA, y la autorización de imagen FIRMADA del acudiente de cada niño
+          que salga. Sin la firma no se publica, aunque la foto sea nuestra. */}
 
       {/* Courses Section */}
       <section id="cursos" className="section bg-gradient-to-b from-gray-50 to-white">
