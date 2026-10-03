@@ -28,12 +28,14 @@ const figtree = Figtree({
 
 export const metadata: Metadata = {
   title: 'INVENTIA | Robótica, Programación e IA para Niños',
-  description: 'Tu hijo no usa tecnología. La inventa. Campamento STEM para niños de 4-16 años en Bogotá.',
+  description:
+    'Tu hijo no usa tecnología. La inventa. Robótica, programación e inteligencia artificial para niños de 4 a 16 años en Bogotá, presencial y virtual.',
   keywords: [
     'robótica niños',
     'programación infantil',
     'IA niños',
-    'campamento STEM',
+    'refuerzo escolar virtual',
+    'tareas con inteligencia artificial',
     'educación tecnológica',
     'Bogotá',
   ],

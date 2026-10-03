@@ -36,11 +36,19 @@ export const SITE_CONFIG = {
  */
 export const CAMPAIGN = {
   enabled: true,
-  name: 'Campamento STEM',
-  dateLabel: '5-12 de octubre',
+  name: 'Refuerzo de fin de año',
+  dateLabel: 'virtual, hasta el 27 de noviembre',
   /** Último día en que la campaña sigue anunciándose (hora de Bogotá). */
-  endDate: '2026-10-12',
-  whatsappMessage: '¡Hola INVENTIA! Quiero reservar un cupo para el campamento.',
+  endDate: '2026-11-27',
+  /**
+   * Frase del llamado final y texto del botón. Viven aquí porque cambian con
+   * cada campaña: el campamento hablaba de cupos de 8 niños, el refuerzo
+   * virtual no tiene ese límite.
+   */
+  ctaNote:
+    'De lunes a viernes, de 3 a 6 p.m., con reporte semanal de cómo hizo las tareas y cómo usó la IA. La primera tarde es gratis.',
+  ctaLabel: '📅 Pedir la tarde de prueba',
+  whatsappMessage: '¡Hola INVENTIA! Quiero información del Refuerzo de fin de año.',
 } as const
 
 /** Si la campaña sigue vigente hoy. Colombia es UTC-5 todo el año. */

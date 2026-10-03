@@ -363,7 +363,7 @@ export default function Home() {
               {
                 q: '¿Las clases son presenciales o virtuales?',
                 a: `Tenemos ambas modalidades: clases presenciales en Bogotá y clases en vivo por Google Meet, durante todo el año.${
-                  campaignActive ? ` Además, ${CAMPAIGN.name} del ${CAMPAIGN.dateLabel}.` : ''
+                  campaignActive ? ` Además, ${CAMPAIGN.name}: ${CAMPAIGN.dateLabel}.` : ''
                 }`,
               },
               {
@@ -451,7 +451,7 @@ export default function Home() {
           </h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
             {campaignActive
-              ? `${CAMPAIGN.name} ${CAMPAIGN.dateLabel}. Cupos limitados — los grupos son de máximo 8 niños.`
+              ? `${CAMPAIGN.name}, ${CAMPAIGN.dateLabel}. ${CAMPAIGN.ctaNote}`
               : 'La primera clase es gratis y sin compromiso. Los grupos son de máximo 8 niños.'}
           </p>
           {campaignActive ? (
@@ -461,7 +461,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="inline-block px-8 py-4 bg-white text-primary-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors"
             >
-              📅 Reservar cupo ahora
+              {CAMPAIGN.ctaLabel}
             </a>
           ) : (
             <Link
