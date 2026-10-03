@@ -3,6 +3,7 @@ import { createServiceRoleClient } from '@/lib/supabase/server'
 import { sendClassReminderEmail } from '@/lib/email'
 import { sendPendingTrialFollowUps } from '@/lib/trialFollowUp'
 import { runTutoringMaintenance } from '@/lib/tutoringRenewals'
+import { sendWeeklyTutoringReports } from '@/lib/tutoringReport'
 import { alertAdmin } from '@/lib/alerts'
 
 // Corre una vez al día (ver vercel.json) — el plan gratuito de Vercel no
@@ -36,6 +37,18 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('Error en el mantenimiento de la Sala de Tareas:', error)
     await alertAdmin('cron: mantenimiento de Sala de Tareas', error)
+  }
+
+  // Reporte semanal de la Sala de Tareas: es la promesa que se le vendió a la
+  // familia. Corre todos los días pero solo manda la última semana terminada y
+  // deja constancia, así que en la práctica sale el sábado y, si ese día falla
+  // el envío, el domingo o el lunes lo reintentan con la misma semana.
+  let weeklyReports = { sent: 0, alreadySent: 0 }
+  try {
+    weeklyReports = await sendWeeklyTutoringReports(admin)
+  } catch (error) {
+    console.error('Error enviando los reportes semanales de la Sala de Tareas:', error)
+    await alertAdmin('cron: reportes semanales de Sala de Tareas', error)
   }
 
   // Colombia es UTC-5 todo el año (sin horario de verano) — se calcula el
@@ -151,8 +164,8 @@ export async function GET(request: Request) {
       sessions.map((s) => s.id)
     )
 
-  await logCronRun({ ok: true, sent, followUps, tutoring })
-  return NextResponse.json({ sent, followUps, tutoring })
+  await logCronRun({ ok: true, sent, followUps, tutoring, weeklyReports })
+  return NextResponse.json({ sent, followUps, tutoring, weeklyReports })
 }
 
 /**
@@ -168,6 +181,7 @@ async function logCronRun(data: {
   error?: string
   followUps: { day1: number; day4: number }
   tutoring: { expired: number; usedUp: number; renewalAlerts: number }
+  weeklyReports?: { sent: number; alreadySent: number }
 }) {
   try {
     const admin = createServiceRoleClient()
@@ -176,7 +190,10 @@ async function logCronRun(data: {
       ok: data.ok,
       reminders_sent: data.sent ?? 0,
       follow_ups_sent:
-        data.followUps.day1 + data.followUps.day4 + data.tutoring.renewalAlerts,
+        data.followUps.day1 +
+        data.followUps.day4 +
+        data.tutoring.renewalAlerts +
+        (data.weeklyReports?.sent ?? 0),
       error: data.error ?? null,
     })
   } catch {

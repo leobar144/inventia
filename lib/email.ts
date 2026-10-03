@@ -138,6 +138,90 @@ export async function sendRenewalAlertToParent(data: RenewalAlertParent) {
   })
 }
 
+interface WeeklyTutoringReport {
+  parentEmail: string
+  parentName: string
+  childName: string
+  /** Lunes y viernes de la semana reportada, en formato YYYY-MM-DD. */
+  weekStart: string
+  weekEnd: string
+  tardes: number
+  materias: string[]
+  usoIA: { label: string; veces: number }[]
+  atascos: string[]
+  temaAtascado: { materia: string; veces: number; notas: string[] } | null
+  portalUrl: string
+}
+
+/** Fecha corta en español, sin año: "6 de octubre". */
+function diaLargo(fecha: string): string {
+  const [y, m, d] = fecha.split('-').map(Number)
+  const meses = [
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
+  ]
+  return `${d} de ${meses[m - 1]}`
+}
+
+/**
+ * El reporte semanal de la Sala de Tareas: lo que la familia compró.
+ *
+ * Dice tres cosas que ningún profesor particular manda: cuántas tardes entró,
+ * cómo usó la inteligencia artificial, y si lleva varias tardes trabado en la
+ * misma materia.
+ */
+export async function sendWeeklyTutoringReport(data: WeeklyTutoringReport) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey || !data.parentEmail) return
+
+  const resend = new Resend(apiKey)
+
+  const materias =
+    data.materias.length > 0
+      ? `<p><strong>En qué trabajó:</strong> ${data.materias.join(', ')}.</p>`
+      : ''
+
+  const usoIA =
+    data.usoIA.length > 0
+      ? `<p><strong>Cómo usó la inteligencia artificial:</strong></p>
+         <ul>${data.usoIA
+           .map((u) => `<li>${u.label}: ${u.veces} ${u.veces === 1 ? 'tarde' : 'tardes'}</li>`)
+           .join('')}</ul>`
+      : ''
+
+  const alerta = data.temaAtascado
+    ? `<p style="background:#FCF0D5;border-left:4px solid #D98A1B;padding:12px 14px;border-radius:6px">
+         <strong>Ojo con ${data.temaAtascado.materia}:</strong> ${data.childName} se ha trabado
+         ${data.temaAtascado.veces} veces en esta materia en sus últimas tardes. Vale la pena mirarlo
+         antes del boletín. Si quiere, lo conversamos por WhatsApp.
+       </p>`
+    : ''
+
+  const atascos =
+    data.atascos.length > 0
+      ? `<p><strong>Lo que se le dificultó esta semana:</strong></p>
+         <ul>${data.atascos.map((a) => `<li>${a}</li>`).join('')}</ul>`
+      : ''
+
+  await resend.emails.send({
+    from: FROM,
+    to: data.parentEmail,
+    subject: `La semana de ${data.childName} en la Sala de Tareas`,
+    html: `
+      <h2>La semana de ${data.childName}</h2>
+      <p>Hola ${data.parentName}, esto fue lo que pasó entre el ${diaLargo(data.weekStart)} y el
+      ${diaLargo(data.weekEnd)}.</p>
+      <p><strong>Entró ${data.tardes} ${data.tardes === 1 ? 'tarde' : 'tardes'}.</strong></p>
+      ${materias}
+      ${usoIA}
+      ${atascos}
+      ${alerta}
+      <p><a href="${data.portalUrl}">Ver el detalle de cada tarde →</a></p>
+      <p>— El equipo de INVENTIA</p>
+    `,
+  })
+}
+
 interface SchoolLeadNotification {
   institutionName: string
   contactName: string
