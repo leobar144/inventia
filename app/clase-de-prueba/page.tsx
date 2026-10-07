@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { FaArrowLeft, FaArrowRight, FaSpinner } from 'react-icons/fa'
 import { track } from '@vercel/analytics'
 import { CONSENT_VERSION } from '@/lib/legal'
+import { CLASE_DE_PRUEBA } from '@/lib/constants'
 import type { AvailableSlotDay } from '@/types'
 
 const COURSES = [
@@ -140,6 +141,23 @@ export default function ClaseDePruebaPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary-50 via-white to-primary-50 py-12 px-4">
       <div className="max-w-lg mx-auto">
+        {/* Qué es esto, antes de pedir un solo dato. Sin esto el papá llena el
+            formulario preguntándose en qué lo compromete. */}
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl md:text-3xl font-heading font-bold mb-2">
+            {CLASE_DE_PRUEBA.titulo}
+          </h1>
+          <p className="text-gray-600">{CLASE_DE_PRUEBA.resumen}</p>
+          <ul className="text-sm text-gray-600 mt-4 space-y-1 text-left inline-block">
+            {CLASE_DE_PRUEBA.bullets.map((b) => (
+              <li key={b} className="flex gap-2">
+                <span className="text-primary-600 font-bold shrink-0">✓</span>
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         {/* Progress bar */}
         <div className="mb-8">
           <div className="flex justify-between text-xs text-gray-500 mb-2">

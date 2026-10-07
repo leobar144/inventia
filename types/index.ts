@@ -27,6 +27,11 @@ export interface Child {
   public_slug: string | null
   /** Autorización para tomar y guardar fotos del menor. Independiente de is_public. */
   photo_consent: boolean
+  /**
+   * Código con el que el niño entra a /mi-espacio. Null hasta que el acudiente
+   * lo crea. No es una credencial — ver lib/espacio.ts.
+   */
+  access_code?: string | null
 }
 
 export interface ClassAttendance {

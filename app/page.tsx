@@ -7,6 +7,7 @@ import {
   PRICING_PLANS,
   PROGRAM_TRACKS,
   CAMPAIGN,
+  CLASE_DE_PRUEBA,
   isCampaignActive,
 } from '@/lib/constants'
 import { CREADORES_CON_IA, isCreadoresOpen } from '@/lib/creadores'
@@ -57,8 +58,11 @@ export default function Home() {
                 <Link href="/clase-de-prueba" className="btn btn-primary text-lg">
                   Reservar clase de prueba gratis
                 </Link>
+                {/* Se dice qué es la clase ANTES de que haga clic: 15 minutos
+                    uno a uno quita la pregunta de "¿en qué me compromete?",
+                    que es la que frena al papá en el botón. */}
                 <p className="text-sm text-gray-500 mt-3">
-                  Sin costo y sin compromiso · Planes desde{' '}
+                  {CLASE_DE_PRUEBA.minutos} minutos, uno a uno, sin compromiso · Planes desde{' '}
                   <strong className="text-gray-700">
                     ${minPlanPrice.toLocaleString('es-CO')} al mes
                   </strong>

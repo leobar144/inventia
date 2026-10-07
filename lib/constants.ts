@@ -34,6 +34,33 @@ export const SITE_CONFIG = {
  * Ahora vive aquí. Para cambiar de campaña se editan estas líneas; cuando pasa
  * `endDate` los avisos desaparecen solos, sin tocar código.
  */
+/**
+ * Qué es exactamente la clase de prueba. Decidido el 7/10/2026.
+ *
+ * Antes se anunciaba como "clase de prueba gratis" sin decir cuánto dura, con
+ * quién es ni qué pasa en ella. Eso le deja al papá la pregunta más cara de
+ * todas: "¿esto en qué me compromete?".
+ *
+ * Es individual y corta a propósito: no es una clase regalada, es una
+ * demostración. El niño entra a la plataforma y sale de ahí con su espacio
+ * abierto y su primera misión empezada (ver lib/espacio.ts), que es justo lo
+ * que hace que pida volver.
+ */
+export const CLASE_DE_PRUEBA = {
+  minutos: 15,
+  /** Quién la dicta. Es un argumento de venta, no un detalle operativo. */
+  quienDicta: 'el fundador de INVENTIA',
+  titulo: 'Una demostración de 15 minutos, uno a uno',
+  resumen:
+    'No es una clase suelta: es para que su hijo vea de qué se trata. Entra a la plataforma, hace su primera misión con el fundador de INVENTIA —ingeniero— y queda con su propio espacio abierto.',
+  bullets: [
+    'Uno a uno, solo su hijo y el instructor.',
+    '15 minutos: lo que dura la atención de un niño en una primera cita.',
+    'Entra a la plataforma y se lleva algo hecho.',
+    'Sin costo y sin compromiso de matrícula.',
+  ],
+} as const
+
 export const CAMPAIGN = {
   enabled: true,
   name: 'Refuerzo de fin de año',

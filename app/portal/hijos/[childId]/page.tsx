@@ -15,6 +15,7 @@ import ClassPath from '@/components/portal/ClassPath'
 import NextClassCard from '@/components/portal/NextClassCard'
 import ShareProfileCard from '@/components/portal/ShareProfileCard'
 import ClassDiary from '@/components/portal/ClassDiary'
+import CodigoDelNino from '@/components/portal/CodigoDelNino'
 import MakeupCard from '@/components/portal/MakeupCard'
 import { getMakeupInfoForChild } from '@/lib/supabase/makeup-queries'
 
@@ -136,6 +137,15 @@ export default async function ChildDashboardPage({
           </Link>
         </div>
       </div>
+
+      {/* El código del espacio del niño. Va arriba, antes del progreso, porque
+          mientras el acudiente no se lo entregue, el niño no entra — y un niño
+          que no entra no vuelve solo. */}
+      <CodigoDelNino
+        childId={child.id}
+        childName={child.full_name.trim().split(/\s+/)[0] ?? child.full_name}
+        codigoInicial={child.access_code ?? null}
+      />
 
       {/* Insignia de nivel */}
       {(() => {
