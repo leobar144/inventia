@@ -50,14 +50,18 @@ export default function Header() {
             >
               Portal de Padres
             </Link>
-            <a
-              href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            {/* Lleva al formulario, no a WhatsApp. Es el boton mas visible del
+                sitio: por WhatsApp el interesado queda en el celular de quien
+                conteste y se pierde si nadie responde a tiempo; por el
+                formulario queda en la base, con fecha agendada y con el
+                seguimiento automatico de lib/trialFollowUp.ts. El boton
+                flotante de WhatsApp sigue ahi para quien prefiera escribir. */}
+            <Link
+              href="/clase-de-prueba"
               className="px-5 py-2 text-[15px] bg-primary-600 text-white rounded-lg font-bold hover:bg-primary-700 transition-colors whitespace-nowrap"
             >
-              Reservar
-            </a>
+              Clase gratis
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -90,14 +94,13 @@ export default function Header() {
             >
               Portal de Padres
             </Link>
-            <a
-              href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/clase-de-prueba"
+              onClick={() => setIsOpen(false)}
               className="block px-4 py-2 bg-primary-500 text-white rounded-lg font-medium text-center hover:bg-primary-600 transition-colors"
             >
-              Reservar
-            </a>
+              Clase gratis
+            </Link>
           </nav>
         )}
       </div>

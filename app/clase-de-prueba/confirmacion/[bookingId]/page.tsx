@@ -35,6 +35,11 @@ export default async function BookingConfirmationPage({
   const timeLabel = formatTimeLabel(booking.trial_availability.time)
   const targetDateTime = new Date(`${booking.booking_date}T${booking.trial_availability.time}`)
 
+  // El correo del acudiente NO se le pasa a la tarjeta. Esta página es
+  // pública: el id de la reserva es un UUID impredecible que llega por correo,
+  // pero el enlace queda en el historial, se reenvía y se comparte. Quien
+  // reservó ya conoce su propio correo; mostrarlo solo agrega un dato personal
+  // expuesto, y aquí de por medio está el nombre de un menor.
   return (
     <BookingConfirmationCard
       childName={booking.child_name}
@@ -44,7 +49,6 @@ export default async function BookingConfirmationPage({
       targetDateTime={targetDateTime}
       meetLink={process.env.NEXT_PUBLIC_TRIAL_MEET_LINK}
       parentName={booking.parent_name}
-      parentEmail={booking.parent_email ?? undefined}
     />
   )
 }
