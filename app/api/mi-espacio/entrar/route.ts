@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServiceRoleClient } from '@/lib/supabase/server'
 import { checkRateLimit } from '@/lib/rateLimit'
-import { looksLikeAccessCode, normalizeAccessCode } from '@/lib/espacio'
+import { COOKIE_ESPACIO, looksLikeAccessCode, normalizeAccessCode } from '@/lib/espacio'
 
 /**
  * El niño entra a su espacio con el código que le pasó su papá, o que el
@@ -16,8 +16,6 @@ import { looksLikeAccessCode, normalizeAccessCode } from '@/lib/espacio'
 
 /** Seis meses: un niño no debería tener que pedir su código cada semana. */
 const DURACION_COOKIE = 60 * 60 * 24 * 180
-
-export const COOKIE_ESPACIO = 'inventia_espacio'
 
 export async function POST(request: Request) {
   // El código es corto, así que la fuerza bruta es el riesgo real. Diez

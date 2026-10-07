@@ -13,6 +13,15 @@ import { randomInt } from 'crypto'
  */
 
 /**
+ * Nombre de la cookie donde viaja el código.
+ *
+ * Vive aquí y no junto a la ruta que la escribe porque un `route.ts` de Next
+ * SOLO puede exportar métodos HTTP: cualquier otra exportación rompe el build
+ * ("is not a valid Route export field"), y `tsc --noEmit` no lo detecta.
+ */
+export const COOKIE_ESPACIO = 'inventia_espacio'
+
+/**
  * Alfabeto del código.
  *
  * Sin O, 0, I, 1 ni L: son las que un niño de ocho años confunde al copiar del

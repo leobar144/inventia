@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { COOKIE_ESPACIO } from '../entrar/route'
+import { COOKIE_ESPACIO } from '@/lib/espacio'
 
 /**
  * Salir del espacio.

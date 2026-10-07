@@ -1,8 +1,13 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServiceRoleClient } from '@/lib/supabase/server'
-import { MISION_BIENVENIDA, SUENOS, parseSteps, type PasoId } from '@/lib/espacio'
-import { COOKIE_ESPACIO } from '../entrar/route'
+import {
+  COOKIE_ESPACIO,
+  MISION_BIENVENIDA,
+  SUENOS,
+  parseSteps,
+  type PasoId,
+} from '@/lib/espacio'
 
 /**
  * El niño marca un paso de su misión, o dice qué quiere crear.

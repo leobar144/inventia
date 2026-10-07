@@ -3,12 +3,12 @@ import { cookies } from 'next/headers'
 import { getEspacioByCode } from '@/lib/supabase/espacio-queries'
 import { getBadgeProgress } from '@/lib/badges'
 import {
+  COOKIE_ESPACIO,
   calcularMisionSiguiente,
   misionCompleta,
   primerNombre,
   MISION_BIENVENIDA,
 } from '@/lib/espacio'
-import { COOKIE_ESPACIO } from '@/app/api/mi-espacio/entrar/route'
 import EntrarConCodigo from '@/components/espacio/EntrarConCodigo'
 import MisionBienvenida from '@/components/espacio/MisionBienvenida'
 
