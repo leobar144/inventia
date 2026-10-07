@@ -11,6 +11,7 @@ import {
   isCampaignActive,
 } from '@/lib/constants'
 import { CREADORES_CON_IA, isCreadoresOpen } from '@/lib/creadores'
+import ProtocoloIaInteractivo from '@/components/ProtocoloIaInteractivo'
 import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
 import WelcomePopup from '@/components/WelcomePopup'
 import MobileStickyBar from '@/components/MobileStickyBar'
@@ -193,6 +194,27 @@ export default function Home() {
           Para reponerla hacen falta dos cosas, en este orden: fotos tomadas en
           INVENTIA, y la autorización de imagen FIRMADA del acudiente de cada niño
           que salga. Sin la firma no se publica, aunque la foto sea nuestra. */}
+
+      {/* El protocolo de IA, para tocar.
+          Va aquí, entre el "por qué" y los cursos, porque es la respuesta
+          concreta a por qué esta academia y no otra: es lo único que un
+          competidor global no puede copiar sin tener a alguien mirando al niño
+          resolver una tarea real. Y de paso es la pieza interactiva que a la
+          home le faltaba. */}
+      <section className="section bg-white">
+        <div className="section-container">
+          <div className="text-center mb-10 max-w-2xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Usted va a saber cómo usó la IA
+            </h2>
+            <p className="text-xl text-gray-600">
+              No le decimos “sí la usó” o “no la usó”. Cada tarde queda registrado de qué forma — y
+              eso es justo lo que los colegios están empezando a exigir. Toque cada una:
+            </p>
+          </div>
+          <ProtocoloIaInteractivo />
+        </div>
+      </section>
 
       {/* Courses Section */}
       <section id="cursos" className="section bg-gradient-to-b from-gray-50 to-white">
