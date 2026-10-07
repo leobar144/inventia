@@ -7,6 +7,8 @@ import { FaArrowLeft, FaArrowRight, FaSpinner } from 'react-icons/fa'
 import { track } from '@vercel/analytics'
 import { CONSENT_VERSION } from '@/lib/legal'
 import { CLASE_DE_PRUEBA } from '@/lib/constants'
+import { LEONARDO } from '@/lib/equipo'
+import FichaInstructor from '@/components/FichaInstructor'
 import type { AvailableSlotDay } from '@/types'
 
 const COURSES = [
@@ -156,6 +158,13 @@ export default function ClaseDePruebaPage() {
               </li>
             ))}
           </ul>
+        </div>
+
+        {/* Quién recibe al niño. Va ANTES del formulario: cuando el papá ya
+            entendió qué es la clase, lo único que le queda por resolver es con
+            quién va a estar su hijo. */}
+        <div className="mb-8">
+          <FichaInstructor persona={LEONARDO} titulo="Quién dicta la clase" />
         </div>
 
         {/* Progress bar */}

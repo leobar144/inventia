@@ -5,6 +5,8 @@ import { FEATURES } from '@/lib/constants'
 import { BADGE_LEVELS } from '@/lib/badges'
 import { FadeInGrid, FadeInItem } from '@/components/FadeInSection'
 import BadgeIcon from '@/components/BadgeIcon'
+import FichaInstructor from '@/components/FichaInstructor'
+import { LEONARDO } from '@/lib/equipo'
 
 export const metadata: Metadata = {
   title: 'Por qué INVENTIA',
@@ -60,6 +62,16 @@ export default function AcercaDePage() {
               hijo.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Quién está detrás. Va después de la trayectoria y antes de los
+          atributos: la historia de la metodología se cree más cuando se ve a la
+          persona que responde por ella. */}
+      <section className="section bg-gray-50">
+        <div className="section-container max-w-3xl">
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">Quién está detrás</h2>
+          <FichaInstructor persona={LEONARDO} />
         </div>
       </section>
 
