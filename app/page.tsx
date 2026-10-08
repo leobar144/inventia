@@ -13,6 +13,7 @@ import {
 import { CREADORES_CON_IA, isCreadoresOpen } from '@/lib/creadores'
 import ProtocoloIaInteractivo from '@/components/ProtocoloIaInteractivo'
 import SelectorEdad from '@/components/SelectorEdad'
+import PrimerasFamilias from '@/components/PrimerasFamilias'
 import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
 import WelcomePopup from '@/components/WelcomePopup'
 import MobileStickyBar from '@/components/MobileStickyBar'
@@ -231,6 +232,11 @@ export default function Home() {
           <ProtocoloIaInteractivo />
         </div>
       </section>
+
+      {/* Las primeras familias. Va después del protocolo —el argumento— porque
+          una cara real es lo que lo vuelve creíble. Se muestra sola: si ninguna
+          familia tiene autorización firmada, la sección no existe. */}
+      <PrimerasFamilias />
 
       {/* Courses Section */}
       <section id="cursos" className="section bg-gradient-to-b from-gray-50 to-white">
