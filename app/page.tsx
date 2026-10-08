@@ -51,7 +51,7 @@ export default function Home() {
               <p className="text-xl text-gray-600 leading-relaxed">
                 <span className="font-bold">La inventa.</span> Robótica, programación e IA para
                 niños de <strong>4 a 16 años</strong> en <strong>Bogotá</strong>, en grupos de
-                máximo 8 niños, presencial o virtual.
+                máximo 8 niños —6 en Exploradores—, presencial o virtual.
               </p>
 
               {/* Un solo llamado principal: el segundo botón se llevaba gente
@@ -482,7 +482,7 @@ export default function Home() {
           <p className="text-xl mb-8 max-w-2xl mx-auto">
             {campaignActive
               ? `${CAMPAIGN.name}, ${CAMPAIGN.dateLabel}. ${CAMPAIGN.ctaNote}`
-              : 'La primera clase es gratis y sin compromiso. Los grupos son de máximo 8 niños.'}
+              : 'La primera clase es gratis y sin compromiso. Los grupos son de máximo 8 niños, y de 6 en Exploradores.'}
           </p>
           {campaignActive ? (
             <a
