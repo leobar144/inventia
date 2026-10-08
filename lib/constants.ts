@@ -52,9 +52,9 @@ export const CLASE_DE_PRUEBA = {
   quienDicta: 'el fundador de INVENTIA',
   titulo: 'Una demostración de 15 minutos, uno a uno',
   resumen:
-    'No es una clase suelta: es para que su hijo vea de qué se trata. Entra a la plataforma, hace su primera misión con el fundador de INVENTIA —ingeniero— y queda con su propio espacio abierto.',
+    'No es una clase suelta: es para que tu hijo vea de qué se trata. Entra a la plataforma, hace su primera misión con el fundador de INVENTIA —ingeniero— y queda con su propio espacio abierto.',
   bullets: [
-    'Uno a uno, solo su hijo y el instructor.',
+    'Uno a uno, solo tu hijo y el instructor.',
     '15 minutos: lo que dura la atención de un niño en una primera cita.',
     'Entra a la plataforma y se lleva algo hecho.',
     'Sin costo y sin compromiso de matrícula.',

@@ -147,7 +147,7 @@ export default function Home() {
                   {CREADORES_CON_IA.capacity}
                 </p>
                 <h2 className="text-2xl md:text-3xl font-heading font-bold">
-                  {CREADORES_CON_IA.name}: cuatro mañanas y su hijo sale con un proyecto propio
+                  {CREADORES_CON_IA.name}: cuatro mañanas y tu hijo sale con un proyecto propio
                 </h2>
                 <p className="text-white/90 mt-1">
                   {CREADORES_CON_IA.datesShort}, {CREADORES_CON_IA.timeLabel}, en vivo y en línea.
@@ -170,9 +170,9 @@ export default function Home() {
       <section className="section bg-gray-50">
         <div className="section-container">
           <div className="text-center mb-8 max-w-2xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Empecemos por su hijo</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Empecemos por tu hijo</h2>
             <p className="text-xl text-gray-600">
-              Dígame la edad y le muestro qué puede tomar, sin que tenga que leerse el catálogo.
+              Dime la edad y te muestro qué puede tomar, sin que tengas que leerte el catálogo.
             </p>
           </div>
           <SelectorEdad />
@@ -221,11 +221,11 @@ export default function Home() {
         <div className="section-container">
           <div className="text-center mb-10 max-w-2xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Usted va a saber cómo usó la IA
+              Vas a saber cómo usó la IA
             </h2>
             <p className="text-xl text-gray-600">
-              No le decimos “sí la usó” o “no la usó”. Cada tarde queda registrado de qué forma — y
-              eso es justo lo que los colegios están empezando a exigir. Toque cada una:
+              No te decimos “sí la usó” o “no la usó”. Cada tarde queda registrado de qué forma — y
+              eso es justo lo que los colegios están empezando a exigir. Toca cada una:
             </p>
           </div>
           <ProtocoloIaInteractivo />

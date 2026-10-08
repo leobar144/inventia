@@ -31,7 +31,7 @@ export const LEONARDO: MiembroEquipo = {
   rol: 'Ingeniero · Director de INVENTIA',
   foto: '/equipo/leonardo-barajas.jpg',
   fotoAlt: 'Leonardo Barajas Gordillo, ingeniero y director de INVENTIA',
-  bio: 'Soy ingeniero, desarrollo software y trabajo con inteligencia artificial todos los días — la misma que su hijo ya está usando para hacer las tareas. Monté INVENTIA porque la diferencia no va a estar entre los niños que usan la IA y los que no: va a estar entre los que la entienden y los que solo le obedecen. La clase de prueba la doy yo, y en esos 15 minutos quiero ver qué le mueve a su hijo.',
+  bio: 'Soy ingeniero, desarrollo software y trabajo con inteligencia artificial todos los días — la misma que tu hijo ya está usando para hacer las tareas. Monté INVENTIA porque la diferencia no va a estar entre los niños que usan la IA y los que no: va a estar entre los que la entienden y los que solo le obedecen. La clase de prueba la doy yo, y en esos 15 minutos quiero ver qué le mueve a tu hijo.',
   unaLinea: 'Ingeniero, desarrollador y especialista en inteligencia artificial. Director de INVENTIA.',
 }
 

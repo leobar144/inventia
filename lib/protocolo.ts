@@ -78,14 +78,14 @@ export function buildWaitlistWhatsAppMessage(params: {
   const firstName = params.fullName.trim().split(/\s+/)[0]
 
   if (params.wantsCourse) {
-    return `Hola ${firstName}, le escribe INVENTIA 🤖
+    return `Hola ${firstName}, te escribe INVENTIA 🤖
 
-Gracias por descargar el Protocolo de IA honesta para las tareas. Nos pidió que le avisáramos de la preventa del curso en video «${CURSO_PADRES_NOMBRE}», y queríamos contarle a usted primero.
+Gracias por descargar el Protocolo de IA honesta para las tareas. Nos pediste que te avisáramos de la preventa del curso en video «${CURSO_PADRES_NOMBRE}», y queríamos contarte a ti primero.
 
-¿Le comparto los detalles?`
+¿Te comparto los detalles?`
   }
 
-  return `Hola ${firstName}, le escribe INVENTIA 🤖
+  return `Hola ${firstName}, te escribe INVENTIA 🤖
 
-Gracias por descargar el Protocolo de IA honesta para las tareas. ¿Pudo ponerlo en práctica en casa? Nos encantaría saber cómo le fue.`
+Gracias por descargar el Protocolo de IA honesta para las tareas. ¿Pudiste ponerlo en práctica en casa? Nos encantaría saber cómo te fue.`
 }

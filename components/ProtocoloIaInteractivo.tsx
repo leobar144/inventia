@@ -90,7 +90,7 @@ export default function ProtocoloIaInteractivo() {
       </div>
 
       <p className="text-sm text-gray-500 text-center mt-5">
-        Cada tarde queda registrada una de estas cuatro, y el sábado usted recibe el resumen de la
+        Cada tarde queda registrada una de estas cuatro, y el sábado recibes el resumen de la
         semana.{' '}
         <Link href="/protocolo" className="text-secondary-600 font-medium hover:underline">
           Ver cómo funciona el protocolo

@@ -51,7 +51,7 @@ export default function SelectorEdad() {
 
       {edad === null ? (
         <p className="text-center text-gray-500">
-          Toque una edad y le mostramos qué puede tomar su hijo.
+          Toca una edad y te mostramos qué puede tomar tu hijo.
         </p>
       ) : (
         <div>

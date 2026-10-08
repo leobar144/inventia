@@ -42,7 +42,7 @@ export default function CreadoresConIaPage() {
             Receso de diciembre · {CREADORES_CON_IA.ageRange} · {CREADORES_CON_IA.modality}
           </p>
           <h1 className="text-4xl md:text-5xl font-heading font-bold mb-5 max-w-3xl mx-auto">
-            Estas vacaciones su hijo no va a consumir tecnología.
+            Estas vacaciones tu hijo no va a consumir tecnología.
             <br />
             <span className="text-secondary-600">La va a construir.</span>
           </h1>
@@ -104,7 +104,7 @@ export default function CreadoresConIaPage() {
           </h2>
           <p className="text-lg text-gray-600 text-center mb-10">
             Más de la mitad de los estudiantes colombianos de 15 años dice usar inteligencia
-            artificial para sus tareas. La pregunta de este diciembre no es si su hijo la va a usar
+            artificial para sus tareas. La pregunta de este diciembre no es si tu hijo la va a usar
             —ya la usa—, sino si va a entenderla o solo a obedecerle.
           </p>
 
@@ -202,7 +202,7 @@ export default function CreadoresConIaPage() {
 
               <div className="mt-5 pt-5 border-t border-gray-100 space-y-3 text-sm">
                 <p className="text-gray-700">
-                  <strong>{formatCOP(CREADORES_CON_IA.familyPriceCOP)}</strong> si su hijo ya está
+                  <strong>{formatCOP(CREADORES_CON_IA.familyPriceCOP)}</strong> si tu hijo ya está
                   en la Sala de Tareas, en un curso de INVENTIA, o si venía del campamento que
                   cancelamos.
                 </p>
@@ -261,7 +261,7 @@ export default function CreadoresConIaPage() {
           </h2>
           <p className="text-lg text-white/90 max-w-2xl mx-auto mb-8">
             {abierto
-              ? `${CREADORES_CON_IA.datesLabel}, de ${CREADORES_CON_IA.timeLabel}, en línea. Escríbanos y le contamos si su hijo encaja en el grupo antes de que pague nada.`
+              ? `${CREADORES_CON_IA.datesLabel}, de ${CREADORES_CON_IA.timeLabel}, en línea. Escríbenos y te contamos si tu hijo encaja en el grupo antes de que pagues nada.`
               : 'Escríbanos y le avisamos en cuanto abramos la siguiente fecha.'}
           </p>
           <a
@@ -277,9 +277,9 @@ export default function CreadoresConIaPage() {
             Escribir por WhatsApp
           </a>
           <p className="text-sm text-white/80 mt-6">
-            ¿Su hijo necesita ayuda con las tareas del colegio, no un taller de vacaciones?{' '}
+            ¿Tu hijo necesita ayuda con las tareas del colegio, no un taller de vacaciones?{' '}
             <Link href="/asesoria-tareas" className="underline font-semibold">
-              Mire la Sala de Tareas
+              Mira la Sala de Tareas
             </Link>
             .
           </p>

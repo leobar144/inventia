@@ -54,8 +54,8 @@ export default async function AsesoriaTareasPage() {
             <span className="text-primary-600">Le enseñamos a hacerla.</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            {SALA_DE_TAREAS.scheduleLabel}, en línea. Su hijo entra desde la casa con lo que le
-            dejaron, lo trabaja acompañado por un monitor, y usted recibe el mismo día qué hizo y
+            {SALA_DE_TAREAS.scheduleLabel}, en línea. Tu hijo entra desde la casa con lo que le
+            dejaron, lo trabaja acompañado por un monitor, y recibes el mismo día qué hizo y
             en qué se atascó.
           </p>
           <div className="flex flex-wrap gap-3 justify-center mt-8">
@@ -94,9 +94,9 @@ export default async function AsesoriaTareasPage() {
               </p>
               <ul className="space-y-2 text-gray-600 text-sm">
                 <li>· Alguien le dicta la respuesta para que alcance a entregar.</li>
-                <li>· El niño copia sin entender y usted se entera en el boletín.</li>
+                <li>· El niño copia sin entender y te enteras en el boletín.</li>
                 <li>· Un profesor distinto cada vez, que no sabe qué pasó la semana pasada.</li>
-                <li>· Ningún reporte: usted pregunta “¿cómo te fue?” y le dicen “bien”.</li>
+                <li>· Ningún reporte: preguntas “¿cómo te fue?” y te dicen “bien”.</li>
               </ul>
             </div>
             <div className="card p-6 border-l-4 border-l-primary-500">
@@ -114,7 +114,7 @@ export default async function AsesoriaTareasPage() {
                   presencial será de máximo {TUTORING_BLOCK_CAPACITY} niños por monitor.
                 </li>
                 <li>
-                  · Usted recibe el registro de cada tarde: materia, qué avanzó y en qué se trabó.
+                  · Recibes el registro de cada tarde: materia, qué avanzó y en qué se trabó.
                 </li>
               </ul>
             </div>
@@ -136,7 +136,7 @@ export default async function AsesoriaTareasPage() {
           </h2>
           <p className="text-secondary-200 text-center mb-10">
             En INVENTIA los niños programan y entrenan modelos de IA. No la prohibimos: enseñamos a
-            usarla. En cada tarde queda registrado cómo la usó su hijo — y usted lo ve.
+            usarla. En cada tarde queda registrado cómo la usó tu hijo — y tú lo ves.
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -179,7 +179,7 @@ export default async function AsesoriaTareasPage() {
         <div className="section-container max-w-4xl text-center">
           <h2 className="text-3xl font-heading font-bold mb-3">Todas las materias del colegio</h2>
           <p className="text-gray-600 mb-8">
-            Su hijo llega con lo que le dejaron ese día. No hay que avisar con anticipación qué
+            Tu hijo llega con lo que le dejaron ese día. No hay que avisar con anticipación qué
             materia va a trabajar.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
@@ -208,7 +208,7 @@ export default async function AsesoriaTareasPage() {
             </h2>
             <p className="text-gray-600 mb-5">
               Cada tarde queda registrado en qué se atascó. Cuando el mismo tema aparece tres veces,
-              el sistema nos avisa a nosotros y a usted — semanas antes de que aparezca en un
+              el sistema nos avisa a nosotros y a ti — semanas antes de que aparezca en un
               boletín.
             </p>
             <div className="rounded-xl bg-accent-50 border border-accent-200 p-4">
@@ -296,7 +296,7 @@ export default async function AsesoriaTareasPage() {
 
           <div className="mt-8 max-w-2xl mx-auto rounded-xl bg-primary-50 border border-primary-200 p-5 text-center">
             <p className="font-bold text-primary-800 mb-1">
-              ¿Su hijo ya está en un curso de INVENTIA?
+              ¿Tu hijo ya está en un curso de INVENTIA?
             </p>
             <p className="text-sm text-gray-700">
               Tiene <strong>15% de descuento</strong> en la Sala de Tareas. Ya lo conocemos y él ya

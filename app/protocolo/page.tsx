@@ -9,7 +9,7 @@ import { AI_USE_OPTIONS } from '@/lib/homework'
 export const metadata: Metadata = {
   title: 'Protocolo de IA honesta para las tareas',
   description:
-    'Guía gratuita para familias: cómo acompañar a su hijo cuando la inteligencia artificial puede hacerle la tarea. El mismo protocolo de la Sala de Tareas de INVENTIA.',
+    'Guía gratuita para familias: cómo acompañar a tu hijo cuando la inteligencia artificial puede hacerle la tarea. El mismo protocolo de la Sala de Tareas de INVENTIA.',
 }
 
 export default function ProtocoloPage() {
@@ -23,7 +23,7 @@ export default function ProtocoloPage() {
                 Guía gratuita para familias
               </p>
               <h1 className="text-4xl md:text-5xl font-heading font-bold mb-5">
-                Su hijo ya usa IA para las tareas.
+                Tu hijo ya usa IA para las tareas.
                 <span className="block text-primary-600">Así se acompaña.</span>
               </h1>
               <p className="text-lg text-gray-600 mb-6">

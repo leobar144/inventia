@@ -165,6 +165,6 @@ export const CREADORES_FAQ: readonly CreadoresFaq[] = [
   },
   {
     q: '¿Van a publicar fotos de mi hijo?',
-    a: 'Solo si usted firma la autorización de imagen, y es aparte de la inscripción. Lo que sí queda publicado es el proyecto: eso lo hizo él y es suyo. Si prefiere que su perfil sea privado, también se puede.',
+    a: 'Solo si firmas la autorización de imagen, y es aparte de la inscripción. Lo que sí queda publicado es el proyecto: eso lo hizo él y es suyo. Si prefieres que su perfil sea privado, también se puede.',
   },
 ] as const
