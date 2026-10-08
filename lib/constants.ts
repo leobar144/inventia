@@ -102,10 +102,24 @@ export const NAV_LINKS = [
   { label: 'Contacto', href: '/#contacto' },
 ]
 
-// Programas — contenido compartido entre la sección "Cursos" de la home y /cursos
+/**
+ * Programas — contenido compartido entre la sección "Cursos" de la home y
+ * /cursos.
+ *
+ * `ageMin` y `ageMax` están en campos propios y no solo en el texto de
+ * `bullets` porque el selector de edad de la home los necesita como números.
+ * Si cambian las edades de un curso, se cambian AQUÍ y en su bullet: son el
+ * mismo dato y no pueden contradecirse.
+ *
+ * Los rangos se superponen a propósito (un niño de 10 puede entrar a Scratch o
+ * a Python, uno de 12 a Robótica o a IA). Por eso el selector muestra TODOS los
+ * cursos que le sirven a una edad, no uno solo.
+ */
 export const PROGRAM_TRACKS = [
   {
     id: 'exploradores',
+    ageMin: 4,
+    ageMax: 6,
     icon: '🧸',
     title: 'Exploradores',
     description:
@@ -116,6 +130,8 @@ export const PROGRAM_TRACKS = [
   },
   {
     id: 'scratch',
+    ageMin: 7,
+    ageMax: 10,
     icon: '🎨',
     title: 'Scratch & Bloques',
     description: 'Aprende lógica de programación con bloques visuales. Perfecto para empezar.',
@@ -125,6 +141,8 @@ export const PROGRAM_TRACKS = [
   },
   {
     id: 'python',
+    ageMin: 10,
+    ageMax: 16,
     icon: '🐍',
     title: 'Python & Código Real',
     description: 'Domina un lenguaje de programación real usado por profesionales.',
@@ -134,6 +152,8 @@ export const PROGRAM_TRACKS = [
   },
   {
     id: 'robotica',
+    ageMin: 8,
+    ageMax: 14,
     icon: '🤖',
     title: 'Robótica',
     description: 'Construye y programa robots reales. Aprende electrónica y mecánica.',
@@ -143,6 +163,8 @@ export const PROGRAM_TRACKS = [
   },
   {
     id: 'ia',
+    ageMin: 12,
+    ageMax: 16,
     icon: '🧠',
     title: 'IA & Futuro',
     description: 'Entiende inteligencia artificial, machine learning y el futuro de la tecnología.',
@@ -256,10 +278,8 @@ export const FEATURES = [
   },
 ]
 
-// Age Groups
-export const AGE_GROUPS = [
-  { id: '4-6', label: '4-6 años', description: 'Introducción a la lógica' },
-  { id: '7-9', label: '7-9 años', description: 'Bloques visuales (Scratch)' },
-  { id: '10-12', label: '10-12 años', description: 'Programación e inicio de robótica' },
-  { id: '13-16', label: '13-16 años', description: 'Código avanzado y proyectos complejos' },
-]
+// AGE_GROUPS se eliminó el 7/10/2026. Eran cuatro rangos fijos (4-6, 7-9,
+// 10-12, 13-16) que contradecían las edades reales de los cursos: anunciaban
+// Scratch hasta los 9 cuando llega a los 10, y robótica desde los 10 cuando
+// empieza a los 8. Las edades viven ahora SOLO en PROGRAM_TRACKS (ageMin /
+// ageMax) y las lee components/SelectorEdad.tsx.

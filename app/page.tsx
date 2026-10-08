@@ -12,6 +12,7 @@ import {
 } from '@/lib/constants'
 import { CREADORES_CON_IA, isCreadoresOpen } from '@/lib/creadores'
 import ProtocoloIaInteractivo from '@/components/ProtocoloIaInteractivo'
+import SelectorEdad from '@/components/SelectorEdad'
 import { FadeInGrid, FadeInItem, FloatingCard } from '@/components/FadeInSection'
 import WelcomePopup from '@/components/WelcomePopup'
 import MobileStickyBar from '@/components/MobileStickyBar'
@@ -162,6 +163,21 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Selector de edad. Va arriba, casi pegado al hero, porque "¿qué le
+          sirve a mi hijo?" es la primera pregunta de un papá y hasta hoy se la
+          respondíamos con un catálogo para que la resolviera solo. */}
+      <section className="section bg-gray-50">
+        <div className="section-container">
+          <div className="text-center mb-8 max-w-2xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Empecemos por su hijo</h2>
+            <p className="text-xl text-gray-600">
+              Dígame la edad y le muestro qué puede tomar, sin que tenga que leerse el catálogo.
+            </p>
+          </div>
+          <SelectorEdad />
+        </div>
+      </section>
 
       {/* Features Section */}
       <section id="caracteristicas" className="section bg-white">

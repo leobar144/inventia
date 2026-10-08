@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { FaCheckCircle } from 'react-icons/fa'
-import { PROGRAM_TRACKS, AGE_GROUPS } from '@/lib/constants'
+import { PROGRAM_TRACKS } from '@/lib/constants'
+import SelectorEdad from '@/components/SelectorEdad'
 import { FadeInGrid, FadeInItem } from '@/components/FadeInSection'
 
 export const metadata: Metadata = {
@@ -61,14 +62,12 @@ export default function CursosPage() {
               Cada etapa tiene su propio punto de entrada natural.
             </p>
           </div>
-          <FadeInGrid className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {AGE_GROUPS.map((group) => (
-              <FadeInItem key={group.id} className="card p-6 text-center">
-                <p className="text-2xl font-bold text-primary-600 mb-1">{group.label}</p>
-                <p className="text-gray-600 text-sm">{group.description}</p>
-              </FadeInItem>
-            ))}
-          </FadeInGrid>
+          {/* Antes aquí había cuatro tarjetas fijas (AGE_GROUPS) que
+              contradecían los cursos reales: decían Scratch 7-9 cuando va
+              hasta los 10, y robótica 10-12 cuando va de 8 a 14. Ahora es el
+              mismo selector de la home, que lee las edades de PROGRAM_TRACKS:
+              una sola fuente de verdad y, de paso, algo que se puede tocar. */}
+          <SelectorEdad />
         </div>
       </section>
 
