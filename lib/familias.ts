@@ -26,6 +26,15 @@ export interface FamiliaDestacada {
   nombre: string
   /** Nombre de pila del niño. Solo si el acudiente lo autorizó expresamente. */
   nombreMenor?: string
+  /**
+   * Cuadrada, 800×800.
+   *
+   * OJO AL ENCUADRAR: la tarjeta la muestra apaisada y recorta arriba y abajo
+   * —solo se ve la franja central, más o menos del 20 % al 80 % del alto—. Si
+   * las caras quedan muy arriba, desaparecen. Pasó con la foto de Kate: se veía
+   * el niño y no ella. Antes de publicar, hay que mirar cómo queda en la
+   * tarjeta, no solo el archivo.
+   */
   foto: string
   fotoAlt: string
   /** Lo que dijo la familia, TEXTUAL. Vacío mientras no haya dicho nada. */
@@ -57,8 +66,8 @@ export const FAMILIAS: readonly FamiliaDestacada[] = [
     // El usuario dio el nombre del niño y decidió no publicarlo (9/10/2026).
     foto: '/familias/kate.jpg',
     fotoAlt: 'Kate y su hijo, una de las primeras familias de INVENTIA en Bogotá',
-    pie: 'Kate y su hijo, que acaba de empezar con nosotros.',
-    programa: 'Exploradores',
+    pie: 'Kate y su hijo de 7 años, que acaba de empezar con nosotros.',
+    programa: 'Scratch & Bloques',
     autorizacionFirmada: true,
   },
 ] as const
