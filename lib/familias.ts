@@ -8,9 +8,11 @@
  * indexable. El campo `autorizacionFirmada` no es decorativo — si está en
  * false, la familia no se muestra.
  *
- * MINIMIZACIÓN: se publica el nombre del acudiente, nunca el del niño. Para
- * presentar a una familia no hace falta identificar al menor, así que no se
- * hace.
+ * MINIMIZACIÓN: por defecto se publica solo el nombre del acudiente. El nombre
+ * del menor va en un campo aparte (`nombreMenor`) y solo se llena cuando el
+ * acudiente lo autorizó expresamente para eso, porque identificar a un niño en
+ * una web indexable no aporta nada a la venta y sí lo expone. Nunca apellidos
+ * de menores.
  *
  * SOBRE EL TESTIMONIO: `frase` queda vacía hasta que la familia diga algo de
  * verdad. Y cuando la familia acaba de entrar, la pregunta honesta no es "¿qué
@@ -20,14 +22,21 @@
 
 export interface FamiliaDestacada {
   id: string
-  /** Nombre del acudiente. Nunca el del menor. */
+  /** Nombre del acudiente. */
   nombre: string
+  /** Nombre de pila del niño. Solo si el acudiente lo autorizó expresamente. */
+  nombreMenor?: string
   foto: string
   fotoAlt: string
-  /** Lo que dijo la familia, textual. Vacío mientras no haya dicho nada. */
+  /** Lo que dijo la familia, TEXTUAL. Vacío mientras no haya dicho nada. */
   frase?: string
-  /** Qué ruta toma el niño. Sirve para que el visitante se ubique. */
-  programa: string
+  /**
+   * Qué se muestra mientras no haya frase. Es descripción, no testimonio: dice
+   * lo que sabemos que es cierto, sin ponerle palabras en la boca a nadie.
+   */
+  pie: string
+  /** Qué ruta toma el niño. Opcional: no siempre está definida al entrar. */
+  programa?: string
   /** Sin esto, no se publica. */
   autorizacionFirmada: boolean
 }
@@ -38,6 +47,17 @@ export const FAMILIAS: readonly FamiliaDestacada[] = [
     nombre: 'Valeria',
     foto: '/familias/valeria.jpg',
     fotoAlt: 'Valeria y su hija, una de las primeras familias de INVENTIA en Bogotá',
+    pie: 'Valeria y su hija, de las primeras familias que llegaron a INVENTIA en Bogotá.',
+    programa: 'Exploradores',
+    autorizacionFirmada: true,
+  },
+  {
+    id: 'kate',
+    nombre: 'Kate',
+    // El usuario dio el nombre del niño y decidió no publicarlo (9/10/2026).
+    foto: '/familias/kate.jpg',
+    fotoAlt: 'Kate y su hijo, una de las primeras familias de INVENTIA en Bogotá',
+    pie: 'Kate y su hijo, que acaba de empezar con nosotros.',
     programa: 'Exploradores',
     autorizacionFirmada: true,
   },

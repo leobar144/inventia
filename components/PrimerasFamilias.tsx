@@ -26,41 +26,61 @@ export default function PrimerasFamilias() {
           </p>
         </div>
 
-        <div className={FAMILIAS_PUBLICABLES.length === 1 ? '' : 'grid md:grid-cols-2 gap-6'}>
-          {FAMILIAS_PUBLICABLES.map((familia) => (
-            <figure
-              key={familia.id}
-              className="card overflow-hidden flex flex-col sm:flex-row items-stretch"
-            >
-              <Image
-                src={familia.foto}
-                alt={familia.fotoAlt}
-                width={320}
-                height={320}
-                // Cuadrada en escritorio: con altura automática la tarjeta la
-                // achataba, porque el texto de al lado es corto.
-                className="w-full sm:w-72 h-64 sm:h-72 object-cover shrink-0"
-              />
+        {/* Con una familia la tarjeta va horizontal y ocupa el ancho; con
+            varias, vertical en rejilla. Una tarjeta horizontal a media columna
+            deja la foto y el texto apretados contra la línea del medio. */}
+        <div
+          className={
+            FAMILIAS_PUBLICABLES.length === 1
+              ? ''
+              : 'grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto'
+          }
+        >
+          {FAMILIAS_PUBLICABLES.map((familia) => {
+            const unaSola = FAMILIAS_PUBLICABLES.length === 1
+            return (
+              <figure
+                key={familia.id}
+                className={`card overflow-hidden flex ${
+                  unaSola ? 'flex-col sm:flex-row items-stretch' : 'flex-col'
+                }`}
+              >
+                <Image
+                  src={familia.foto}
+                  alt={familia.fotoAlt}
+                  width={400}
+                  height={400}
+                  // Cuadrada: con altura automática la tarjeta la achataba,
+                  // porque el texto de al lado es corto.
+                  className={
+                    unaSola
+                      ? 'w-full sm:w-72 h-64 sm:h-72 object-cover shrink-0'
+                      : 'w-full h-56 object-cover'
+                  }
+                />
 
-              <figcaption className="p-6 sm:p-8 flex flex-col justify-center">
-                {familia.frase ? (
-                  <blockquote className="text-lg text-gray-700 leading-relaxed mb-4">
-                    «{familia.frase}»
-                  </blockquote>
-                ) : (
-                  <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                    {familia.nombre} y su hija, de las primeras familias de INVENTIA en Bogotá.
+                <figcaption
+                  className={`p-6 ${unaSola ? 'sm:p-8 flex flex-col justify-center' : ''}`}
+                >
+                  {familia.frase ? (
+                    <blockquote className="text-lg text-gray-700 leading-relaxed mb-4">
+                      «{familia.frase}»
+                    </blockquote>
+                  ) : (
+                    <p className="text-gray-700 leading-relaxed mb-4">{familia.pie}</p>
+                  )}
+
+                  <p className="font-bold">{familia.nombre}</p>
+                  {familia.programa && (
+                    <p className="text-sm text-primary-600">{familia.programa}</p>
+                  )}
+                  <p className="text-xs text-gray-400 mt-3">
+                    Publicada con autorización firmada de la familia.
                   </p>
-                )}
-
-                <p className="font-bold">{familia.nombre}</p>
-                <p className="text-sm text-primary-600">{familia.programa}</p>
-                <p className="text-xs text-gray-400 mt-3">
-                  Publicada con autorización firmada de la familia.
-                </p>
-              </figcaption>
-            </figure>
-          ))}
+                </figcaption>
+              </figure>
+            )
+          })}
         </div>
       </div>
     </section>
